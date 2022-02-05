@@ -5,3 +5,4 @@ This repository contains code from exercise sessions taking place in spring seme
 
 For each lecture exercise there is a corresponding folder named LectureXX and within each such folder there are seperate subfolders containing the code for each exercise task . 
 
+In RoboRally folder you can find versions of the RoboRally game app.
