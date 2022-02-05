@@ -9,7 +9,7 @@ import interfaceLektion1.IStak.StakEmptyException;
 public class Main {
 
       public static void main(String[] args) throws StakEmptyException{
-        
+
         int valg = 0;
         Scanner scan = new Scanner(System.in);
 
