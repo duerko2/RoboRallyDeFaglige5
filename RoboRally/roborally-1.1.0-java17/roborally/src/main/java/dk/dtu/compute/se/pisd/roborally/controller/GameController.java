@@ -206,10 +206,10 @@ public class GameController {
         Space nextSpace;
         Space currentScape = player.getSpace();
         switch (player.getHeading()){
-            case SOUTH -> nextSpace = player.getSpace();
-            case WEST -> player.setSpace(player.getSpace());
-            case NORTH -> player.setSpace(player.getSpace());
-            case EAST -> player.setSpace(player.getSpace());
+            case SOUTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y+1));
+            case WEST -> player.setSpace(board.getSpace(player.getSpace().x-1,player.getSpace().y));
+            case NORTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y-1));
+            case EAST -> player.setSpace(board.getSpace(player.getSpace().x+1,player.getSpace().y));
         }
 
     }
@@ -217,10 +217,10 @@ public class GameController {
     // TODO Assignment V2
     public void fastForward(@NotNull Player player) {
         switch (player.getHeading()){
-            case SOUTH -> player.setSpace(player.getSpace());
-            case WEST -> player.setSpace(player.getSpace());
-            case NORTH -> player.setSpace(player.getSpace());
-            case EAST -> player.setSpace(player.getSpace());
+            case SOUTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y+2));
+            case WEST -> player.setSpace(board.getSpace(player.getSpace().x-2,player.getSpace().y));
+            case NORTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y-2));
+            case EAST -> player.setSpace(board.getSpace(player.getSpace().x+2,player.getSpace().y));
         }
 
     }
