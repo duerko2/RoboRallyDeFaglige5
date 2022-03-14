@@ -53,6 +53,12 @@ public class GameController {
         //   - the counter of moves in the game should be increased by one
         //     if the player is moved
 
+        if(space.getPlayer()==null){
+            board.getCurrentPlayer().setSpace(space);
+            board.nextPlayer();
+            board.setStep(board.getStep()+1);
+        }
+
     }
 
     // XXX: V2

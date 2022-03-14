@@ -199,6 +199,14 @@ public class Board extends Subject {
 
         return getSpace(x, y);
     }
+    public List<Player> getPlayers(){
+        return players;
+    }
+
+    public void nextPlayer(){
+        int playersTurn = (getPlayerNumber(getCurrentPlayer())+1)%getPlayers().size();
+        setCurrentPlayer(getPlayer(playersTurn));
+    }
 
     public String getStatusMessage() {
         // this is actually a view aspect, but for making assignment V1 easy for
