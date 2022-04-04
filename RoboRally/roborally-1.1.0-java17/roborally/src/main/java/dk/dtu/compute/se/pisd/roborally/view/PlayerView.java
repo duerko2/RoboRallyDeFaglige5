@@ -191,12 +191,17 @@ public class PlayerView extends Tab implements ViewObserver {
                 }
 
 
-            } else {
+            } else {    // This is run if the game is in Player Interaction phase.
                 if (!programPane.getChildren().contains(playerInteractionPanel)) {
                     programPane.getChildren().remove(buttonPanel);
                     programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
                 }
                 playerInteractionPanel.getChildren().clear();
+
+                // TODO Assignment V3: these buttons should be shown only when there is
+                //      an interactive command card, and the buttons should represent
+                //      the player's choices of the interactive command card. The
+                //      following is just a mockup showing two options
                 if (player.board.getCurrentPlayer() == player) {
                     Command command = gameController.board.getCurrentPlayer().getProgramField(gameController.board.getStep()).getCard().command;
                     for (int j=0; j< command.getOptions().size();j++){
@@ -207,10 +212,7 @@ public class PlayerView extends Tab implements ViewObserver {
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
 
-                    // TODO Assignment V3: these buttons should be shown only when there is
-                    //      an interactive command card, and the buttons should represent
-                    //      the player's choices of the interactive command card. The
-                    //      following is just a mockup showing two options
+
 
                 }
             }

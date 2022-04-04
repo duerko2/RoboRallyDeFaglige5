@@ -221,6 +221,12 @@ public class GameController {
             }
         }
     }
+
+    /**
+     * This method executes chosen command from a command option card and continues the execution of the game.
+     *
+     * @param command This is the command chosen from the command option card.
+     */
     public void executeCommandOptionAndContinue(Command command){
         board.setPhase(Phase.ACTIVATION);
         executeCommand(board.getCurrentPlayer(),command);
