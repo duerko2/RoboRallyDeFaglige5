@@ -224,7 +224,7 @@ public class GameController {
     public void executeCommandOptionAndContinue(Command command){
         board.setPhase(Phase.ACTIVATION);
         executeCommand(board.getCurrentPlayer(),command);
-       int step = board.getStep();
+        int step = board.getStep();
         int nextPlayerNumber = board.getPlayerNumber(board.getCurrentPlayer()) + 1;
         if (nextPlayerNumber < board.getPlayersNumber()) {
             board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
@@ -238,6 +238,7 @@ public class GameController {
                 startProgrammingPhase();
             }
         }
+        continuePrograms();
     }
 
     // TODO Assignment V2
