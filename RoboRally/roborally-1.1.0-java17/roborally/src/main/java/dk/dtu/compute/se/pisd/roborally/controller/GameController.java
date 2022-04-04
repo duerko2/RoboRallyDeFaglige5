@@ -40,7 +40,6 @@ public class GameController {
     public GameController(@NotNull Board board) {
         this.board = board;
     }
-
     /**
      * This is just some dummy controller operation to make a simple move to see something
      * happening on the board. This method should eventually be deleted!
@@ -63,6 +62,7 @@ public class GameController {
         }
 
     }
+
 
     // XXX: V2
     public void startProgrammingPhase() {
@@ -147,11 +147,16 @@ public class GameController {
     // XXX: V2
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
-        if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
+        if  (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
             int step = board.getStep();
             if (step >= 0 && step < Player.NO_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
+                    if (!card.command.getOptions().isEmpty()){
+                        board.setPhase(Phase.PLAYER_INTERACTION);
+
+                        return;
+                    }
                     Command command = card.command;
                     executeCommand(currentPlayer, command);
                 }
@@ -199,14 +204,38 @@ public class GameController {
                     this.fastForward(player);
                     break;
                 case OPTION_LEFT_RIGHT:
-                    ChoiceDialog<Command> dialog = new ChoiceDialog<>(command.getOptions().get(0),command.getOptions());
+                    executeNextStep();
+
+
+
+                    /*ChoiceDialog<Command> dialog = new ChoiceDialog<>(command.getOptions().get(0),command.getOptions());
                     dialog.setTitle("Choose command");
                     dialog.setHeaderText("Select command left or right");
                     Optional<Command> chosenCommand=dialog.showAndWait();
                     executeCommand(player,chosenCommand.get());
+
+                     */
                     break;
                 default:
                     // DO NOTHING (for now)
+            }
+        }
+    }
+    public void executeCommandOptionAndContinue(Command command){
+        board.setPhase(Phase.ACTIVATION);
+        executeCommand(board.getCurrentPlayer(),command);
+       int step = board.getStep();
+        int nextPlayerNumber = board.getPlayerNumber(board.getCurrentPlayer()) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            step++;
+            if (step < Player.NO_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                startProgrammingPhase();
             }
         }
     }
