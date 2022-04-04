@@ -22,7 +22,10 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * ...
@@ -194,6 +197,13 @@ public class GameController {
                     break;
                 case FAST_FORWARD:
                     this.fastForward(player);
+                    break;
+                case OPTION_LEFT_RIGHT:
+                    ChoiceDialog<Command> dialog = new ChoiceDialog<>(command.getOptions().get(0),command.getOptions());
+                    dialog.setTitle("Choose command");
+                    dialog.setHeaderText("Select command left or right");
+                    Optional<Command> chosenCommand=dialog.showAndWait();
+                    executeCommand(player,chosenCommand.get());
                     break;
                 default:
                     // DO NOTHING (for now)
