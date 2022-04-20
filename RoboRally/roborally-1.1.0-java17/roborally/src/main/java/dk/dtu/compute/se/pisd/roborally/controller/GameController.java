@@ -22,10 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 /**
  * ...
@@ -193,7 +190,7 @@ public class GameController {
 
             switch (command) {
                 case FORWARD:
-                    this.moveForward(player);
+                    this.moveOne(player);
                     break;
                 case RIGHT:
                     this.turnRight(player);
@@ -202,7 +199,7 @@ public class GameController {
                     this.turnLeft(player);
                     break;
                 case FAST_FORWARD:
-                    this.fastForward(player);
+                    this.moveTwo(player);
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
@@ -254,49 +251,76 @@ public class GameController {
     }
 
     // TODO Assignment V2
-    public void moveForward(@NotNull Player player) {
+    public void moveOne(@NotNull Player player) {
         Space nextSpace;
-        Space currentScape = player.getSpace();
+        Space currentSpace = player.getSpace();
         switch (player.getHeading()) {
             case SOUTH:
                 nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                //checkForOutOfBounds();
+                if(checkForWall(currentSpace,nextSpace,player)){
+                    return;
+                }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case WEST:
                 nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                if(checkForWall(currentSpace,nextSpace,player)){
+                    return;
+                }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case NORTH:
                 nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
+                if(checkForWall(currentSpace,nextSpace,player)){
+                    return;
+                }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case EAST:
                 nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                if(checkForWall(currentSpace,nextSpace,player)){
+                    return;
+                }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
         }
     }
 
+
     // TODO Assignment V2
-    public void fastForward(@NotNull Player player) {
+    public void moveTwo(@NotNull Player player) {
         Space nextSpace;
-        Space currentScape = player.getSpace();
+
         for (int i = 0; i < 2; i++) {
+            Space currentSpace = player.getSpace();
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                    if(checkForWall(currentSpace,nextSpace,player)){
+                        return;
+                    }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                    if(checkForWall(currentSpace,nextSpace,player)){
+                        return;
+                    }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
+                    if(checkForWall(currentSpace,nextSpace,player)){
+                        return;
+                    }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                    if(checkForWall(currentSpace,nextSpace,player)){
+                        return;
+                    }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
             }
@@ -306,24 +330,37 @@ public class GameController {
 
     public void moveThree(@NotNull Player player) {
         Space nextSpace;
-        Space currentScape = player.getSpace();
+
 
         for (int i = 0; i < 3; i++) {
+            Space currentSpace = player.getSpace();
                 switch (player.getHeading()) {
                     case SOUTH:
                         nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                        if(checkForWall(currentSpace,nextSpace,player)){
+                            return;
+                        }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case WEST:
                         nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                        if(checkForWall(currentSpace,nextSpace,player)){
+                            return;
+                        }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case NORTH:
                         nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
+                        if(checkForWall(currentSpace,nextSpace,player)){
+                            return;
+                        }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case EAST:
                         nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                        if(checkForWall(currentSpace,nextSpace,player)){
+                            return;
+                        }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                 }
@@ -394,9 +431,10 @@ public class GameController {
         player.setSpace(space);
     }
     public void checkForPush(@NotNull Player player, @NotNull Space space, @NotNull Heading heading, boolean backwards) {
+        Heading orig = heading;
         Player other = space.getPlayer();
         if (other != null) {
-            Space target = board.getNeighbour(other.getSpace(),player.getHeading().next().next());
+            Space target = board.getNeighbour(other.getSpace(),orig.next().next());
             if (target != null) {
 
                         checkForPush(other, target,player.getHeading().next().next(),backwards);
@@ -408,6 +446,28 @@ public class GameController {
             }
         }
         player.setSpace(space);
+    }
+
+    /**
+     *
+     * @param currentSpace
+     * @param nextSpace
+     * @param player
+     * @return returns true if there is a wall in front of the player
+     */
+
+    private boolean checkForWall(Space currentSpace, Space nextSpace, Player player) {
+        for(int i=0;i<currentSpace.getWalls().length;i++){
+            if(currentSpace.getWalls()[i]==player.getHeading()){
+                return true;
+            }
+        }
+        for(int i=0;i<nextSpace.getWalls().length;i++){
+            if(nextSpace.getWalls()[i]==player.getHeading().next().next()){
+                return true;
+            }
+        }
+        return false;
     }
 
 
