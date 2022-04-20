@@ -71,6 +71,12 @@ public class Board extends Subject {
                 spaces[x][y] = space;
             }
         }
+        Space.initializeCheckpoints(6);
+        spaces[1][4].setCheckpoint(1);
+        spaces[3][4].setCheckpoint(1);
+        spaces[7][4].setCheckpoint(1);
+
+
         this.stepMode = false;
     }
 

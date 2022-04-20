@@ -22,6 +22,12 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import javafx.scene.text.Text;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 
 /**
  * ...
@@ -39,6 +45,8 @@ public class Space extends Subject {
     private Player player;
 
     private Heading[] wall;
+
+    private static LinkedList<LinkedList<Space>> Checkpoints = new LinkedList<LinkedList<Space>>();
 
     public Space(Board board, int x, int y, Heading[] wallHeading) {
         this.board = board;
@@ -71,6 +79,32 @@ public class Space extends Subject {
     public Heading[] getWalls() {
         return wall;
     }
+
+    public static void initializeCheckpoints(int amount){
+        for(int i = 0; i < amount; i++){
+            Checkpoints.add(new LinkedList<Space>());
+        }
+    }
+    //LinkedList is Last-in-First-Out
+    public void setCheckpoint(int amount){
+        for(int i = 0; i < amount; i++) {
+            Checkpoints.get(i).add(this);
+        }
+        Text text = new Text();
+        text.setText(""+1);
+        text.setY(this.y);
+        text.setX(this.x);
+    }
+    public void collectCheckpoint(int PlayerNumber){
+        Checkpoints.get(PlayerNumber).remove(this);
+    }
+    public boolean spaceIsNextCheckPoint(int PlayerNumber){
+        if(Checkpoints.get(PlayerNumber).peekLast() == this){
+            return true;
+        }
+        return false;
+    }
+
 
 
     void playerChanged() {
