@@ -23,7 +23,7 @@ public enum Command {
     BACK_UP("Move 1 Back"),
 
     // XXX Assignment P3
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT),
+    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
 
     /* 2 Special programming cards
     WEASEL_ROUTINE("Weasel", LEFT,RIGHT,U_TURN),
