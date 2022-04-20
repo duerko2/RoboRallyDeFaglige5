@@ -205,16 +205,21 @@ public class GameController {
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
-
-
-
                     /*ChoiceDialog<Command> dialog = new ChoiceDialog<>(command.getOptions().get(0),command.getOptions());
                     dialog.setTitle("Choose command");
                     dialog.setHeaderText("Select command left or right");
                     Optional<Command> chosenCommand=dialog.showAndWait();
                     executeCommand(player,chosenCommand.get());
-
                      */
+                    break;
+                case U_TURN:
+                    this.uTurn(player);
+                    break;
+                case MOVE_THREE:
+                    this.moveThree(player);
+                    break;
+                case BACK_UP:
+                    this.backUp(player);
                     break;
                 default:
                     // DO NOTHING (for now)
@@ -257,7 +262,6 @@ public class GameController {
             case NORTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y-1));
             case EAST -> player.setSpace(board.getSpace(player.getSpace().x+1,player.getSpace().y));
         }
-
     }
 
     // TODO Assignment V2
@@ -269,6 +273,29 @@ public class GameController {
             case EAST -> player.setSpace(board.getSpace(player.getSpace().x+2,player.getSpace().y));
         }
 
+    }
+
+    public void moveThree(@NotNull Player player){
+        switch (player.getHeading()){
+            case SOUTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y+3));
+            case WEST -> player.setSpace(board.getSpace(player.getSpace().x-3,player.getSpace().y));
+            case NORTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y-3));
+            case EAST -> player.setSpace(board.getSpace(player.getSpace().x+3,player.getSpace().y));
+        }
+    }
+
+    public void backUp(@NotNull Player player){
+        switch (player.getHeading()){
+            case SOUTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y-1));
+            case WEST -> player.setSpace(board.getSpace(player.getSpace().x+1,player.getSpace().y));
+            case NORTH -> player.setSpace(board.getSpace(player.getSpace().x,player.getSpace().y+1));
+            case EAST -> player.setSpace(board.getSpace(player.getSpace().x-1,player.getSpace().y));
+        }
+    }
+
+    public void uTurn(@NotNull Player player){
+        player.setHeading((player.getHeading().next()));
+        player.setHeading((player.getHeading().next()));
     }
 
     // TODO Assignment V2

@@ -14,10 +14,13 @@ public enum Command {
 
     // This is a very simplistic way of realizing different commands.
 
-    FORWARD("Fwd"),
+    FORWARD("Move 1"),
     RIGHT("Turn Right"),
     LEFT("Turn Left"),
-    FAST_FORWARD("Fast Fwd"),
+    FAST_FORWARD("Move 2"),
+    U_TURN("U-Turn"),
+    MOVE_THREE("Move 3"),
+    BACK_UP("Move 1 back"),
 
     // XXX Assignment P3
     OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
