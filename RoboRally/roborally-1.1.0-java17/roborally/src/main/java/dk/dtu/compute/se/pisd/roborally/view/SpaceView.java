@@ -27,9 +27,12 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
 
@@ -95,6 +98,56 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             updatePlayer();
+        }
+        if(space.getWall()!=null){
+            Pane pane = new Pane();
+            Rectangle rectangle =
+                    new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
+            rectangle.setFill(Color.TRANSPARENT);
+            pane.getChildren().add(rectangle);
+
+
+            int startY=SPACE_HEIGHT-2;
+            int startX=2;
+            int endX=SPACE_WIDTH-2;
+            int endY=SPACE_HEIGHT-2;
+
+            //
+            switch(this.space.getWall()){
+                case EAST:
+
+                    startY=2;
+                    startX=SPACE_WIDTH-2;
+                    endX=SPACE_WIDTH-2;
+                    endY=SPACE_HEIGHT-2;
+                    break;
+                case WEST:
+                    startY=SPACE_HEIGHT-2;
+                    startX=2;
+                    endX=2;
+                    endY=2;
+                    break;
+                case NORTH:
+                    startY=2;
+                    startX=2;
+                    endX=SPACE_WIDTH-2;
+                    endY=2;
+                    break;
+                case SOUTH:
+                    startY=SPACE_HEIGHT-2;
+                    startX=2;
+                    endX=SPACE_WIDTH-2;
+                    endY=SPACE_HEIGHT-2;
+                    break;
+            }
+
+            Line line =
+                    new Line(startX, startY, endX,
+                            endY);
+            line.setStroke(Color.RED);
+            line.setStrokeWidth(5);
+            pane.getChildren().add(line);
+            this.getChildren().add(pane);
         }
     }
 
