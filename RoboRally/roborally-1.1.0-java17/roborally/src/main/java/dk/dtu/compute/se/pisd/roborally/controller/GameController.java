@@ -194,11 +194,9 @@ public class GameController {
                     break;
                 case RIGHT:
                     this.turnRight(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case LEFT:
                     this.turnLeft(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case FAST_FORWARD:
                     this.fastForward(player);
@@ -212,11 +210,9 @@ public class GameController {
                     Optional<Command> chosenCommand=dialog.showAndWait();
                     executeCommand(player,chosenCommand.get());
                      */
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case U_TURN:
                     this.uTurn(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case MOVE_THREE:
                     this.moveThree(player);
