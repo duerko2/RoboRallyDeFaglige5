@@ -22,6 +22,12 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import javafx.scene.text.Text;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 
 /**
  * ...
@@ -39,6 +45,8 @@ public class Space extends Subject {
     private Player player;
 
     private Heading[] wall;
+
+    private static LinkedList<LinkedList<Space>> Checkpoints = new LinkedList<LinkedList<Space>>();
 
     public Space(Board board, int x, int y, Heading[] wallHeading) {
         this.board = board;
@@ -71,6 +79,39 @@ public class Space extends Subject {
     public Heading[] getWalls() {
         return wall;
     }
+
+    public static void initializeCheckpoints(int amount){
+        for(int i = 0; i < amount; i++){
+            Checkpoints.add(new LinkedList<Space>());
+        }
+    }
+    //LinkedList is Last-in-First-Out
+    public void setCheckpoint(){
+        for(int i = 0; i < Checkpoints.size(); i++) {
+            Checkpoints.get(i).add(this);
+        }
+    }
+    public void collectCheckpoint(int PlayerNumber){
+        Checkpoints.get(PlayerNumber).removeFirst();
+    }
+    public void checkForCheckpoint(){
+        if(Checkpoints.get(board.getPlayerNumber(board.getCurrentPlayer())).peekFirst() == this){
+            board.getCurrentPlayer().getSpace().collectCheckpoint(board.getPlayerNumber(board.getCurrentPlayer()));
+            board.getCurrentPlayer().getSpace().playerHasWon(board.getPlayerNumber(board.getCurrentPlayer()));
+        }
+    }
+    public boolean playerHasWon(int PlayerNumber){
+        if(Checkpoints.get(PlayerNumber).size() == 0){
+            System.out.println("Spiller " + (PlayerNumber+1) + " har vundet!");
+            return true;
+        }
+        return false;
+    }
+
+    public static LinkedList<LinkedList<Space>> getCheckpoints(){
+        return Checkpoints;
+    }
+
 
     public void setWall(Heading[] wall) {
         this.wall = wall;

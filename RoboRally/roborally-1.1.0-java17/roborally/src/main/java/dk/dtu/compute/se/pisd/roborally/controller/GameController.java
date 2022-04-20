@@ -22,7 +22,10 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * ...
@@ -191,6 +194,7 @@ public class GameController {
             switch (command) {
                 case FORWARD:
                     this.moveOne(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case RIGHT:
                     this.turnRight(player);
@@ -200,6 +204,7 @@ public class GameController {
                     break;
                 case FAST_FORWARD:
                     this.moveTwo(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
@@ -215,9 +220,11 @@ public class GameController {
                     break;
                 case MOVE_THREE:
                     this.moveThree(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case BACK_UP:
                     this.backUp(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 default:
                     // DO NOTHING (for now)

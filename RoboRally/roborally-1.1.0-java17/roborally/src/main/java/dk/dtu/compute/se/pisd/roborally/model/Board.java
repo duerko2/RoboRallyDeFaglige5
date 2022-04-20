@@ -27,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dk.dtu.compute.se.pisd.roborally.model.Heading.*;
+import static dk.dtu.compute.se.pisd.roborally.model.Heading.EAST;
+import static dk.dtu.compute.se.pisd.roborally.model.Heading.NORTH;
 import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
 
 /**
@@ -63,9 +64,10 @@ public class Board extends Subject {
         this.width = width;
         this.height = height;
         spaces = new Space[width][height];
+        Heading[] headings= {EAST,NORTH};
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                Space space = new Space(this, x, y,new Heading[]{null,null,null,null});
+                Space space = new Space(this, x, y,headings);
                 spaces[x][y] = space;
             }
         }
@@ -76,10 +78,15 @@ public class Board extends Subject {
         spaces[0][2].setWall(new Heading[]{EAST});
         spaces[0][3].setWall(new Heading[]{EAST});
         spaces[0][4].setWall(new Heading[]{EAST});
-        spaces[1][4].setWall(new Heading[]{SOUTH});
-        spaces[2][4].setWall(new Heading[]{SOUTH});
-        spaces[3][4].setWall(new Heading[]{SOUTH});
         spaces[4][5].setWall(new Heading[]{EAST});
+
+
+
+        //Six potential players and 1 placeholder that keeps track of all checkpoints(a caller).
+        Space.initializeCheckpoints(7);
+        spaces[5][6].setCheckpoint();
+        spaces[5][7].setCheckpoint();
+        spaces[6][7].setCheckpoint();
 
 
         this.stepMode = false;
