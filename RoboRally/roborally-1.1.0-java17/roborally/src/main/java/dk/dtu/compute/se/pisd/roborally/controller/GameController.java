@@ -258,28 +258,28 @@ public class GameController {
             case SOUTH:
                 nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
                 //checkForOutOfBounds();
-                if(checkForWall(currentSpace,nextSpace,player)){
+                if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                     return;
                 }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case WEST:
                 nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
-                if(checkForWall(currentSpace,nextSpace,player)){
+                if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                     return;
                 }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case NORTH:
                 nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
-                if(checkForWall(currentSpace,nextSpace,player)){
+                if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                     return;
                 }
                 checkForPush(player, nextSpace, player.getHeading());
                 break;
             case EAST:
                 nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
-                if(checkForWall(currentSpace,nextSpace,player)){
+                if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                     return;
                 }
                 checkForPush(player, nextSpace, player.getHeading());
@@ -297,28 +297,28 @@ public class GameController {
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
-                    if(checkForWall(currentSpace,nextSpace,player)){
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
-                    if(checkForWall(currentSpace,nextSpace,player)){
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
-                    if(checkForWall(currentSpace,nextSpace,player)){
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
-                    if(checkForWall(currentSpace,nextSpace,player)){
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
@@ -337,28 +337,28 @@ public class GameController {
                 switch (player.getHeading()) {
                     case SOUTH:
                         nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
-                        if(checkForWall(currentSpace,nextSpace,player)){
+                        if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                             return;
                         }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case WEST:
                         nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
-                        if(checkForWall(currentSpace,nextSpace,player)){
+                        if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                             return;
                         }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case NORTH:
                         nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
-                        if(checkForWall(currentSpace,nextSpace,player)){
+                        if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                             return;
                         }
                         checkForPush(player, nextSpace, player.getHeading());
                         break;
                     case EAST:
                         nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
-                        if(checkForWall(currentSpace,nextSpace,player)){
+                        if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                             return;
                         }
                         checkForPush(player, nextSpace, player.getHeading());
@@ -369,22 +369,35 @@ public class GameController {
 
         public void backUp (@NotNull Player player){
         Space nextSpace;
+        Space currentSpace = player.getSpace();
         Boolean backwards = true;
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y -1));
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
+                        return;
+                    }
                     checkForPush(player, nextSpace,Heading.NORTH, backwards);
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
+                        return;
+                    }
                     checkForPush(player, nextSpace, Heading.EAST, backwards);
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
+                        return;
+                    }
                     checkForPush(player, nextSpace, Heading.SOUTH, backwards);
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                    if(checkForWall(currentSpace,nextSpace,player.getHeading())){
+                        return;
+                    }
                     checkForPush(player, nextSpace, Heading.WEST, backwards);
                     break;
             }
@@ -417,53 +430,55 @@ public class GameController {
             }
 
         }
-    public void checkForPush(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) {
+    public void checkForPush(@NotNull Player player, @NotNull Space nextSpace, @NotNull Heading heading) {
         Heading orig = heading;
-        Player other = space.getPlayer();
+        Player other = nextSpace.getPlayer();
         if (other != null) {
-            Space target = board.getNeighbour(other.getSpace(),orig);
-            if (target != null) {
-                    checkForPush(other, target, player.getHeading());
-
-                }
+             Space target = board.getNeighbour(other.getSpace(),orig);
+            if(checkForWall(nextSpace,target,orig)){
+                return;
             }
 
-        player.setSpace(space);
-    }
-    public void checkForPush(@NotNull Player player, @NotNull Space space, @NotNull Heading heading, boolean backwards) {
-        Heading orig = heading;
-        Player other = space.getPlayer();
-        if (other != null) {
-            Space target = board.getNeighbour(other.getSpace(),orig.next().next());
             if (target != null) {
+                    checkForPush(other, target, orig);
+            }
 
+        }
+        if(nextSpace.getPlayer()==null){
+            player.setSpace(nextSpace);
+        }
+    }
+    public void checkForPush(@NotNull Player player, @NotNull Space previousSpace, @NotNull Heading heading, boolean backwards) {
+        Heading orig = heading;
+        Player other = previousSpace.getPlayer();
+        if (other != null) {
+            Space target = board.getNeighbour(other.getSpace(),player.getHeading().next().next());
+            if(checkForWall(previousSpace,target,orig)){
+                return;
+            }
+            if (target != null) {
                         checkForPush(other, target,player.getHeading().next().next(),backwards);
-
-
-
-
-
             }
         }
-        player.setSpace(space);
+        player.setSpace(previousSpace);
     }
 
     /**
      *
      * @param currentSpace
      * @param nextSpace
-     * @param player
+     * @param heading
      * @return returns true if there is a wall in front of the player
      */
 
-    private boolean checkForWall(Space currentSpace, Space nextSpace, Player player) {
+    private boolean checkForWall(Space currentSpace, Space nextSpace, Heading heading) {
         for(int i=0;i<currentSpace.getWalls().length;i++){
-            if(currentSpace.getWalls()[i]==player.getHeading()){
+            if(currentSpace.getWalls()[i]==heading){
                 return true;
             }
         }
         for(int i=0;i<nextSpace.getWalls().length;i++){
-            if(nextSpace.getWalls()[i]==player.getHeading().next().next()){
+            if(nextSpace.getWalls()[i]==heading.next().next()){
                 return true;
             }
         }
