@@ -38,9 +38,9 @@ public class Space extends Subject {
 
     private Player player;
 
-    private Heading wall;
+    private Heading[] wall;
 
-    public Space(Board board, int x, int y, Heading wallHeading) {
+    public Space(Board board, int x, int y, Heading[] wallHeading) {
         this.board = board;
         this.x = x;
         this.y = y;
@@ -68,13 +68,10 @@ public class Space extends Subject {
         }
     }
 
-    public Heading getWall() {
+    public Heading[] getWalls() {
         return wall;
     }
 
-    public void setWall(Heading wall) {
-        this.wall = wall;
-    }
 
     void playerChanged() {
         // This is a minor hack; since some views that are registered with the space

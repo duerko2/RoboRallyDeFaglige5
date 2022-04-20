@@ -99,12 +99,8 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
-        if(space.getWall()!=null){
-            Pane pane = new Pane();
-            Rectangle rectangle =
-                    new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
-            rectangle.setFill(Color.TRANSPARENT);
-            pane.getChildren().add(rectangle);
+        if(space.getWalls()[0]!=null){
+
 
 
             int startY=SPACE_HEIGHT-2;
@@ -113,42 +109,51 @@ public class SpaceView extends StackPane implements ViewObserver {
             int endY=SPACE_HEIGHT-2;
 
             //
-            switch(this.space.getWall()){
-                case EAST:
+            for(int i=0;i<this.space.getWalls().length;i++){
+                Pane pane = new Pane();
+                Rectangle rectangle =
+                        new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
+                rectangle.setFill(Color.TRANSPARENT);
+                pane.getChildren().add(rectangle);
 
-                    startY=2;
-                    startX=SPACE_WIDTH-2;
-                    endX=SPACE_WIDTH-2;
-                    endY=SPACE_HEIGHT-2;
-                    break;
-                case WEST:
-                    startY=SPACE_HEIGHT-2;
-                    startX=2;
-                    endX=2;
-                    endY=2;
-                    break;
-                case NORTH:
-                    startY=2;
-                    startX=2;
-                    endX=SPACE_WIDTH-2;
-                    endY=2;
-                    break;
-                case SOUTH:
-                    startY=SPACE_HEIGHT-2;
-                    startX=2;
-                    endX=SPACE_WIDTH-2;
-                    endY=SPACE_HEIGHT-2;
-                    break;
+
+                switch(this.space.getWalls()[i]){
+                    case EAST:
+                        startY=2;
+                        startX=SPACE_WIDTH-2;
+                        endX=SPACE_WIDTH-2;
+                        endY=SPACE_HEIGHT-2;
+                        break;
+                    case WEST:
+                        startY=SPACE_HEIGHT-2;
+                        startX=2;
+                        endX=2;
+                        endY=2;
+                        break;
+                    case NORTH:
+                        startY=2;
+                        startX=2;
+                        endX=SPACE_WIDTH-2;
+                        endY=2;
+                        break;
+                    case SOUTH:
+                        startY=SPACE_HEIGHT-2;
+                        startX=2;
+                        endX=SPACE_WIDTH-2;
+                        endY=SPACE_HEIGHT-2;
+                        break;
+                }
+
+                Line line =
+                        new Line(startX, startY, endX,
+                                endY);
+                line.setStroke(Color.RED);
+                line.setStrokeWidth(5);
+                pane.getChildren().add(line);
+                this.getChildren().add(pane);
             }
-
-            Line line =
-                    new Line(startX, startY, endX,
-                            endY);
-            line.setStroke(Color.RED);
-            line.setStrokeWidth(5);
-            pane.getChildren().add(line);
-            this.getChildren().add(pane);
         }
+
     }
 
 }
