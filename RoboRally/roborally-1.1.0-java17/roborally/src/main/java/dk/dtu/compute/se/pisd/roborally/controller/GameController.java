@@ -377,28 +377,28 @@ public class GameController {
                     if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
-                    checkForPush(player, nextSpace,Heading.NORTH, backwards);
+                    checkForPush(player, nextSpace,player.getHeading().next().next());
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
                     if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
-                    checkForPush(player, nextSpace, Heading.EAST, backwards);
+                    checkForPush(player, nextSpace,player.getHeading().next().next());
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
                     if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
-                    checkForPush(player, nextSpace, Heading.SOUTH, backwards);
+                    checkForPush(player, nextSpace,player.getHeading().next().next());
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
                     if(checkForWall(currentSpace,nextSpace,player.getHeading())){
                         return;
                     }
-                    checkForPush(player, nextSpace, Heading.WEST, backwards);
+                    checkForPush(player, nextSpace,player.getHeading().next().next());
                     break;
             }
         }
@@ -447,20 +447,6 @@ public class GameController {
         if(nextSpace.getPlayer()==null){
             player.setSpace(nextSpace);
         }
-    }
-    public void checkForPush(@NotNull Player player, @NotNull Space previousSpace, @NotNull Heading heading, boolean backwards) {
-        Heading orig = heading;
-        Player other = previousSpace.getPlayer();
-        if (other != null) {
-            Space target = board.getNeighbour(other.getSpace(),player.getHeading().next().next());
-            if(checkForWall(previousSpace,target,orig)){
-                return;
-            }
-            if (target != null) {
-                        checkForPush(other, target,player.getHeading().next().next(),backwards);
-            }
-        }
-        player.setSpace(previousSpace);
     }
 
     /**
