@@ -20,11 +20,15 @@ public enum Command {
     FAST_FORWARD("Move 2"),
     U_TURN("U-Turn"),
     MOVE_THREE("Move 3"),
-    BACK_UP("Move 1 back"),
+    BACK_UP("Move 1 Back"),
 
     // XXX Assignment P3
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
+    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT),
 
+    /* 2 Special programming cards
+    WEASEL_ROUTINE("Weasel", LEFT,RIGHT,U_TURN),
+    SANDBOX("Sandbox",LEFT,RIGHT,FORWARD,FAST_FORWARD,U_TURN,MOVE_THREE,BACK_UP);
+    */
     final public String displayName;
 
     // XXX Assignment P3
