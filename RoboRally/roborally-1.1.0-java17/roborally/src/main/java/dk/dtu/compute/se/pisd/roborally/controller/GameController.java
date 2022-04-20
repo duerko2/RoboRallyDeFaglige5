@@ -22,10 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 /**
  * ...
@@ -190,19 +187,22 @@ public class GameController {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
-
             switch (command) {
                 case FORWARD:
                     this.moveForward(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case RIGHT:
                     this.turnRight(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case LEFT:
                     this.turnLeft(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case FAST_FORWARD:
                     this.fastForward(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
@@ -212,15 +212,19 @@ public class GameController {
                     Optional<Command> chosenCommand=dialog.showAndWait();
                     executeCommand(player,chosenCommand.get());
                      */
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case U_TURN:
                     this.uTurn(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case MOVE_THREE:
                     this.moveThree(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 case BACK_UP:
                     this.backUp(player);
+                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
                     break;
                 default:
                     // DO NOTHING (for now)

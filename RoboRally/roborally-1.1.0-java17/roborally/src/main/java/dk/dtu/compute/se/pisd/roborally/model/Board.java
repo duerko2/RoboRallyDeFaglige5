@@ -71,10 +71,12 @@ public class Board extends Subject {
                 spaces[x][y] = space;
             }
         }
-        Space.initializeCheckpoints(6);
-        spaces[1][4].setCheckpoint(1);
-        spaces[3][4].setCheckpoint(1);
-        spaces[7][4].setCheckpoint(1);
+
+        //Six potential players and 1 placeholder that keeps track of all checkpoints(a caller).
+        Space.initializeCheckpoints(7);
+        spaces[5][6].setCheckpoint();
+        spaces[5][7].setCheckpoint();
+        spaces[6][7].setCheckpoint();
 
 
         this.stepMode = false;

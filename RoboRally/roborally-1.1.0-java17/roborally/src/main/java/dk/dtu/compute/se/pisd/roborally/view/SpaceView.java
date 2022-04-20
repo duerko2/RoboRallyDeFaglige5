@@ -34,6 +34,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -99,10 +100,25 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
+
+
+        if(Space.getCheckpoints().size() != 0) {
+            for(int i = 0; i < Space.getCheckpoints().get(6).size(); i++) {
+                if (this.space.x == Space.getCheckpoints().get(6).get(i).x && this.space.y == Space.getCheckpoints().get(6).get(i).y) {
+                    Text text = new Text();
+                    text.setText("" + (Space.getCheckpoints().get(6).indexOf(Space.getCheckpoints().get(6).get(i))+1));
+                    if (this.getStyle().equals("-fx-background-color: black;")) {
+                        text.setFill(Color.WHITE);
+                    } else {
+                        text.setFill(Color.BLACK);
+                    }
+                    this.getChildren().add(text);
+                }
+            }
+        }
+
+
         if(space.getWalls()[0]!=null){
-
-
-
             int startY=SPACE_HEIGHT-2;
             int startX=2;
             int endX=SPACE_WIDTH-2;
@@ -115,6 +131,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                         new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
                 rectangle.setFill(Color.TRANSPARENT);
                 pane.getChildren().add(rectangle);
+
 
 
                 switch(this.space.getWalls()[i]){

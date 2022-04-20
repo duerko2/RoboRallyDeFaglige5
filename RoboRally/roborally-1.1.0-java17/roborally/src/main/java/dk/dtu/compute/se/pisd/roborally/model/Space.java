@@ -86,23 +86,30 @@ public class Space extends Subject {
         }
     }
     //LinkedList is Last-in-First-Out
-    public void setCheckpoint(int amount){
-        for(int i = 0; i < amount; i++) {
+    public void setCheckpoint(){
+        for(int i = 0; i < Checkpoints.size(); i++) {
             Checkpoints.get(i).add(this);
         }
-        Text text = new Text();
-        text.setText(""+1);
-        text.setY(this.y);
-        text.setX(this.x);
     }
     public void collectCheckpoint(int PlayerNumber){
-        Checkpoints.get(PlayerNumber).remove(this);
+        Checkpoints.get(PlayerNumber).removeFirst();
     }
-    public boolean spaceIsNextCheckPoint(int PlayerNumber){
-        if(Checkpoints.get(PlayerNumber).peekLast() == this){
+    public void checkForCheckpoint(){
+        if(Checkpoints.get(board.getPlayerNumber(board.getCurrentPlayer())).peekFirst() == this){
+            board.getCurrentPlayer().getSpace().collectCheckpoint(board.getPlayerNumber(board.getCurrentPlayer()));
+            board.getCurrentPlayer().getSpace().playerHasWon(board.getPlayerNumber(board.getCurrentPlayer()));
+        }
+    }
+    public boolean playerHasWon(int PlayerNumber){
+        if(Checkpoints.get(PlayerNumber).size() == 0){
+            System.out.println("Spiller " + (PlayerNumber+1) + " har vundet!");
             return true;
         }
         return false;
+    }
+
+    public static LinkedList<LinkedList<Space>> getCheckpoints(){
+        return Checkpoints;
     }
 
 
