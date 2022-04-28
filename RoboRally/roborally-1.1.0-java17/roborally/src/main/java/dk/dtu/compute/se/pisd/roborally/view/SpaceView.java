@@ -126,11 +126,13 @@ public class SpaceView extends StackPane implements ViewObserver {
 
             //
             for(int i=0;i<this.space.getWalls().length;i++){
+                if(this.space.getWalls()[i]!=null){
                 Pane pane = new Pane();
                 Rectangle rectangle =
                         new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
                 rectangle.setFill(Color.TRANSPARENT);
                 pane.getChildren().add(rectangle);
+
 
 
 
@@ -169,8 +171,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                 pane.getChildren().add(line);
                 this.getChildren().add(pane);
             }
+            }
         }
-
     }
-
 }

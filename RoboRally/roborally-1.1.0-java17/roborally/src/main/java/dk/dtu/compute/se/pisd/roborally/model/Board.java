@@ -63,21 +63,13 @@ public class Board extends Subject {
         this.width = width;
         this.height = height;
         spaces = new Space[width][height];
-        Heading[] headings= {EAST};
+        Heading[] headings=new Heading[4];
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 Space space = new Space(this, x, y,headings);
                 spaces[x][y] = space;
             }
         }
-
-
-        spaces[0][0].setWall(new Heading[]{EAST});
-        spaces[0][1].setWall(new Heading[]{EAST});
-        spaces[0][2].setWall(new Heading[]{EAST});
-        spaces[0][3].setWall(new Heading[]{EAST});
-        spaces[0][4].setWall(new Heading[]{EAST});
-        spaces[4][5].setWall(new Heading[]{EAST});
 
 
 
