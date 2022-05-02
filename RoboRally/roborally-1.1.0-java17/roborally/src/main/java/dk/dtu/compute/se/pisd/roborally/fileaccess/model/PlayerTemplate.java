@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.fileaccess.model;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
@@ -12,13 +9,18 @@ public class PlayerTemplate {
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
-    public Board board;
-
     public String name;
     public String color;
 
-    public Space space;
+
+    public int x;
+    public int y;
     public Heading heading = SOUTH;
+
+    public CardTemplate[] program = new CardTemplate[Player.NO_REGISTERS];
+    public CardTemplate[] cards = new CardTemplate[Player.NO_CARDS];
+
+
 
 
 }

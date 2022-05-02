@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.CardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
@@ -47,6 +48,7 @@ public class LoadBoard {
     private static final String SAVESFOLDER = "saves";
     private static final String DEFAULTBOARD = "defaultboard";
     private static final String JSON_EXT = "json";
+    private static final String RESOURCEFOLDER = "resources";
 
     public static Board loadBoard(String boardname) {
         if (boardname == null) {
@@ -107,6 +109,7 @@ public class LoadBoard {
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
                 Space space = board.getSpace(i,j);
+
                 if (space.getWalls()[0]!=null) {
                     SpaceTemplate spaceTemplate = new SpaceTemplate();
                     spaceTemplate.x = space.x;
@@ -114,31 +117,38 @@ public class LoadBoard {
                     spaceTemplate.walls=space.getWalls();
                     template.spaces.add(spaceTemplate);
                 }
+
+
             }
         }
 
         for(int i=0;i<board.getPlayersNumber();i++){
             PlayerTemplate playerTemplate = new PlayerTemplate();
-            playerTemplate.board=board;
-            playerTemplate.space=board.getPlayer(i).getSpace();
+            playerTemplate.x=board.getPlayer(i).getSpace().x;
+            playerTemplate.y=board.getPlayer(i).getSpace().y;
             playerTemplate.color=board.getPlayer(i).getColor();
             playerTemplate.name=board.getPlayer(i).getName();
 
 
-            // Need to figure out a way to save the registers also...
-            /*
-            for(int j=0;j<board.getPlayer(i).;j++){
 
-                playerTemplate.cards[j]=board.getPlayer(i).getCardField(j);
+            for(int j=0;j<PlayerTemplate.NO_CARDS;j++){
+                CardTemplate cardTemplate = new CardTemplate();
+                cardTemplate.card=board.getPlayer(i).getCardField(j).getCard();
+                cardTemplate.visible=board.getPlayer(i).getCardField(j).isVisible();
+                playerTemplate.cards[j]=cardTemplate;
             }
-            for(int l=0;l<playerTemplate.program.length;l++){
-
-                playerTemplate.program[l]=board.getPlayer(i).getProgramField(l);
+            for(int j=0;j<PlayerTemplate.NO_REGISTERS;j++){
+                CardTemplate cardTemplate = new CardTemplate();
+                cardTemplate.card=board.getPlayer(i).getProgramField(j).getCard();
+                cardTemplate.visible=board.getPlayer(i).getProgramField(j).isVisible();
+                playerTemplate.program[j]=cardTemplate;
             }
 
-             */
+
 
             template.players.add(playerTemplate);
+
+
         }
 
 
@@ -158,13 +168,8 @@ public class LoadBoard {
         // a builder (here, we want to configure the JSON serialisation with
         // a pretty printer):
         GsonBuilder simpleBuilder = new GsonBuilder().
-                registerTypeAdapter(SpaceTemplate.class,new Adapter<SpaceTemplate>()).
-                registerTypeAdapter(PlayerTemplate.class,new Adapter<PlayerTemplate>()).
                 setPrettyPrinting();
         Gson gson = simpleBuilder.create();
-
-
-        String string =gson.toJson(template);
 
 
         FileWriter fileWriter = null;
