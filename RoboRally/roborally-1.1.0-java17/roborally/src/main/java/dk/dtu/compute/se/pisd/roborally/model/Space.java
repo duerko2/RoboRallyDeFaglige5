@@ -21,12 +21,16 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
+import com.google.gson.annotations.JsonAdapter;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import javafx.scene.text.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -37,23 +41,23 @@ import java.util.LinkedList;
  */
 public class Space extends Subject {
 
+    private Player player;
+
+
+    private List<Heading> walls = new ArrayList<>();
+    private List<FieldAction> actions = new ArrayList<>();
+
     public final Board board;
 
     public final int x;
     public final int y;
 
-    private Player player;
 
-    private Heading[] wall;
-
-    private static LinkedList<LinkedList<Space>> Checkpoints = new LinkedList<LinkedList<Space>>();
-
-    public Space(Board board, int x, int y, Heading[] wallHeading) {
+    public Space(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
         player = null;
-        this.wall=wallHeading;
     }
 
     public Player getPlayer() {
@@ -69,17 +73,20 @@ public class Space extends Subject {
                 // this should actually not happen
                 oldPlayer.setSpace(null);
             }
-            if (player != null) {
+            if (player != null)
                 player.setSpace(this);
             }
             notifyChange();
         }
+
+    public List<Heading> getWalls() {
+        return walls;
+    }
+    public List<FieldAction> getActions(){
+        return actions;
     }
 
-    public Heading[] getWalls() {
-        return wall;
-    }
-
+/*
     public static void initializeCheckpoints(int amount){
         for(int i = 0; i < amount; i++){
             Checkpoints.add(new LinkedList<Space>());
@@ -117,11 +124,15 @@ public class Space extends Subject {
         this.wall = wall;
     }
 
+ */
+
     void playerChanged() {
         // This is a minor hack; since some views that are registered with the space
         // also need to update when some player attributes change, the player can
         // notify the space of these changes by calling this method.
         notifyChange();
     }
+
+
 
 }

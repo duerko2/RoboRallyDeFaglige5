@@ -66,18 +66,10 @@ public class Board extends Subject {
         Heading[] headings=new Heading[4];
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                Space space = new Space(this, x, y,headings);
+                Space space = new Space(this, x, y);
                 spaces[x][y] = space;
             }
         }
-
-
-
-        //Six potential players and 1 placeholder that keeps track of all checkpoints(a caller).
-        Space.initializeCheckpoints(7);
-        spaces[5][6].setCheckpoint();
-        spaces[5][7].setCheckpoint();
-        spaces[6][7].setCheckpoint();
 
 
         this.stepMode = false;

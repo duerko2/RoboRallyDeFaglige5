@@ -44,15 +44,16 @@ public class Player extends Subject {
 
     private Space space;
     private Heading heading = SOUTH;
+    private int currentCheckPoint;
 
     private CommandCardField[] program;
     private CommandCardField[] cards;
 
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(@NotNull Board board, String color, @NotNull String name, int currentCheckPoint) {
         this.board = board;
         this.name = name;
         this.color = color;
-
+        this.currentCheckPoint = currentCheckPoint;
         this.space = null;
 
         program = new CommandCardField[NO_REGISTERS];
@@ -123,6 +124,12 @@ public class Player extends Subject {
                 space.playerChanged();
             }
         }
+    }
+    public int getCurrentCheckPoint(){
+        return currentCheckPoint;
+    }
+    public void setCurrentCheckPoint(int setCheckpoint) {
+        this.currentCheckPoint = setCheckpoint;
     }
 
     public CommandCardField getProgramField(int i) {

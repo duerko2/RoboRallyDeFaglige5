@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
@@ -100,33 +102,29 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
-
-
-        if(Space.getCheckpoints().size() != 0) {
-            for(int i = 0; i < Space.getCheckpoints().get(6).size(); i++) {
-                if (this.space.x == Space.getCheckpoints().get(6).get(i).x && this.space.y == Space.getCheckpoints().get(6).get(i).y) {
-                    Text text = new Text();
-                    text.setText("" + (Space.getCheckpoints().get(6).indexOf(Space.getCheckpoints().get(6).get(i))+1));
-                    if (this.getStyle().equals("-fx-background-color: black;")) {
-                        text.setFill(Color.WHITE);
-                    } else {
-                        text.setFill(Color.BLACK);
-                    }
-                    this.getChildren().add(text);
+        for(int i = 0; 0 <space.getActions().size();i++) {
+            FieldAction fieldaction = space.getActions().get(i);
+            if (space.getActions().contains(fieldaction instanceof CheckPoint)) {
+                CheckPoint checkpoint = (CheckPoint) space.getActions().get(i);
+                Text text = new Text();
+                text.setText("" + (checkpoint.getNumber()));
+                if (this.getStyle().equals("-fx-background-color: black;")) {
+                    text.setFill(Color.WHITE);
+                } else {
+                    text.setFill(Color.BLACK);
                 }
+                this.getChildren().add(text);
             }
         }
-
-
-        if(space.getWalls()[0]!=null){
+        if(!space.getWalls().isEmpty()){
             int startY=SPACE_HEIGHT-2;
             int startX=2;
             int endX=SPACE_WIDTH-2;
             int endY=SPACE_HEIGHT-2;
 
-            //
-            for(int i=0;i<this.space.getWalls().length;i++){
-                if(this.space.getWalls()[i]!=null){
+
+            for(int i=0;i<this.space.getWalls().size();i++){
+                if(this.space.getWalls()!=null){
                 Pane pane = new Pane();
                 Rectangle rectangle =
                         new Rectangle(0.0, 0.0, SPACE_WIDTH, SPACE_HEIGHT);
@@ -135,8 +133,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
 
 
-
-                switch(this.space.getWalls()[i]){
+                switch(this.space.getWalls().get(i)){
                     case EAST:
                         startY=2;
                         startX=SPACE_WIDTH-2;
@@ -174,4 +171,6 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
         }
     }
+
+
 }

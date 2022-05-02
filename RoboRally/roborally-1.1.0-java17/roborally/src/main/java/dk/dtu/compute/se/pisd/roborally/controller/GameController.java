@@ -194,7 +194,7 @@ public class GameController {
             switch (command) {
                 case FORWARD:
                     this.moveOne(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
+                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 case RIGHT:
                     this.turnRight(player);
@@ -204,7 +204,7 @@ public class GameController {
                     break;
                 case FAST_FORWARD:
                     this.moveTwo(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
+                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
@@ -220,11 +220,11 @@ public class GameController {
                     break;
                 case MOVE_THREE:
                     this.moveThree(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
+                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 case BACK_UP:
                     this.backUp(player);
-                    board.getCurrentPlayer().getSpace().checkForCheckpoint();
+                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 default:
                     // DO NOTHING (for now)
@@ -465,16 +465,14 @@ public class GameController {
      */
 
     private boolean checkForWall(Space currentSpace, Space nextSpace, Heading heading) {
-        for(int i=0;i<currentSpace.getWalls().length;i++){
-            if(currentSpace.getWalls()[i]==heading){
+            if(!currentSpace.getWalls().contains(heading)){
                 return true;
             }
-        }
-        for(int i=0;i<nextSpace.getWalls().length;i++){
-            if(nextSpace.getWalls()[i]==heading.next().next()){
+
+            if(!nextSpace.getWalls().contains(heading.next().next())){
                 return true;
             }
-        }
+
         return false;
     }
 

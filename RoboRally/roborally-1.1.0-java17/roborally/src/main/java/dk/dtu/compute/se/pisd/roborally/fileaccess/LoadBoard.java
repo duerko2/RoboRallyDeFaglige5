@@ -76,7 +76,7 @@ public class LoadBoard {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
                     for (int i = 0;i<spaceTemplate.walls.length;i++) {
-                        space.setWall(spaceTemplate.walls);
+                        //space.setWalls();
                     }
                 }
             }
