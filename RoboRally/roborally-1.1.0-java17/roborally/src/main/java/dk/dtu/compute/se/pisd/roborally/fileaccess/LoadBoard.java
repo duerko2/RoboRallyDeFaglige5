@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.CardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
@@ -36,6 +37,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * ...
@@ -55,12 +57,17 @@ public class LoadBoard {
             boardname = DEFAULTBOARD;
         }
 
+
+/*
+
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
+        InputStream inputStream = classLoader.getResourceAsStream("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards" + "/" + boardname);
         if (inputStream == null) {
             // TODO these constants should be defined somewhere
             return new Board(8,8);
         }
+
+ */
 
 		// In simple cases, we can create a Gson object with new Gson():
         GsonBuilder simpleBuilder = new GsonBuilder();
@@ -68,10 +75,13 @@ public class LoadBoard {
 
 		Board result;
 		// FileReader fileReader = null;
-        JsonReader reader = null;
+        //JsonReader reader = null;
+        Reader reader = null;
 		try {
 			// fileReader = new FileReader(filename);
-			reader = gson.newJsonReader(new InputStreamReader(inputStream));
+			//reader = gson.newJsonReader(new InputStreamReader(inputStream));
+
+            reader = Files.newBufferedReader(Paths.get("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards" + "/" + boardname));
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
 			result = new Board(template.width, template.height);
@@ -89,15 +99,23 @@ public class LoadBoard {
             if (reader != null) {
                 try {
                     reader.close();
-                    inputStream = null;
+                    reader = null;
                 } catch (IOException e2) {}
             }
-            if (inputStream != null) {
+            if (reader != null) {
 				try {
-					inputStream.close();
+					reader.close();
 				} catch (IOException e2) {}
 			}
-		}
+		} catch (NullPointerException e3){
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e2) {
+                }
+            }
+            return new Board(8,8);
+        }
 		return null;
     }
 

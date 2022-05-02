@@ -43,6 +43,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +61,8 @@ public class AppController implements Observer {
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
+    private static final String BOARDSFOLDER = "resources/boards";
+    final private List<String> BOARDS = new ArrayList<>();
 
     private GameController gameController;
 
@@ -72,7 +76,14 @@ public class AppController implements Observer {
         dialog.setHeaderText("Select number of players");
         Optional<Integer> result = dialog.showAndWait();
 
-        if (result.isPresent()) {
+
+        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
+        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+        filename.setTitle("Boards");
+        filename.setHeaderText("Select board to play");
+        Optional<String> fileNameResult = filename.showAndWait();
+
+        if (result.isPresent()&&fileNameResult.isPresent()) {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
@@ -83,8 +94,20 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-
+            /*
             Board board = new Board(8,8);
+            gameController = new GameController(board);
+            int no = result.get();
+            for (int i = 0; i < no; i++) {
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                board.addPlayer(player);
+                player.setSpace(board.getSpace(i % board.width, i));
+
+             */
+            // Real implementation of loading a board
+
+
+            Board board = LoadBoard.loadBoard(fileNameResult.get());
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -98,6 +121,7 @@ public class AppController implements Observer {
             gameController.startProgrammingPhase();
 
             roboRally.createBoardView(gameController);
+
         }
     }
 
@@ -132,6 +156,7 @@ public class AppController implements Observer {
 
 
         LoadBoard.saveBoard(gameController.board,fileName);
+
 
 
     }
