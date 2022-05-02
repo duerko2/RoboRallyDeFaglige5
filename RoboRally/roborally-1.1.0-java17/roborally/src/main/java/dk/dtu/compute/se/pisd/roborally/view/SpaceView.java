@@ -39,6 +39,8 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 /**
  * ...
  *
