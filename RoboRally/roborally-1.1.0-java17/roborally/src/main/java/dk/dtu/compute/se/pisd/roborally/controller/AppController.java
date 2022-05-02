@@ -32,10 +32,15 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -97,7 +102,38 @@ public class AppController implements Observer {
     }
 
     public void saveGame() {
-        // XXX needs to be implemented eventually
+        Stage dialogue = new Stage();
+        dialogue.setTitle("Name of save file:");
+
+        final TextField textField = new TextField();
+        final Button submitButton = new Button("Submit");
+        submitButton.setDefaultButton(true);
+        submitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent t) {
+                dialogue.close();
+            }
+        });
+
+        final VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER_RIGHT);
+        layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
+        layout.getChildren().setAll(
+                textField,
+                submitButton
+        );
+
+        dialogue.setScene(new Scene(layout));
+
+        textField.setMinHeight(TextField.USE_PREF_SIZE);
+
+        dialogue.showAndWait();
+        String fileName=textField.getText();
+
+
+
+        LoadBoard.saveBoard(gameController.board,fileName);
+
+
     }
 
     public void loadGame() {

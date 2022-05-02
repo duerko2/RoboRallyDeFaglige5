@@ -38,7 +38,6 @@ import java.util.List;
 public class SpaceTemplate {
 
     public Heading[] walls = new Heading[4];
-    private static LinkedList<LinkedList<Space>> Checkpoints = new LinkedList<LinkedList<Space>>();
 
     public int x;
     public int y;
