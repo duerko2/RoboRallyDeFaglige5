@@ -41,4 +41,7 @@ public class ConveyorBelt extends FieldAction{
 
         return false;
     }
+    public Heading getHeading(){
+        return this.heading;
+    }
 }
