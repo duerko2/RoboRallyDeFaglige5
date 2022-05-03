@@ -9,10 +9,10 @@ public class CheckPoint extends FieldAction {
     Space space;
     static int amountOfCheckpoints = 0;
 
-    public CheckPoint(Space space,int number){
-        this.number=number;
+    public CheckPoint(Space space){
         this.space = space;
         this.amountOfCheckpoints++;
+        number = amountOfCheckpoints;
     }
 
     @Override

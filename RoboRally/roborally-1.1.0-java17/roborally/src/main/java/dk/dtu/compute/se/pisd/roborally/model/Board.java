@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class Board extends Subject {
                 spaces[x][y] = space;
             }
         }
-
+        spaces[7][2].getActions().add(new CheckPoint(spaces[7][2]));
 
         this.stepMode = false;
     }

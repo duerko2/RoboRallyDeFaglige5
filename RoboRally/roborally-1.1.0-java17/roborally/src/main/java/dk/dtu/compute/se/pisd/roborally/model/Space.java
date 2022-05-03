@@ -86,6 +86,7 @@ public class Space extends Subject {
         return actions;
     }
 
+
 /*
     public static void initializeCheckpoints(int amount){
         for(int i = 0; i < amount; i++){
