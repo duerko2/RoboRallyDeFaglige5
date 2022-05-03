@@ -120,7 +120,7 @@ public class AppController extends FieldAction implements Observer {
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
             }
