@@ -126,21 +126,34 @@ public class LoadBoard {
     }
 
     public static void saveBoard(Board board, String name) {
+
+        //Creates board template based on board size.
         BoardTemplate template = new BoardTemplate();
         template.width = board.width;
         template.height = board.height;
 
+
+        // Iterates through the boards spaces
         for (int i=0; i<board.width; i++) {
             for (int j=0; j<board.height; j++) {
                 Space space = board.getSpace(i,j);
 
+
+                //Checks if the current space has walls or fieldactions.
                 if (!space.getWalls().isEmpty()||!space.getActions().isEmpty()) {
+
+                    //Creates a spacetemplate object to be written to JSON file. Only writes it if it contains element.
                     SpaceTemplate spaceTemplate = new SpaceTemplate();
+                    spaceTemplate.x = space.x;
+                    spaceTemplate.y = space.y;
+
+                    //Adds walls to spaceTemplate if it has walls.
                     if(!space.getWalls().isEmpty()) {
-                        spaceTemplate.x = space.x;
-                        spaceTemplate.y = space.y;
+
                         spaceTemplate.walls.addAll(space.getWalls());
                     }
+
+                    //Adds fieldactions to spacetemplate if it has any of those.
                     if(!space.getActions().isEmpty()){
                         for(int l=0;l<space.getActions().size();l++){
                             FieldAction fieldAction = space.getActions().get(l);
@@ -155,6 +168,7 @@ public class LoadBoard {
                         }
                     }
 
+                    // Adds the spacetemplate to the BoardTemplate.
                     template.spaces.add(spaceTemplate);
                 }
 
