@@ -85,17 +85,31 @@ public class LoadBoard {
 			//reader = gson.newJsonReader(new InputStreamReader(inputStream));
 
             reader = Files.newBufferedReader(Paths.get("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards" + "/" + boardname));
+
+            // Creates boardtemplate based on JSON file
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
+            //Creates a new board with size from boardtemplate
 			result = new Board(template.width, template.height);
+
+            //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
+
+                    // Adds walls if available.
                     for (int i = 0;i<spaceTemplate.walls.size();i++) {
                         space.getWalls().addAll(spaceTemplate.walls);
                     }
+
+                    // Adds checkpoint if available.
                     if(spaceTemplate.checkPoint!=null){
                         space.getActions().add(new CheckPoint(space,spaceTemplate.checkPoint.number));
+                    }
+
+                    // Adds conveyorbelt if available.
+                    if(spaceTemplate.conveyorBelt!=null){
+                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading));
                     }
                 }
             }
