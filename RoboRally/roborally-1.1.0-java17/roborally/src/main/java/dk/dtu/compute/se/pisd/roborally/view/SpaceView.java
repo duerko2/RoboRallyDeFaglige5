@@ -108,8 +108,17 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
+
+        //Sets the background tile
+        Image backgroundTile = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/tile.png", 60, 60, false, false);
+        ImageView bgtileView = new ImageView(backgroundTile);
+        this.getChildren().add(bgtileView);
+
+
         for(int i = 0; i <space.getActions().size();i++) {
             FieldAction fieldaction = space.getActions().get(i);
+
+            //Visualizes CheckPoints
             if (fieldaction instanceof CheckPoint) {
                 CheckPoint checkpoint = (CheckPoint) space.getActions().get(i);
                 Text text = new Text();
@@ -121,6 +130,8 @@ public class SpaceView extends StackPane implements ViewObserver {
                 }
                 this.getChildren().add(text);
             }
+
+            //Visualizes ConveyorBelts
             if(fieldaction instanceof ConveyorBelt){
                 ConveyorBelt conveyorBelt = (ConveyorBelt) space.getActions().get(i);
                 Image image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/conbelt.png", 60, 60, false, false);
@@ -198,6 +209,8 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
             }
         }
+        //Keeps the background tile behind everything else that is shown on the space.
+        bgtileView.toBack();
     }
 
 
