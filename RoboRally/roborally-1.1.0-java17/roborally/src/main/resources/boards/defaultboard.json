@@ -81,8 +81,17 @@
           "INSTANCE": {
             "heading": "NORTH"
           }
+        },
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.fileaccess.model.CheckPointTemplate",
+          "INSTANCE": {
+            "number": 1
+          }
         }
       ],
+      "checkPoint": {
+        "number": 1
+      },
       "x": 1,
       "y": 4
     },
@@ -184,6 +193,9 @@
           }
         }
       ],
+      "checkPoint": {
+        "number": 2
+      },
       "x": 6,
       "y": 6
     },

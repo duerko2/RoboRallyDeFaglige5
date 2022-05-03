@@ -39,7 +39,9 @@ import java.util.List;
 public class SpaceTemplate {
 
 
-    public Heading[] walls = new Heading[4];
+    public List<Heading> walls = new ArrayList<>();
+    public ConveyorBeltTemplate conveyorBelt;
+    public CheckPointTemplate checkPoint;
 
     public int x;
     public int y;

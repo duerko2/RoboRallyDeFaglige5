@@ -11,6 +11,7 @@ public class ConveyorBelt extends FieldAction{
     
     Heading heading;
     Space space;
+    boolean isDouble;
 
     public ConveyorBelt(Space space, Heading heading){
         this.heading = heading;
@@ -40,5 +41,14 @@ public class ConveyorBelt extends FieldAction{
         }
 
         return false;
+    }
+
+    public Heading getHeading() {
+        return heading;
+    }
+
+
+    public boolean getIsDouble() {
+        return isDouble;
     }
 }

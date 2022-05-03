@@ -26,6 +26,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.CardTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
@@ -88,8 +91,11 @@ public class LoadBoard {
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
-                    for (int i = 0;i<spaceTemplate.walls.length;i++) {
-                        //space.setWalls();
+                    for (int i = 0;i<spaceTemplate.walls.size();i++) {
+                        space.getWalls().addAll(spaceTemplate.walls);
+                    }
+                    if(spaceTemplate.checkPoint!=null){
+                        space.getActions().add(new CheckPoint(space,spaceTemplate.checkPoint.number));
                     }
                 }
             }
@@ -128,13 +134,30 @@ public class LoadBoard {
             for (int j=0; j<board.height; j++) {
                 Space space = board.getSpace(i,j);
 
-                if (space.getWalls()[0]!=null) {
+                if (!space.getWalls().isEmpty()||!space.getActions().isEmpty()) {
                     SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.x;
-                    spaceTemplate.y = space.y;
-                    spaceTemplate.walls=space.getWalls();
+                    if(!space.getWalls().isEmpty()) {
+                        spaceTemplate.x = space.x;
+                        spaceTemplate.y = space.y;
+                        spaceTemplate.walls.addAll(space.getWalls());
+                    }
+                    if(!space.getActions().isEmpty()){
+                        for(int l=0;l<space.getActions().size();l++){
+                            FieldAction fieldAction = space.getActions().get(l);
+                            if(fieldAction instanceof CheckPoint){
+                                spaceTemplate.checkPoint.number=((CheckPoint) fieldAction).getNumber();
+                            }
+                            if(fieldAction instanceof ConveyorBelt){
+                                spaceTemplate.conveyorBelt.heading= ((ConveyorBelt) fieldAction).getHeading();
+                                spaceTemplate.conveyorBelt.isDouble= ((ConveyorBelt) fieldAction).getIsDouble();
+                            }
+
+                        }
+                    }
+
                     template.spaces.add(spaceTemplate);
                 }
+
 
 
             }
