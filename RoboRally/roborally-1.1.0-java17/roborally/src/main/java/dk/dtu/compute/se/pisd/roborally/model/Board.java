@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -66,19 +68,14 @@ public class Board extends Subject {
         Heading[] headings=new Heading[4];
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                Space space = new Space(this, x, y,headings);
+                Space space = new Space(this, x, y);
                 spaces[x][y] = space;
             }
         }
+        spaces[7][2].getActions().add(new CheckPoint(spaces[7][2]));
+        spaces[2][3].getActions().add(new CheckPoint(spaces[2][3]));
 
-
-
-        //Six potential players and 1 placeholder that keeps track of all checkpoints(a caller).
-        Space.initializeCheckpoints(7);
-        spaces[5][6].setCheckpoint();
-        spaces[5][7].setCheckpoint();
-        spaces[6][7].setCheckpoint();
-
+        spaces[3][2].getActions().add((new ConveyorBelt(spaces[3][2],EAST)));
 
         this.stepMode = false;
     }

@@ -21,6 +21,11 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory;
+import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.Adapter;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
@@ -55,7 +60,7 @@ import java.util.Optional;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class AppController implements Observer {
+public class AppController extends FieldAction implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
@@ -99,13 +104,17 @@ public class AppController implements Observer {
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
                 board.addPlayer(player);
                 player.setSpace(board.getSpace(i % board.width, i));
+            }
+
+            // XXX: V2
+            // board.setCurrentPlayer(board.getPlayer(0));
+            gameController.startProgrammingPhase();
 
              */
             // Real implementation of loading a board
-
 
             Board board = LoadBoard.loadBoard(fileNameResult.get());
             gameController = new GameController(board);
@@ -216,4 +225,8 @@ public class AppController implements Observer {
         // XXX do nothing for now
     }
 
+    @Override
+    public boolean doAction(GameController gameController, Space space) {
+        return false;
+    }
 }
