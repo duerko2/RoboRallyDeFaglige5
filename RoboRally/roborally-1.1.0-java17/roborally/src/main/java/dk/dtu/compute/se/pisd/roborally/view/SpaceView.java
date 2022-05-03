@@ -134,7 +134,12 @@ public class SpaceView extends StackPane implements ViewObserver {
             //Visualizes ConveyorBelts
             if(fieldaction instanceof ConveyorBelt){
                 ConveyorBelt conveyorBelt = (ConveyorBelt) space.getActions().get(i);
-                Image image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/conbelt.png", 60, 60, false, false);
+                Image image;
+                if(((ConveyorBelt) space.getActions().get(i)).getisDouble()){
+                    image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/doubleconbelt.png", 60, 60, false, false);
+                }else {
+                    image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/conbelt.png", 60, 60, false, false);
+                }
                 ImageView imageView = new ImageView(image);
                 switch(conveyorBelt.getHeading()){
                     case SOUTH:
