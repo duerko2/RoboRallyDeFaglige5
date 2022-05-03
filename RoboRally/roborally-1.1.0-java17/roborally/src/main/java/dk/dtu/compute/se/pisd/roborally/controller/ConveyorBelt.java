@@ -16,7 +16,7 @@ public class ConveyorBelt extends FieldAction{
         this.heading = heading;
         this.space = space;
     }
-    GameController gameController = new GameController(space.board);
+
     @Override
     public boolean doAction(GameController gameController, Space space) {
         Space nextSpace;

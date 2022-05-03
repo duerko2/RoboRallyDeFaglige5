@@ -104,9 +104,9 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
-        for(int i = 0; 0 <space.getActions().size();i++) {
+        for(int i = 0; i <space.getActions().size();i++) {
             FieldAction fieldaction = space.getActions().get(i);
-            if (space.getActions().contains(fieldaction instanceof CheckPoint)) {
+            if (fieldaction instanceof CheckPoint) {
                 CheckPoint checkpoint = (CheckPoint) space.getActions().get(i);
                 Text text = new Text();
                 text.setText("" + (checkpoint.getNumber()));

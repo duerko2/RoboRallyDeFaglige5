@@ -465,11 +465,11 @@ public class GameController {
      */
 
     private boolean checkForWall(Space currentSpace, Space nextSpace, Heading heading) {
-            if(!currentSpace.getWalls().contains(heading)){
+            if(currentSpace.getWalls().contains(heading)){
                 return true;
             }
 
-            if(!nextSpace.getWalls().contains(heading.next().next())){
+            if(nextSpace.getWalls().contains(heading.next().next())){
                 return true;
             }
 

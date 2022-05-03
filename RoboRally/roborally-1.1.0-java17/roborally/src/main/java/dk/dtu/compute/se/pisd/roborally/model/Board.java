@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -72,6 +73,9 @@ public class Board extends Subject {
             }
         }
         spaces[7][2].getActions().add(new CheckPoint(spaces[7][2]));
+        spaces[2][3].getActions().add(new CheckPoint(spaces[2][3]));
+
+        spaces[3][2].getActions().add((new ConveyorBelt(spaces[3][2],EAST)));
 
         this.stepMode = false;
     }
