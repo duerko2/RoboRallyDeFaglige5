@@ -23,12 +23,14 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -37,8 +39,10 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
+import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -104,8 +108,17 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (subject == this.space) {
             updatePlayer();
         }
+
+        //Sets the background tile
+        Image backgroundTile = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/tile.png", 60, 60, false, false);
+        ImageView bgtileView = new ImageView(backgroundTile);
+        this.getChildren().add(bgtileView);
+
+
         for(int i = 0; i <space.getActions().size();i++) {
             FieldAction fieldaction = space.getActions().get(i);
+
+            //Visualizes CheckPoints
             if (fieldaction instanceof CheckPoint) {
                 CheckPoint checkpoint = (CheckPoint) space.getActions().get(i);
                 Text text = new Text();
@@ -117,7 +130,36 @@ public class SpaceView extends StackPane implements ViewObserver {
                 }
                 this.getChildren().add(text);
             }
+
+            //Visualizes ConveyorBelts
+            if(fieldaction instanceof ConveyorBelt){
+                ConveyorBelt conveyorBelt = (ConveyorBelt) space.getActions().get(i);
+                Image image;
+                if(((ConveyorBelt) space.getActions().get(i)).getisDouble()){
+                    image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/doubleconbelt.png", 60, 60, false, false);
+                }else {
+                    image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/conbelt.png", 60, 60, false, false);
+                }
+                ImageView imageView = new ImageView(image);
+                switch(conveyorBelt.getHeading()){
+                    case SOUTH:
+                        imageView.setRotate(180);
+                        break;
+                    case WEST:
+                        imageView.setRotate(270);
+                        break;
+                    case NORTH:
+                        break;
+                    case EAST:
+                        imageView.setRotate(90);
+                        break;
+                }
+
+                this.getChildren().add(imageView);
+                imageView.toBack();
+            }
         }
+
         if(!space.getWalls().isEmpty()){
             int startY=SPACE_HEIGHT-2;
             int startX=2;
@@ -172,6 +214,8 @@ public class SpaceView extends StackPane implements ViewObserver {
             }
             }
         }
+        //Keeps the background tile behind everything else that is shown on the space.
+        bgtileView.toBack();
     }
 
 

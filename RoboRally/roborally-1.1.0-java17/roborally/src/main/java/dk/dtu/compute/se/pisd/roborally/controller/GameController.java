@@ -184,6 +184,13 @@ public class GameController {
         }
     }
 
+    private void spaceAction(Board board){
+        if(board.getCurrentPlayer().getSpace().getActions().size() > 0){
+            for(int i = 0; i < board.getCurrentPlayer().getSpace().getActions().size();i++){
+                board.getCurrentPlayer().getSpace().getActions().get(i).doAction(this, board.getCurrentPlayer().getSpace());
+            }
+        }
+    }
     // XXX: V2
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
@@ -194,7 +201,6 @@ public class GameController {
             switch (command) {
                 case FORWARD:
                     this.moveOne(player);
-                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 case RIGHT:
                     this.turnRight(player);
@@ -204,7 +210,7 @@ public class GameController {
                     break;
                 case FAST_FORWARD:
                     this.moveTwo(player);
-                    board.getCurrentPlayer().getSpace().getActions();
+
                     break;
                 case OPTION_LEFT_RIGHT:
                     executeNextStep();
@@ -220,15 +226,14 @@ public class GameController {
                     break;
                 case MOVE_THREE:
                     this.moveThree(player);
-                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 case BACK_UP:
                     this.backUp(player);
-                    board.getCurrentPlayer().getSpace().getActions();
                     break;
                 default:
                     // DO NOTHING (for now)
             }
+            spaceAction(board);
         }
     }
 

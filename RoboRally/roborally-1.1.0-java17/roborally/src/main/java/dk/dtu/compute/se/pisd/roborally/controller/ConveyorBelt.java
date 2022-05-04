@@ -13,9 +13,10 @@ public class ConveyorBelt extends FieldAction{
     Space space;
     boolean isDouble;
 
-    public ConveyorBelt(Space space, Heading heading){
+    public ConveyorBelt(Space space, Heading heading, boolean isDouble){
         this.heading = heading;
         this.space = space;
+        this.isDouble = isDouble;
     }
 
     @Override
@@ -23,32 +24,61 @@ public class ConveyorBelt extends FieldAction{
         Space nextSpace;
         switch (heading) {
             case EAST:
-                nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1, space.getPlayer().getSpace().y);
-                gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                if(isDouble) {
+                    for(int i = 0; i < 2; i++) {
+                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1,space.getPlayer().getSpace().y);
+                        gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                        space = nextSpace;
+                    }
+                } else{
+                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1, space.getPlayer().getSpace().y);
+                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                }
                 break;
             case WEST:
-                nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
-                gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                if(isDouble) {
+                    for (int i = 0; i < 2; i++){
+                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
+                        gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                        space = nextSpace;
+                    }
+                } else{
+                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
+                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                }
                 break;
             case NORTH:
-                nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
-                gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                if(isDouble) {
+                    for(int i = 0; i < 2; i++) {
+                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
+                        gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                        space = nextSpace;
+                    }
+                }else{
+                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
+                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                }
                 break;
             case SOUTH:
-                nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
-                gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                if(isDouble) {
+                    for(int i = 0; i < 2; i++) {
+                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
+                        gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                        space = nextSpace;
+                    }
+                }else{
+                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
+                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                }
                 break;
         }
 
         return false;
     }
-
-    public Heading getHeading() {
-        return heading;
+    public Heading getHeading(){
+        return this.heading;
     }
-
-
-    public boolean getIsDouble() {
+    public boolean getIsDouble(){
         return isDouble;
     }
 }
