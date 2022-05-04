@@ -193,19 +193,25 @@ public class AppController extends FieldAction implements Observer {
         BOARDS.clear();
 
          */
-        Board board = LoadBoard.loadGame("hallo2");
+
+//RoboRally/roborally-1.1.0-java17/roborally/target/classes/boards
+
+        BOARDS.clear();
+        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/target/classes/boards").list()));
+        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+        filename.setTitle("Boards");
+        filename.setHeaderText("Select board to play");
+        Optional<String> fileNameResult = filename.showAndWait();
+        BOARDS.clear();
+        // Real implementation of loading a board
+        String boardString = fileNameResult.get().replaceAll(".json", "");
+        Board board = LoadBoard.loadBoard(boardString);
         gameController = new GameController(board);
 
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase();
-
         roboRally.createBoardView(gameController);
-
-
-
-
-
 
     }
 
