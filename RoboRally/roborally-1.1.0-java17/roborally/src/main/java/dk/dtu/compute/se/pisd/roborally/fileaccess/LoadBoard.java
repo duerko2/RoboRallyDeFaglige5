@@ -29,10 +29,7 @@ import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.CardTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -173,9 +170,11 @@ public class LoadBoard {
                         for(int l=0;l<space.getActions().size();l++){
                             FieldAction fieldAction = space.getActions().get(l);
                             if(fieldAction instanceof CheckPoint){
+                                spaceTemplate.checkPoint = new CheckPointTemplate();
                                 spaceTemplate.checkPoint.number=((CheckPoint) fieldAction).getNumber();
                             }
                             if(fieldAction instanceof ConveyorBelt){
+                                spaceTemplate.conveyorBelt = new ConveyorBeltTemplate();
                                 spaceTemplate.conveyorBelt.heading= ((ConveyorBelt) fieldAction).getHeading();
                                 spaceTemplate.conveyorBelt.isDouble= ((ConveyorBelt) fieldAction).getIsDouble();
                             }
@@ -199,6 +198,11 @@ public class LoadBoard {
             playerTemplate.color=board.getPlayer(i).getColor();
             playerTemplate.name=board.getPlayer(i).getName();
             playerTemplate.checkPoint=board.getPlayer(i).getCurrentCheckPoint();
+            playerTemplate.heading=board.getPlayer(i).getHeading();
+
+            if(board.getPlayer(i)==board.getCurrentPlayer()){
+                playerTemplate.currentPlayer=true;
+            }
 
 
 
@@ -322,8 +326,21 @@ public class LoadBoard {
                 // Creates playertemplate object
                 PlayerTemplate playerTemplate = template.players.get(i);
 
+
+
                 //Creates player object from playertemplate info
                 Player player = new Player(result,playerTemplate.color,playerTemplate.name,playerTemplate.checkPoint);
+
+                // Checks if this player is the current player
+                if(playerTemplate.currentPlayer){
+                    result.setCurrentPlayer(player);
+                }
+
+                // Informs the player object of the location
+                player.setSpace(result.getSpace(playerTemplate.x,playerTemplate.y));
+
+                //Informs the player object of the heading.
+                player.setHeading(playerTemplate.heading);
 
                 // Adds players cards
                 for(int j=0;j<PlayerTemplate.NO_CARDS;j++){

@@ -19,6 +19,8 @@ public class PlayerTemplate {
 
     public int checkPoint;
 
+    public boolean currentPlayer=false;
+
     public CardTemplate[] program = new CardTemplate[Player.NO_REGISTERS];
     public CardTemplate[] cards = new CardTemplate[Player.NO_CARDS];
 

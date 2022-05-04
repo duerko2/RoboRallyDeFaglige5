@@ -26,6 +26,7 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
+import dk.dtu.compute.se.pisd.roborally.fileaccess.IOUtil;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -43,6 +44,8 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +63,7 @@ public class AppController extends FieldAction implements Observer {
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
-    private static final String BOARDSFOLDER = "resources/boards";
+    private static final String BOARDSFOLDER = "boards";
     final private List<String> BOARDS = new ArrayList<>();
 
     private GameController gameController;
@@ -76,11 +79,13 @@ public class AppController extends FieldAction implements Observer {
         Optional<Integer> result = dialog.showAndWait();
 
 
+        BOARDS.clear();
         BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
         ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
         filename.setTitle("Boards");
         filename.setHeaderText("Select board to play");
         Optional<String> fileNameResult = filename.showAndWait();
+        BOARDS.clear();
 
         if (result.isPresent()&&fileNameResult.isPresent()) {
             if (gameController != null) {
@@ -165,6 +170,42 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void loadGame() {
+
+
+        // TODO: Create window which shows the possible save files as drop down menu. Saves the user selection.
+        /*
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream urlStream = classLoader.getResourceAsStream(BOARDSFOLDER);
+
+
+
+        BOARDS.clear();
+        //File saveFile = new File();
+
+
+
+        // String[] lists = saveFile.list();
+        //BOARDS.addAll();
+        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+        filename.setTitle("Saves");
+        filename.setHeaderText("Select savefile");
+        Optional<String> fileNameResult = filename.showAndWait();
+        BOARDS.clear();
+
+         */
+        Board board = LoadBoard.loadGame("hallo2");
+        gameController = new GameController(board);
+
+        // XXX: V2
+        // board.setCurrentPlayer(board.getPlayer(0));
+        gameController.startProgrammingPhase();
+
+        roboRally.createBoardView(gameController);
+
+
+
+
+
 
     }
 
