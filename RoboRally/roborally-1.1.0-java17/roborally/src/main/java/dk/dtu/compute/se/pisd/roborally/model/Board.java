@@ -72,11 +72,6 @@ public class Board extends Subject {
                 spaces[x][y] = space;
             }
         }
-        spaces[7][2].getActions().add(new CheckPoint(spaces[7][2]));
-        spaces[2][3].getActions().add(new CheckPoint(spaces[2][3]));
-
-        spaces[3][2].getActions().add((new ConveyorBelt(spaces[3][2],EAST, false)));
-        spaces[5][4].getActions().add((new ConveyorBelt(spaces[3][2],WEST, true)));
         this.stepMode = false;
     }
 

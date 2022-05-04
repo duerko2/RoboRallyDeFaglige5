@@ -107,7 +107,7 @@ public class LoadBoard {
 
                     // Adds conveyorbelt if available.
                     if(spaceTemplate.conveyorBelt!=null){
-                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading));
+                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading, spaceTemplate.conveyorBelt.isDouble));
                     }
                 }
             }
@@ -314,7 +314,7 @@ public class LoadBoard {
 
                     // Adds conveyorbelt if available.
                     if(spaceTemplate.conveyorBelt!=null){
-                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading));
+                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading, spaceTemplate.conveyorBelt.isDouble));
                     }
                 }
             }
