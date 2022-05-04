@@ -1,0 +1,30 @@
+{
+  "width": 13,
+  "height": 10,
+  "spaces": [
+
+    {
+      "walls": [
+        "NORTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt",
+          "INSTANCE": {
+            "heading": "WEST",
+            "isDouble": true
+          }
+        },
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.controller.Checkpoint",
+          "INSTANCE": {
+            "number": 2
+          }
+        }
+      ],
+      "x": 1,
+      "y": 2
+    }
+
+  ]
+}
