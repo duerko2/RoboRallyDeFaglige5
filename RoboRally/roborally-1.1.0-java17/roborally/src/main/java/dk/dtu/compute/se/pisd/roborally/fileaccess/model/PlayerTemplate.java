@@ -17,6 +17,8 @@ public class PlayerTemplate {
     public int y;
     public Heading heading = SOUTH;
 
+    public int checkPoint;
+
     public CardTemplate[] program = new CardTemplate[Player.NO_REGISTERS];
     public CardTemplate[] cards = new CardTemplate[Player.NO_CARDS];
 

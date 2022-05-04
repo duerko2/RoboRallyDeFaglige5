@@ -35,6 +35,7 @@ import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.io.*;
@@ -139,7 +140,7 @@ public class LoadBoard {
 		return null;
     }
 
-    public static void saveBoard(Board board, String name) {
+    public static void saveGame(Board board, String name) {
 
         //Creates board template based on board size.
         BoardTemplate template = new BoardTemplate();
@@ -197,6 +198,7 @@ public class LoadBoard {
             playerTemplate.y=board.getPlayer(i).getSpace().y;
             playerTemplate.color=board.getPlayer(i).getColor();
             playerTemplate.name=board.getPlayer(i).getName();
+            playerTemplate.checkPoint=board.getPlayer(i).getCurrentCheckPoint();
 
 
 
@@ -263,6 +265,127 @@ public class LoadBoard {
             }
         }
     }
+
+    public static Board loadGame(String boardname) {
+        if (boardname == null) {
+            boardname = DEFAULTBOARD;
+        }
+
+        ClassLoader classLoader = LoadBoard.class.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
+        if (inputStream == null) {
+            // TODO these constants should be defined somewhere
+            return new Board(8,8);
+        }
+
+        // In simple cases, we can create a Gson object with new Gson():
+        GsonBuilder simpleBuilder = new GsonBuilder();
+        Gson gson = simpleBuilder.create();
+
+        Board result;
+        JsonReader reader = null;
+        try {
+            reader = gson.newJsonReader(new InputStreamReader(inputStream));
+
+            // Creates boardtemplate based on JSON file
+            BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
+
+            //Creates a new board with size from boardtemplate
+            result = new Board(template.width, template.height);
+
+            //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
+            for (SpaceTemplate spaceTemplate: template.spaces) {
+                Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
+                if (space != null) {
+
+                    // Adds walls if available.
+                    for (int i = 0;i<spaceTemplate.walls.size();i++) {
+                        space.getWalls().addAll(spaceTemplate.walls);
+                    }
+
+                    // Adds checkpoint if available.
+                    if(spaceTemplate.checkPoint!=null){
+                        space.getActions().add(new CheckPoint(space,spaceTemplate.checkPoint.number));
+                    }
+
+                    // Adds conveyorbelt if available.
+                    if(spaceTemplate.conveyorBelt!=null){
+                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading));
+                    }
+                }
+            }
+
+
+            // Adds players to the Board
+            for(int i=0;i<template.players.size();i++){
+
+                // Creates playertemplate object
+                PlayerTemplate playerTemplate = template.players.get(i);
+
+                //Creates player object from playertemplate info
+                Player player = new Player(result,playerTemplate.color,playerTemplate.name,playerTemplate.checkPoint);
+
+                // Adds players cards
+                for(int j=0;j<PlayerTemplate.NO_CARDS;j++){
+
+                    // Creates card template instance
+                    CardTemplate cardTemplate = new CardTemplate();
+
+                    // Loads information into template from playerTemplate
+                    cardTemplate.card=playerTemplate.cards[j].card;
+                    cardTemplate.visible=playerTemplate.cards[j].visible;
+
+                    // Loads information into player object from card template.
+                    player.getCardField(j).setCard(cardTemplate.card);
+                    player.getCardField(j).setVisible(cardTemplate.visible);
+                }
+
+                // Adds players register
+                for(int j=0;j<PlayerTemplate.NO_REGISTERS;j++){
+                    // Creates card template instance
+                    CardTemplate cardTemplate = new CardTemplate();
+
+                    // Loads information into template from playerTemplate
+                    cardTemplate.card=playerTemplate.program[j].card;
+                    cardTemplate.visible=playerTemplate.program[j].visible;
+
+                    // Loads information into player object from card template.
+                    player.getProgramField(j).setCard(cardTemplate.card);
+                    player.getProgramField(j).setVisible(cardTemplate.visible);
+                }
+
+
+                result.getPlayers().add(player);
+            }
+
+
+            reader.close();
+            return result;
+        } catch (IOException e1) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                    reader = null;
+                } catch (IOException e2) {}
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e2) {}
+            }
+        } catch (NullPointerException e3){
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e2) {
+                }
+            }
+            return new Board(8,8);
+        }
+        return null;
+    }
+
+
 
 
 
