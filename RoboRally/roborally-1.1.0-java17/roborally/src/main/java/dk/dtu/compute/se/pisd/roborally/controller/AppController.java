@@ -134,85 +134,21 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void saveGame() {
-        Stage dialogue = new Stage();
-        dialogue.setTitle("Name of save file:");
-
-        final TextField textField = new TextField();
-        final Button submitButton = new Button("Submit");
-        submitButton.setDefaultButton(true);
-        submitButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent t) {
-                dialogue.close();
-            }
-        });
-
-        final VBox layout = new VBox(10);
-        layout.setAlignment(Pos.CENTER_RIGHT);
-        layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
-        layout.getChildren().setAll(
-                textField,
-                submitButton
-        );
-
-        dialogue.setScene(new Scene(layout));
-
-        textField.setMinHeight(TextField.USE_PREF_SIZE);
-
-        dialogue.showAndWait();
-        String fileName=textField.getText();
-
-
+        String fileName=getUserInput();
 
         LoadBoard.saveGame(gameController.board,fileName);
-
-
-
     }
 
     public void loadGame() {
-
-
-        // TODO: Create window which shows the possible save files as drop down menu. Saves the user selection.
-        /*
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream urlStream = classLoader.getResourceAsStream(BOARDSFOLDER);
-
-
-
-        BOARDS.clear();
-        //File saveFile = new File();
-
-
-
-        // String[] lists = saveFile.list();
-        //BOARDS.addAll();
-        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
-        filename.setTitle("Saves");
-        filename.setHeaderText("Select savefile");
-        Optional<String> fileNameResult = filename.showAndWait();
-        BOARDS.clear();
-
-         */
-
-//RoboRally/roborally-1.1.0-java17/roborally/target/classes/boards
-
-        BOARDS.clear();
-        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/target/classes/boards").list()));
-        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
-        filename.setTitle("Boards");
-        filename.setHeaderText("Select board to play");
-        Optional<String> fileNameResult = filename.showAndWait();
-        BOARDS.clear();
-        // Real implementation of loading a board
-        String boardString = fileNameResult.get().replaceAll(".json", "");
-        Board board = LoadBoard.loadBoard(boardString);
+        String filename=getUserInput();
+        Board board = LoadBoard.loadGame(filename);
         gameController = new GameController(board);
 
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase();
-        roboRally.createBoardView(gameController);
 
+        roboRally.createBoardView(gameController);
     }
 
     /**
@@ -269,5 +205,34 @@ public class AppController extends FieldAction implements Observer {
     @Override
     public boolean doAction(GameController gameController, Space space) {
         return false;
+    }
+
+    public String getUserInput(){
+        Stage dialogue = new Stage();
+        dialogue.setTitle("Name of save file:");
+
+        final TextField textField = new TextField();
+        final Button submitButton = new Button("Submit");
+        submitButton.setDefaultButton(true);
+        submitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent t) {
+                dialogue.close();
+            }
+        });
+
+        final VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER_RIGHT);
+        layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
+        layout.getChildren().setAll(
+                textField,
+                submitButton
+        );
+
+        dialogue.setScene(new Scene(layout));
+
+        textField.setMinHeight(TextField.USE_PREF_SIZE);
+
+        dialogue.showAndWait();
+        return textField.getText();
     }
 }
