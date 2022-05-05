@@ -88,6 +88,12 @@ public class GameController {
         }
     }
 
+    public void startProgrammingPhase(boolean gameLoaded, Player currentPlayer){
+        board.setPhase(Phase.PROGRAMMING);
+        board.setCurrentPlayer(currentPlayer);
+        board.setStep(0);
+    }
+
     // XXX: V2
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();

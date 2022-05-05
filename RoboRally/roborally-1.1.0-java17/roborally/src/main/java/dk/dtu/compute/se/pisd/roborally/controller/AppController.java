@@ -142,11 +142,12 @@ public class AppController extends FieldAction implements Observer {
     public void loadGame() {
         String filename=getUserInput();
         Board board = LoadBoard.loadGame(filename);
+        Player currentPlayer = board.getCurrentPlayer();
         gameController = new GameController(board);
-
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
-        gameController.startProgrammingPhase();
+        gameController.startProgrammingPhase(true,currentPlayer);
+
 
         roboRally.createBoardView(gameController);
     }

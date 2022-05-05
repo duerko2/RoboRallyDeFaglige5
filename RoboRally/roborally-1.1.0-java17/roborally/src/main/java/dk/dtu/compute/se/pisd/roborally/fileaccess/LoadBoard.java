@@ -331,10 +331,6 @@ public class LoadBoard {
                 //Creates player object from playertemplate info
                 Player player = new Player(result,playerTemplate.color,playerTemplate.name,playerTemplate.checkPoint);
 
-                // Checks if this player is the current player
-                if(playerTemplate.currentPlayer){
-                    result.setCurrentPlayer(player);
-                }
 
                 // Informs the player object of the location
                 player.setSpace(result.getSpace(playerTemplate.x,playerTemplate.y));
@@ -373,6 +369,11 @@ public class LoadBoard {
 
 
                 result.getPlayers().add(player);
+
+                // Checks if this player is the current player
+                if(playerTemplate.currentPlayer){
+                    result.setCurrentPlayer(player);
+                }
             }
 
 
