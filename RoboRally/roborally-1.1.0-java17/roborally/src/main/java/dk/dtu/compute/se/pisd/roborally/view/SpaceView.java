@@ -89,22 +89,23 @@ public class SpaceView extends StackPane implements ViewObserver {
 
         Player player = space.getPlayer();
         if (player != null) {
-            /* Polygoner
-            Polygon arrow = new Polygon(0.0, 0.0,
+            try {
+                Image image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/players/" + player.getColor() + ".png", 60, 60, false, false);
+                ImageView imageView = new ImageView(image);
+                imageView.setRotate((90*player.getHeading().ordinal())%360);
+                this.getChildren().add(imageView);
+
+            }catch(Exception e){
+                Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
                     20.0, 0.0 );
-            try {
-                arrow.setFill(Color.valueOf(player.getColor()));
-            } catch (Exception e) {
-                arrow.setFill(Color.MEDIUMPURPLE);
+                    arrow.setFill(Color.valueOf(player.getColor()));
+
+
+                arrow.setRotate((90*player.getHeading().ordinal())%360);
+                this.getChildren().add(arrow);
             }
 
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
-            this.getChildren().add(arrow);*/
-            Image image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/players/"+player.getColor()+".png",60, 60, false, false);
-            ImageView imageView = new ImageView(image);
-            imageView.setRotate((90*player.getHeading().ordinal())%360);
-            this.getChildren().add(imageView);
         }
     }
 
