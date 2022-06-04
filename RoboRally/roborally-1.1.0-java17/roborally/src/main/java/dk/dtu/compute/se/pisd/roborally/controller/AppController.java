@@ -26,7 +26,6 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
-import dk.dtu.compute.se.pisd.roborally.fileaccess.IOUtil;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -44,8 +43,6 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,8 +62,11 @@ public class AppController extends FieldAction implements Observer {
     final private RoboRally roboRally;
     private static final String BOARDSFOLDER = "boards";
     final private List<String> BOARDS = new ArrayList<>();
+    private String name;
 
     private GameController gameController;
+
+    private Optional<Integer> numOfPlayers;
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -134,13 +134,13 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void saveGame() {
-        String fileName=getUserInput();
+        String fileName=getUserInput("Name of save file:");
 
         LoadBoard.saveGame(gameController.board,fileName);
     }
 
     public void loadGame() {
-        String filename=getUserInput();
+        String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
         gameController = new GameController(board);
@@ -208,9 +208,9 @@ public class AppController extends FieldAction implements Observer {
         return false;
     }
 
-    public String getUserInput(){
+    public String getUserInput(String ask){
         Stage dialogue = new Stage();
-        dialogue.setTitle("Name of save file:");
+        dialogue.setTitle(ask);
 
         final TextField textField = new TextField();
         final Button submitButton = new Button("Submit");
@@ -235,5 +235,73 @@ public class AppController extends FieldAction implements Observer {
 
         dialogue.showAndWait();
         return textField.getText();
+    }
+
+    public void hostGame() {
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
+        dialog.setTitle("Player number");
+        dialog.setHeaderText("Select number of players");
+        numOfPlayers = dialog.showAndWait();
+
+        BOARDS.clear();
+        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
+        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+        filename.setTitle("Boards");
+        filename.setHeaderText("Select board to play");
+        Optional<String> fileNameResult = filename.showAndWait();
+        BOARDS.clear();
+
+        if (numOfPlayers.isPresent()&&fileNameResult.isPresent()) {
+            if (gameController != null) {
+                // The UI should not allow this, but in case this happens anyway.
+                // give the user the option to save the game or abort this operation!
+                if (!stopGame()) {
+                    return;
+                }
+            }
+        }
+        Board board = LoadBoard.loadBoard(fileNameResult.get());
+        gameController = new GameController(board);
+
+
+        //Here we create new player objects for the board. In the future the board should already have these objects and we just impose our name on the right one.
+        Player player = new Player(board, PLAYER_COLORS.get(0), name,0);
+        board.addPlayer(player);
+        player.setSpace(board.getSpace(0 % board.width, 0));
+
+
+
+        roboRally.createHostView(numOfPlayers.get(),fileNameResult.get());
+
+
+        // TODO: Upload the game to the server
+
+        //TODO: Pull the game for the server in a loop until the game is full and the button is pressed.
+
+
+
+
+
+    }
+
+    public void joinGame() {
+    }
+
+    public void startHostGame() {
+        // TODO: Include check to see if lobby is full.
+
+
+        // For now we just start the game as normal...
+        gameController.startProgrammingPhase();
+
+        roboRally.createBoardView(gameController);
+
+
+    }
+    public String getName(){
+        return name;
+    }
+    public void setName(String name){
+        this.name=name;
     }
 }
