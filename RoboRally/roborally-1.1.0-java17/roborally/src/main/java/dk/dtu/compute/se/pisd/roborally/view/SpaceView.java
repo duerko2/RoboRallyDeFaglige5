@@ -110,7 +110,7 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
 
         //Sets the background tile
-        Image backgroundTile = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/tile.png", 60, 60, false, false);
+        Image backgroundTile = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/Tile.png", 60, 60, false, false);
         ImageView bgtileView = new ImageView(backgroundTile);
         this.getChildren().add(bgtileView);
 
@@ -121,27 +121,44 @@ public class SpaceView extends StackPane implements ViewObserver {
             //Visualizes CheckPoints
             if (fieldaction instanceof CheckPoint) {
                 CheckPoint checkpoint = (CheckPoint) space.getActions().get(i);
-                Text text = new Text();
-                text.setText("" + (checkpoint.getNumber()));
-                if (this.getStyle().equals("-fx-background-color: black;")) {
-                    text.setFill(Color.WHITE);
-                } else {
-                    text.setFill(Color.BLACK);
+                Image image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/placeholder.png",60, 60, false, false);
+                switch(checkpoint.getNumber()){
+                    case 1:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint1.png",60, 60, false, false);
+                        break;
+                    case 2:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint2.png",60, 60, false, false);
+                        break;
+                    case 3:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint3.png",60, 60, false, false);
+                        break;
+                    case 4:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint4.png",60, 60, false, false);
+                        break;
+                    case 5:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint5.png",60, 60, false, false);
+                        break;
+                    case 6:
+                        image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/checkpoints/checkpoint6.png",60, 60, false, false);
+                        break;
                 }
-                this.getChildren().add(text);
+                ImageView imageView = new ImageView(image);
+                this.getChildren().add(imageView);
+                imageView.toBack();
+
             }
 
             //Visualizes ConveyorBelts
-            if(fieldaction instanceof ConveyorBelt){
+            if(fieldaction instanceof ConveyorBelt) {
                 ConveyorBelt conveyorBelt = (ConveyorBelt) space.getActions().get(i);
                 Image image;
-                if(((ConveyorBelt) space.getActions().get(i)).getIsDouble()){
+                if (((ConveyorBelt) space.getActions().get(i)).getIsDouble()) {
                     image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/doubleconbelt.png", 60, 60, false, false);
-                }else {
+                } else {
                     image = new Image("File:RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/conbelt.png", 60, 60, false, false);
                 }
                 ImageView imageView = new ImageView(image);
-                switch(conveyorBelt.getHeading()){
+                switch (conveyorBelt.getHeading()) {
                     case SOUTH:
                         imageView.setRotate(180);
                         break;
@@ -159,6 +176,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                 imageView.toBack();
             }
         }
+
 
         if(!space.getWalls().isEmpty()){
             int startY=SPACE_HEIGHT-2;
