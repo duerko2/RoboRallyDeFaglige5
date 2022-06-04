@@ -243,16 +243,60 @@ public class AppController extends FieldAction implements Observer {
         dialog.setHeaderText("Select number of players");
         numOfPlayers = dialog.showAndWait();
 
+        BOARDS.clear();
+        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
+        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+        filename.setTitle("Boards");
+        filename.setHeaderText("Select board to play");
+        Optional<String> fileNameResult = filename.showAndWait();
+        BOARDS.clear();
 
-        String map="Default Map";
+        if (numOfPlayers.isPresent()&&fileNameResult.isPresent()) {
+            if (gameController != null) {
+                // The UI should not allow this, but in case this happens anyway.
+                // give the user the option to save the game or abort this operation!
+                if (!stopGame()) {
+                    return;
+                }
+            }
+        }
+        Board board = LoadBoard.loadBoard(fileNameResult.get());
+        gameController = new GameController(board);
 
-        roboRally.createHostView(numOfPlayers.get(),map);
+
+        //Here we create new player objects for the board. In the future the board should already have these objects and we just impose our name on the right one.
+        Player player = new Player(board, PLAYER_COLORS.get(0), name,0);
+        board.addPlayer(player);
+        player.setSpace(board.getSpace(0 % board.width, 0));
+
+
+
+        roboRally.createHostView(numOfPlayers.get(),fileNameResult.get());
+
+
+        // TODO: Upload the game to the server
+
+        //TODO: Pull the game for the server in a loop until the game is full and the button is pressed.
+
+
+
+
+
     }
 
     public void joinGame() {
     }
 
     public void startHostGame() {
+        // TODO: Include check to see if lobby is full.
+
+
+        // For now we just start the game as normal...
+        gameController.startProgrammingPhase();
+
+        roboRally.createBoardView(gameController);
+
+
     }
     public String getName(){
         return name;
