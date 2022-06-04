@@ -26,7 +26,6 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
-import dk.dtu.compute.se.pisd.roborally.fileaccess.IOUtil;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -44,8 +43,6 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,8 +62,11 @@ public class AppController extends FieldAction implements Observer {
     final private RoboRally roboRally;
     private static final String BOARDSFOLDER = "boards";
     final private List<String> BOARDS = new ArrayList<>();
+    private String name;
 
     private GameController gameController;
+
+    private Optional<Integer> numOfPlayers;
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -134,13 +134,13 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void saveGame() {
-        String fileName=getUserInput();
+        String fileName=getUserInput("Name of save file:");
 
         LoadBoard.saveGame(gameController.board,fileName);
     }
 
     public void loadGame() {
-        String filename=getUserInput();
+        String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
         gameController = new GameController(board);
@@ -208,9 +208,9 @@ public class AppController extends FieldAction implements Observer {
         return false;
     }
 
-    public String getUserInput(){
+    public String getUserInput(String ask){
         Stage dialogue = new Stage();
-        dialogue.setTitle("Name of save file:");
+        dialogue.setTitle(ask);
 
         final TextField textField = new TextField();
         final Button submitButton = new Button("Submit");
@@ -235,5 +235,29 @@ public class AppController extends FieldAction implements Observer {
 
         dialogue.showAndWait();
         return textField.getText();
+    }
+
+    public void hostGame() {
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
+        dialog.setTitle("Player number");
+        dialog.setHeaderText("Select number of players");
+        numOfPlayers = dialog.showAndWait();
+
+
+        String map="Default Map";
+
+        roboRally.createHostView(numOfPlayers.get(),map);
+    }
+
+    public void joinGame() {
+    }
+
+    public void startHostGame() {
+    }
+    public String getName(){
+        return name;
+    }
+    public void setName(String name){
+        this.name=name;
     }
 }
