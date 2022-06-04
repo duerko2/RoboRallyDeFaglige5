@@ -22,7 +22,7 @@ public class HostView extends VBox implements ViewObserver{
 
 
 
-        label = new Label(appController.getName()+"'s game");
+        label = new Label(appController.getName()+"'s game\nLIST OF PLAYERS....");
         mainPane = new Pane(label);
         numOfPlayersLabel = new Label("Amount of players needed for this game: "+numOfPlayers+". \nBoard: "+boardName);
         Button button1 = new Button("Start Game");
