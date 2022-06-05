@@ -268,6 +268,10 @@ public class GameController {
 
         }catch (NullPointerException e){
                 moveCurrentPlayerToSpace(board.getSpace(2, 1));
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
+
         }
     }
 
@@ -280,28 +284,28 @@ public class GameController {
                 case SOUTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
                     //checkForOutOfBounds();
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
@@ -321,6 +325,9 @@ public class GameController {
             }
         }catch (NullPointerException e){
             moveCurrentPlayerToSpace(board.getSpace(2,1));
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
         }
     }
 
@@ -332,7 +339,9 @@ public class GameController {
             }
         } catch (NullPointerException e) {
             moveCurrentPlayerToSpace(board.getSpace(2, 1));
-            player.getCardField(4).setCard(null);
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
         }
     }
 
@@ -344,28 +353,28 @@ public class GameController {
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case WEST:
                     nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case NORTH:
                     nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case EAST:
                     nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading())) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
@@ -373,7 +382,9 @@ public class GameController {
             }
         }catch (NullPointerException e){
             moveCurrentPlayerToSpace(board.getSpace(2, 1));
-            executeNextStep();
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
         }
         }
 
@@ -405,11 +416,12 @@ public class GameController {
 
         }
     public void checkForPush(@NotNull Player player, @NotNull Space nextSpace, @NotNull Heading heading) {
+        try {
             Heading orig = heading;
             Player other = nextSpace.getPlayer();
             if (other != null) {
                 Space target = board.getNeighbour(other.getSpace(), orig);
-                if (checkForWall(nextSpace, target, orig)) {
+                if (checkForWall(nextSpace, target, orig,other)) {
                     return;
                 }
 
@@ -417,12 +429,31 @@ public class GameController {
                     checkForPush(other, target, orig);
                 }
 
-            }
-            if (nextSpace.getPlayer() == null) {
-                player.setSpace(nextSpace);
+
             }
 
-    }
+
+            if (nextSpace.getPlayer() == null) {
+                player.setSpace(nextSpace);
+
+            }
+        }catch (NullPointerException e){
+            player = nextSpace.getPlayer();
+            int j= 1;
+            do {
+                if (board.getSpace(2,j).getPlayer() == null) {
+                    player.setSpace(board.getSpace(2, j));
+                    j++;
+            }
+            } while (board.getSpace(2,j).getPlayer() == null);
+
+
+        }
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
+        }
+
 
     /**
      *
@@ -432,14 +463,14 @@ public class GameController {
      * @return returns true if there is a wall in front of the player
      */
 
-    private boolean checkForWall(Space currentSpace, Space nextSpace, Heading heading) throws NullPointerException {
+    private boolean checkForWall(Space currentSpace, Space nextSpace, Heading heading, Player player) throws NullPointerException {
 
 
-            if (currentSpace.getWalls().contains(heading)) {
+        if (currentSpace.getWalls().contains(heading)) {
                 return true;
             }
 
-            if (nextSpace.getWalls().contains(heading.next().next())) {
+        if (nextSpace.getWalls().contains(heading.next().next())) {
                 return true;
             }
 
