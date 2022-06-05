@@ -276,7 +276,7 @@ public class AppController extends FieldAction implements Observer {
 
         // TODO: Upload the game to the server
 
-        //TODO: Pull the game for the server in a loop until the game is full and the button is pressed.
+        //TODO: Pull the game for the server in a loop until it's in progress.
 
 
 
@@ -285,6 +285,19 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void joinGame() {
+        List<Board> boards=null;
+        // TODO: Loop  every 5 or 10 seconds seconds to get games from server and call createJoinView with that list.
+
+        while(!isGameRunning()){
+            roboRally.createJoinView(boards);
+            try {
+                wait(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     public void startHostGame() {
