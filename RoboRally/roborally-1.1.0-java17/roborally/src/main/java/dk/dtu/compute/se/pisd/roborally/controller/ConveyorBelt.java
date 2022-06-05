@@ -7,7 +7,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 
 
 
-public class ConveyorBelt extends FieldAction{
+public class  ConveyorBelt extends FieldAction{
     
     Heading heading;
     Space space;
