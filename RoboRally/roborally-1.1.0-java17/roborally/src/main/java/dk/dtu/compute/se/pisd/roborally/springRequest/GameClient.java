@@ -57,8 +57,6 @@ public class GameClient {
                 httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         String result = response.thenApply((r)->r.body()).get(5, TimeUnit.SECONDS);
 
-
-
         return result;
     }
 
