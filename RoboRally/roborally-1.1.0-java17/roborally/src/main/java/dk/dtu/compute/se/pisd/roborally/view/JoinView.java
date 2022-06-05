@@ -17,19 +17,20 @@ public class JoinView extends VBox implements ViewObserver {
     private Label label;
     private Label numOfPlayersLabel;
     private AppController appController;
-    public JoinView(AppController appController, List<Board> boards){
+    public JoinView(AppController appController, List<String> games){
         this.appController=appController;
-
-        //Create button or pane for each board in the list.
-
-
-
         label = new Label("\nLIST OF GAMES....");
         mainPane = new Pane(label);
-
-
-
         this.getChildren().add(mainPane);
+
+        //Create button or pane for each board in the list.
+        for(int i=0;i<games.size();i++){
+            Button button = new Button(games.get(i));
+            button.setOnAction(e->appController.startJoinGame(button.getText()));
+            this.getChildren().add(button);
+        }
+
+
 
     }
 

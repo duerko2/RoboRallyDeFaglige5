@@ -32,6 +32,19 @@ public class GameClient {
         return result;
     }
 
+    public static String getGames() throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:8080/games/"))
+                .setHeader("User-Agent", "Game Client")
+                .header("Content-Type", "application/json")
+                .build();
+        CompletableFuture<HttpResponse<String>> response =
+                httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        String result = response.thenApply((r)->r.body()).get(5, TimeUnit.SECONDS);
+        return result;
+    }
+
     public static String putGame(int serialNumber, Board board) throws Exception{
         String productJSON = new Gson().toJson(board);
         HttpRequest request = HttpRequest.newBuilder()

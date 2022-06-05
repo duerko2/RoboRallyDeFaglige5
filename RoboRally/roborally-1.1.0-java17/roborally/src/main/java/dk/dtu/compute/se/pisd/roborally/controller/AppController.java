@@ -31,6 +31,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -43,10 +44,7 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * ...
@@ -287,16 +285,23 @@ public class AppController extends FieldAction implements Observer {
     public void joinGame() {
         List<Board> boards=null;
         // TODO: Loop  every 5 or 10 seconds seconds to get games from server and call createJoinView with that list.
-
-        while(!isGameRunning()){
-            roboRally.createJoinView(boards);
-            try {
-                wait(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            String games = GameClient.getGames();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+        // TODO: Interpret the games from the server and see which ones are available to join.
+        // For now hard coded with a default game
+        List<String> games= List.of(new String[]{"Marcus's Game", "Beier's Game"});
+
+
+        roboRally.createJoinView(games);
+
+
+    }
+
+    public void startJoinGame(String gameName){
 
     }
 
