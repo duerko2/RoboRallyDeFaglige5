@@ -273,6 +273,18 @@ public class AppController extends FieldAction implements Observer {
 
 
         // TODO: Upload the game to the server
+        // Dummy values
+        String jsonString = "JSONFILEN";
+        int serialNumber = 12345;
+
+
+        // Sends the game to the client
+        try {
+            GameClient.putGame(serialNumber,jsonString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //TODO: Pull the game for the server in a loop until it's in progress.
 
@@ -313,6 +325,8 @@ public class AppController extends FieldAction implements Observer {
         gameController.startProgrammingPhase();
 
         roboRally.createBoardView(gameController);
+
+
 
 
     }

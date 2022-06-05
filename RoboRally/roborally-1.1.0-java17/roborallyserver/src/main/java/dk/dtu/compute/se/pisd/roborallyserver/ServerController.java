@@ -9,8 +9,12 @@ import java.io.IOException;
 @RequestMapping("/games")
 public class ServerController {
 
-    @PutMapping
-    public String putGame(@RequestBody String r){
+    private ServiceLayer serviceLayer = new ServiceLayer();
+
+    @PutMapping(value="/{id}")
+    public String putGame(@RequestBody String r,@PathVariable("id") String id){
+        serviceLayer.putGame(r,id);
+
 
         try {
 
