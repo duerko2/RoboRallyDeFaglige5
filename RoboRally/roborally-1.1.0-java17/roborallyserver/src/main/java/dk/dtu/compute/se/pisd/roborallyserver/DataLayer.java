@@ -11,7 +11,7 @@ import java.io.IOException;
 public class DataLayer {
     private final String GAMESFOLDER = "games";
     private final String BOARDSFOLDER = "boards";
-    private final String JSON_EXT = ".json";
+    private final String JSON_EXT = "json";
 
 
     public String loadGame(String fileName){
@@ -27,27 +27,13 @@ public class DataLayer {
         // File path
         String filename = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber + "." + JSON_EXT;
 
-
-        GsonBuilder simpleBuilder = new GsonBuilder().
-                setPrettyPrinting();
-        Gson gson = simpleBuilder.create();
-
-
         FileWriter fileWriter = null;
-        JsonWriter writer = null;
         try {
             fileWriter = new FileWriter(filename);
-            writer = gson.newJsonWriter(fileWriter);
-            gson.toJson(jsonString);
-            writer.close();
+            fileWriter.write(jsonString);
+            fileWriter.close();
 
         } catch (IOException e1) {
-            if (writer != null) {
-                try {
-                    writer.close();
-                    fileWriter = null;
-                } catch (IOException e2) {}
-            }
             if (fileWriter != null) {
                 try {
                     fileWriter.close();

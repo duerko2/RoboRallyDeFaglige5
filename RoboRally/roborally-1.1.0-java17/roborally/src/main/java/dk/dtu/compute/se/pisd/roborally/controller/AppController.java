@@ -32,6 +32,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
+import dk.dtu.compute.se.pisd.roborally.springRequest.JsonConverter;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -272,13 +273,15 @@ public class AppController extends FieldAction implements Observer {
         roboRally.createHostView(numOfPlayers.get(),fileNameResult.get());
 
 
-        // TODO: Upload the game to the server
-        // Dummy values
-        String jsonString = "JSONFILEN";
-        int serialNumber = 12345;
+        // Converts the game information to json string
+        String jsonString = JsonConverter.gameToJson(board);
+
+        // Large random number for the serial number. Used to identify games on the server.
+        // For the future, there could be a check to see if the number already exists on the server.
+        int serialNumber = (int)Math.random()*1000000;
 
 
-        // Sends the game to the client
+        // Sends the game information and serial number to the server.
         try {
             GameClient.putGame(serialNumber,jsonString);
         } catch (Exception e) {
