@@ -306,7 +306,7 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void joinGame() {
-        List<Board> boards=null;
+        List<Board> boards = null;
         String games = null;
         // TODO: Loop  every 5 or 10 seconds seconds to get games from server and call createJoinView with that list.
         try {
@@ -319,8 +319,13 @@ public class AppController extends FieldAction implements Observer {
         // For now hard coded with a default game
 
 
-        String[] gamesList=games.split("\n");
+        String[] gamesList = games.split("\n");
 
+        // for looop gamesList
+        // Game game = GameClient.getGame(gamesList(i))
+        // if(game.getReadyToReceivePlayers()){
+        //  display...
+        // }
 
         roboRally.createJoinView(gamesList);
 
