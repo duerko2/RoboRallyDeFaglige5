@@ -336,6 +336,27 @@ public class AppController extends FieldAction implements Observer {
         try {
             String gameJson = GameClient.getGame(gameName);
             Game game = JsonConverter.jsonToGame(gameJson);
+
+            // Add ourselves to the player list.
+            int currentIndex=0;
+            while(game.getBoard().getPlayers().get(currentIndex).getName()!=null){
+                currentIndex++;
+            }
+
+            game.getBoard().getPlayers().get(currentIndex).setName(name);
+
+            // Upload new game to server
+
+            GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+
+
+            // Create lobby view. Lobby view will be attached to the Game instance with Observer pattern, which will be updated frequently.
+            // Should therefore display players currently in game in realtime.
+            roboRally.createLobbyView(gameName,game);
+
+            // TODO: Loop to fetch game object from server.
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

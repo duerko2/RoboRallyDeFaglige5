@@ -12,4 +12,8 @@ public class ServiceLayer {
     public String getGames() {
         return dataLayer.loadGames();
     }
+
+    public String getGame(String id) {
+        return dataLayer.loadGame(id);
+    }
 }

@@ -24,10 +24,8 @@ package dk.dtu.compute.se.pisd.roborally;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.view.BoardView;
-import dk.dtu.compute.se.pisd.roborally.view.HostView;
-import dk.dtu.compute.se.pisd.roborally.view.JoinView;
-import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
+import dk.dtu.compute.se.pisd.roborally.model.Game;
+import dk.dtu.compute.se.pisd.roborally.view.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -118,6 +116,12 @@ public class RoboRally extends Application {
         boardRoot.getChildren().clear();
         JoinView joinView = new JoinView(appController,games);
         boardRoot.setCenter(joinView);
+        stage.sizeToScene();
+    }
+    public void createLobbyView(String boardName, Game game){
+        boardRoot.getChildren().clear();
+        LobbyView lobbyView = new LobbyView(game.getBoard().getPlayers().size(),boardName,game,appController);
+        boardRoot.setCenter(lobbyView);
         stage.sizeToScene();
     }
 

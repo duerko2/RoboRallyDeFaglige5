@@ -37,10 +37,8 @@ public class ServerController {
 
     @GetMapping(value = "/{id}")
     public String getGame(@PathVariable("id") String id){
-
-
-
-        return "Board JSON file";
+        String game = serviceLayer.getGame(id);
+        return game;
     }
 
 }

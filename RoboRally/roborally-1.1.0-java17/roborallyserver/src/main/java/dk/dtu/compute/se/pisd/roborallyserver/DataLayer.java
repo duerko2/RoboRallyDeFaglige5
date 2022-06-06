@@ -5,9 +5,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DataLayer {
     private final String GAMESFOLDER = "games";
@@ -16,10 +19,22 @@ public class DataLayer {
     ClassLoader classLoader = this.getClass().getClassLoader();
 
 
-    public String loadGame(String fileName){
+    public String loadGame(String serialNumber){
 
+        String game=null;
 
-        return null;
+        // File path
+        String fileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber;
+
+        Path filePath = Path.of(fileName);
+
+        try {
+            game = Files.readString(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return game;
     }
 
     public String loadGames(){

@@ -1,6 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
-public class Game {
+import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+
+public class Game extends Subject {
     String serialNumber;
     int maxAmountOfPlayers;
     boolean readyToReceivePlayers;
