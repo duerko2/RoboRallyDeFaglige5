@@ -23,13 +23,18 @@ package dk.dtu.compute.se.pisd.roborally;
 
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
+import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.HostView;
+import dk.dtu.compute.se.pisd.roborally.view.JoinView;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 /**
  * ...
@@ -43,6 +48,7 @@ public class RoboRally extends Application {
 
     private Stage stage;
     private BorderPane boardRoot;
+    private AppController appController;
     // private RoboRallyMenuBar menuBar;
 
     // private AppController appController;
@@ -56,7 +62,15 @@ public class RoboRally extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
 
-        AppController appController = new AppController(this);
+        appController = new AppController(this);
+
+        // Before any other views, the player has to choose nickname.
+        String playerName=appController.getUserInput("Nickname:");
+
+        appController.setName(playerName);
+
+
+
 
         // create the primary scene with the a menu bar and a pane for
         // the board view (which initially is empty); it will be filled
@@ -88,6 +102,22 @@ public class RoboRally extends Application {
             boardRoot.setCenter(boardView);
         }
 
+        stage.sizeToScene();
+    }
+
+    public void createHostView(int numOfPlayers, String mapName){
+        boardRoot.getChildren().clear();
+        HostView hostView = new HostView(numOfPlayers,mapName,appController);
+        boardRoot.setCenter(hostView);
+        stage.sizeToScene();
+
+
+    }
+
+    public void createJoinView(String[] games){
+        boardRoot.getChildren().clear();
+        JoinView joinView = new JoinView(appController,games);
+        boardRoot.setCenter(joinView);
         stage.sizeToScene();
     }
 
