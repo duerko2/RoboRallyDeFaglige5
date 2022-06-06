@@ -114,7 +114,7 @@ public class RoboRally extends Application {
 
     }
 
-    public void createJoinView(List<String> games){
+    public void createJoinView(String[] games){
         boardRoot.getChildren().clear();
         JoinView joinView = new JoinView(appController,games);
         boardRoot.setCenter(joinView);

@@ -8,4 +8,8 @@ public class ServiceLayer {
     public void putGame(String r, String id) {
         dataLayer.saveGame(r,id);
     }
+
+    public String getGames() {
+        return dataLayer.loadGames();
+    }
 }
