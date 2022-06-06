@@ -267,12 +267,10 @@ public class GameController {
                 move(player);
 
         }catch (NullPointerException e){
-                moveCurrentPlayerToSpace(board.getSpace(2, 1));
-            for (int i = 0; i< 5;i++) {
-                player.getProgramField(i).setCard(null);
-            }
-
+            outOfBounds(player);
         }
+
+
     }
 
     // TODO Assignment V2
@@ -324,26 +322,23 @@ public class GameController {
                 move(player);
             }
         }catch (NullPointerException e){
-            moveCurrentPlayerToSpace(board.getSpace(2,1));
-            for (int i = 0; i< 5;i++) {
-                player.getProgramField(i).setCard(null);
-            }
+            outOfBounds(player);
         }
     }
 
     public void moveThree(@NotNull Player player) {
         try {
-            Space nextSpace;
-            for (int i = 0; i < 3; i++) {
-                move(player);
-            }
-        } catch (NullPointerException e) {
-            moveCurrentPlayerToSpace(board.getSpace(2, 1));
-            for (int i = 0; i< 5;i++) {
-                player.getProgramField(i).setCard(null);
-            }
+        Space nextSpace;
+        for (int i = 0; i < 3; i++) {
+            move(player);
         }
+        }catch (NullPointerException e){
+            outOfBounds(player);
+        }
+
     }
+
+
 
         public void backUp (@NotNull Player player){
         try {
@@ -381,11 +376,10 @@ public class GameController {
                     break;
             }
         }catch (NullPointerException e){
-            moveCurrentPlayerToSpace(board.getSpace(2, 1));
-            for (int i = 0; i< 5;i++) {
-                player.getProgramField(i).setCard(null);
-            }
+            outOfBounds(player);
         }
+
+
         }
 
         public void uTurn (@NotNull Player player){
@@ -428,30 +422,27 @@ public class GameController {
                 if (target != null) {
                     checkForPush(other, target, orig);
                 }
-
-
             }
-
-
             if (nextSpace.getPlayer() == null) {
                 player.setSpace(nextSpace);
-
             }
-        }catch (NullPointerException e){
-            player = nextSpace.getPlayer();
-            int j= 1;
+        }catch (NullPointerException e) {
+            Player player2 = nextSpace.getPlayer();
+            boolean u = false;
+            int j = 1;
             do {
-                if (board.getSpace(2,j).getPlayer() == null) {
-                    player.setSpace(board.getSpace(2, j));
+                if (board.getSpace(2, j).getPlayer() == null) {
+                    player2.setSpace(board.getSpace(2, j));
+                    u = true;
+                }else {
                     j++;
+                }
+            }while (u == false);
+            for (int i = 0; i < 5; i++) {
+                player2.getProgramField(i).setCard(null);
             }
-            } while (board.getSpace(2,j).getPlayer() == null);
-
-
+            checkForPush(player,nextSpace,heading);
         }
-            for (int i = 0; i< 5;i++) {
-                player.getProgramField(i).setCard(null);
-            }
         }
 
 
@@ -486,6 +477,20 @@ public class GameController {
             // XXX just for now to indicate that the actual method is not yet implemented
             assert false;
         }
-
+        public void outOfBounds ( Player player) {
+            int j = 1;
+            Boolean u = false;
+            do {
+                if (board.getSpace(2, j).getPlayer() == null) {
+                    player.setSpace(board.getSpace(2,j));
+                    u = true;
+                }else {
+                    j++;
+                }
+            }while (u == false );
+            for (int i = 0; i< 5;i++) {
+                player.getProgramField(i).setCard(null);
+            }
+        }
     }
 
