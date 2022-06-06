@@ -13,27 +13,30 @@ public class LobbyView extends VBox implements ViewObserver{
     private Label label;
     private Label numOfPlayersLabel;
     private AppController appController;
-    public LobbyView(int numOfPlayers, String boardName, Game game,AppController appController){
+    private Game game;
+    private String gameName;
+    public LobbyView(int numOfPlayers, String gameName,AppController appController){
         this.appController=appController;
-
-
-
-        label = new Label(appController.getName()+"'s game\nLIST OF PLAYERS....");
-        mainPane = new Pane(label);
-        numOfPlayersLabel = new Label("Amount of players needed for this game: "+numOfPlayers+". \nBoard: "+boardName);
-        Button button1 = new Button("Start Game");
-        button1.setOnAction(e->appController.startHostGame());
-
-        this.getChildren().add(mainPane);
-        this.getChildren().add(button1);
-        this.getChildren().add(numOfPlayersLabel);
+        this.game=appController.getGame();
+        this.gameName=gameName;
 
         game.attach(this);
-        updateView(game);
-
+        update(game);
     }
 
     @Override
     public void updateView(Subject subject) {
+
+        this.getChildren().clear();
+
+        label = new Label(game.getBoard().getPlayers().get(0).getName()+"'s game\nLIST OF PLAYERS....\n");
+        for(int i=0;i<game.getBoard().getPlayers().size();i++){
+            this.getChildren().add(new Pane(new Label(game.getBoard().getPlayers().get(i).getName())));
+        }
+        Button button1 = new Button("Refresh Lobby");
+        button1.setOnAction(e->appController.updateLobby(gameName));
+        this.getChildren().add(button1);
+
+        // this.getChildren().add(numOfPlayersLabel);
     }
 }

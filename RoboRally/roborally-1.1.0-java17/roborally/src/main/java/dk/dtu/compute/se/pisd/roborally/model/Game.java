@@ -42,4 +42,8 @@ public class Game extends Subject {
     public boolean getReadyToReceivePlayers(){
         return this.readyToReceivePlayers;
     }
+
+    public void updated(){
+        notifyChange();
+    }
 }

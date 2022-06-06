@@ -27,13 +27,13 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Game;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 
-import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
 import dk.dtu.compute.se.pisd.roborally.springRequest.JsonConverter;
+import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -43,6 +43,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -67,6 +68,7 @@ public class AppController extends FieldAction implements Observer {
     private GameController gameController;
 
     private Optional<Integer> numOfPlayers;
+    private Game game;
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -335,12 +337,17 @@ public class AppController extends FieldAction implements Observer {
     public void startJoinGame(String gameName){
         try {
             String gameJson = GameClient.getGame(gameName);
-            Game game = JsonConverter.jsonToGame(gameJson);
+            game = JsonConverter.jsonToGame(gameJson);
 
             // Add ourselves to the player list.
             int currentIndex=0;
-            while(game.getBoard().getPlayers().get(currentIndex).getName()!=null){
-                currentIndex++;
+            try {
+                while (game.getBoard().getPlayers().get(currentIndex).getName() != null) {
+                    currentIndex++;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println(e.getMessage());
+                return;
             }
 
             game.getBoard().getPlayers().get(currentIndex).setName(name);
@@ -354,12 +361,26 @@ public class AppController extends FieldAction implements Observer {
             // Should therefore display players currently in game in realtime.
             roboRally.createLobbyView(gameName,game);
 
-            // TODO: Loop to fetch game object from server.
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+    }
+    public void updateLobby(String gameName){
+        try {
+            String gameJson = GameClient.getGame(gameName);
+            game.getBoard().getPlayers().clear();
+            game.getBoard().getPlayers().addAll(JsonConverter.jsonToGame(gameJson).getBoard().getPlayers());
+            game.updated();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+
 
 
     }
@@ -382,5 +403,9 @@ public class AppController extends FieldAction implements Observer {
     }
     public void setName(String name){
         this.name=name;
+    }
+
+    public Game getGame() {
+        return game;
     }
 }

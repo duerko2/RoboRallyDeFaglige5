@@ -120,7 +120,7 @@ public class RoboRally extends Application {
     }
     public void createLobbyView(String boardName, Game game){
         boardRoot.getChildren().clear();
-        LobbyView lobbyView = new LobbyView(game.getBoard().getPlayers().size(),boardName,game,appController);
+        LobbyView lobbyView = new LobbyView(game.getBoard().getPlayers().size(),boardName,appController);
         boardRoot.setCenter(lobbyView);
         stage.sizeToScene();
     }
