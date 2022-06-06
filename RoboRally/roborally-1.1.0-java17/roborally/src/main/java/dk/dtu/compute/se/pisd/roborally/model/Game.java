@@ -1,12 +1,12 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 public class Game {
-    int serialNumber;
+    String serialNumber;
     int maxAmountOfPlayers;
     boolean readyToReceivePlayers;
     Board board;
 
-    public Game(Board board, int serialNumber, int maxAmountOfPlayers, boolean readyToReceivePlayers){
+    public Game(Board board, String serialNumber, int maxAmountOfPlayers, boolean readyToReceivePlayers){
         this.board = board;
         this.serialNumber = serialNumber;
         this.maxAmountOfPlayers = maxAmountOfPlayers;
@@ -17,7 +17,7 @@ public class Game {
     public void setBoard(Board board){
         this.board = board;
     }
-    public void setSerialNumber(int serialNumber){
+    public void setSerialNumber(String serialNumber){
         this.serialNumber = serialNumber;
     }
     public void setReadyToReceivePlayers(boolean bool){
@@ -31,7 +31,7 @@ public class Game {
     public Board getBoard(){
         return this.board;
     }
-    public int getSerialNumber(){
+    public String getSerialNumber(){
         return this.serialNumber;
     }
     public int getMaxAmountOfPlayers(){
