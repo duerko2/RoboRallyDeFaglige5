@@ -28,6 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Game;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.Space;
@@ -259,32 +260,38 @@ public class AppController extends FieldAction implements Observer {
                 }
             }
         }
-        Board board = LoadBoard.loadBoard(fileNameResult.get());
+        Board board = LoadBoard.loadFromBoards(fileNameResult.get());
+        for(int i = 5; i >= numOfPlayers.get() ;i--){
+            board.getPlayers().remove(i);
+        }
+
+        board.getPlayers().get(0).setName(name);
+
         gameController = new GameController(board);
 
 
-        //Here we create new player objects for the board. In the future the board should already have these objects and we just impose our name on the right one.
-        Player player = new Player(board, PLAYER_COLORS.get(0), name,0);
-        board.addPlayer(player);
-        player.setSpace(board.getSpace(0 % board.width, 0));
+
 
 
 
         roboRally.createHostView(numOfPlayers.get(),fileNameResult.get());
 
 
-        // Converts the game information to json string
-        String jsonString = JsonConverter.gameToJson(board);
+
 
         // Large random number for the serial number. Used to identify games on the server.
         // For the future, there could be a check to see if the number already exists on the server.
-        int serialNumber = (int)(Math.random()*1000000);
+        String serialNumber = String.valueOf((int)(Math.random()*1000000));
 
+        Game game = new Game(board,serialNumber,numOfPlayers.get(),true);
+
+        // Converts the game information to json string
+        String jsonString = JsonConverter.gameToJson(game);
 
 
         // Sends the game information and serial number to the server.
         try {
-            GameClient.putGame(String.valueOf(serialNumber),jsonString);
+            GameClient.putGame(serialNumber,jsonString);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -322,8 +329,8 @@ public class AppController extends FieldAction implements Observer {
 
     public void startJoinGame(String gameName){
         try {
-            String game = GameClient.getGame(gameName);
-            Board board = JsonConverter.jsonToBoard(game);
+            String gameJson = GameClient.getGame(gameName);
+            Game game = JsonConverter.jsonToGame(gameJson);
         } catch (Exception e) {
             e.printStackTrace();
         }

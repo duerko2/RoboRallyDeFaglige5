@@ -2,16 +2,24 @@ package dk.dtu.compute.se.pisd.roborally.springRequest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
 import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Game;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.*;
 
 public class JsonConverter {
 
-    public static String gameToJson(Board board) {
+    public static String gameToJson(Game game) {
+        Board board = game.getBoard();
 
         //Creates board template based on board size.
         BoardTemplate template = new BoardTemplate();
@@ -95,15 +103,111 @@ public class JsonConverter {
             template.players.add(playerTemplate);
         }
 
+        GameTemplate gameTemplate = new GameTemplate();
+        gameTemplate.board=template;
+        gameTemplate.serialNumber=game.getSerialNumber();
+        gameTemplate.maxAmountOfPlayers=game.getMaxAmountOfPlayers();
+        gameTemplate.readyToReceivePlayers=game.getReadyToReceivePlayers();
+
         GsonBuilder simpleBuilder = new GsonBuilder().
                 setPrettyPrinting();
         Gson gson = simpleBuilder.create();
 
-        return gson.toJson(template,template.getClass());
+        return gson.toJson(gameTemplate,gameTemplate.getClass());
     }
 
-    public static Board jsonToBoard(String game) {
+    public static Game jsonToGame(String game) {
 
-        return null;
+
+        // In simple cases, we can create a Gson object with new Gson():
+        GsonBuilder simpleBuilder = new GsonBuilder();
+        Gson gson = simpleBuilder.create();
+
+
+            GameTemplate gameTemplate = gson.fromJson(game, GameTemplate.class);
+
+            //Creates a new board with size from boardtemplate
+            Board board = new Board(gameTemplate.board.width, gameTemplate.board.height);
+
+            //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
+            for (SpaceTemplate spaceTemplate : gameTemplate.board.spaces) {
+                Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
+                if (space != null) {
+
+                    // Adds walls if available.
+                    for (int i = 0; i < spaceTemplate.walls.size(); i++) {
+                        space.getWalls().addAll(spaceTemplate.walls);
+                    }
+
+                    // Adds checkpoint if available.
+                    if (spaceTemplate.checkPoint != null) {
+                        space.getActions().add(new CheckPoint(space, spaceTemplate.checkPoint.number));
+                    }
+
+                    // Adds conveyorbelt if available.
+                    if (spaceTemplate.conveyorBelt != null) {
+                        space.getActions().add(new ConveyorBelt(space, spaceTemplate.conveyorBelt.heading, spaceTemplate.conveyorBelt.isDouble));
+                    }
+                }
+            }
+
+
+            // Adds players to the Board
+            for (int i = 0; i < gameTemplate.board.players.size(); i++) {
+
+                // Creates playertemplate object
+                PlayerTemplate playerTemplate = gameTemplate.board.players.get(i);
+
+
+                //Creates player object from playertemplate info
+                Player player = new Player(board, playerTemplate.color, playerTemplate.name, playerTemplate.checkPoint);
+
+
+                // Informs the player object of the location
+                player.setSpace(board.getSpace(playerTemplate.x, playerTemplate.y));
+
+                //Informs the player object of the heading.
+                player.setHeading(playerTemplate.heading);
+
+                // Adds players cards
+                for (int j = 0; j < PlayerTemplate.NO_CARDS; j++) {
+
+                    // Creates card template instance
+                    CardTemplate cardTemplate = new CardTemplate();
+
+                    // Loads information into template from playerTemplate
+                    cardTemplate.card = playerTemplate.cards[j].card;
+                    cardTemplate.visible = playerTemplate.cards[j].visible;
+
+                    // Loads information into player object from card template.
+                    player.getCardField(j).setCard(cardTemplate.card);
+                    player.getCardField(j).setVisible(cardTemplate.visible);
+                }
+
+                // Adds players register
+                for (int j = 0; j < PlayerTemplate.NO_REGISTERS; j++) {
+                    // Creates card template instance
+                    CardTemplate cardTemplate = new CardTemplate();
+
+                    // Loads information into template from playerTemplate
+                    cardTemplate.card = playerTemplate.program[j].card;
+                    cardTemplate.visible = playerTemplate.program[j].visible;
+
+                    // Loads information into player object from card template.
+                    player.getProgramField(j).setCard(cardTemplate.card);
+                    player.getProgramField(j).setVisible(cardTemplate.visible);
+                }
+
+
+                board.getPlayers().add(player);
+
+                // Checks if this player is the current player
+                if (playerTemplate.currentPlayer) {
+                    board.setCurrentPlayer(player);
+                }
+            }
+            Game result = new Game(board,gameTemplate.serialNumber,gameTemplate.maxAmountOfPlayers,gameTemplate.readyToReceivePlayers);
+
+        return result;
     }
 }

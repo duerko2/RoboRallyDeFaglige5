@@ -276,7 +276,7 @@ public class LoadBoard {
         }
 
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
+        InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname);
         if (inputStream == null) {
             // TODO these constants should be defined somewhere
             return new Board(8,8);
@@ -384,18 +384,126 @@ public class LoadBoard {
                 try {
                     reader.close();
                     reader = null;
-                } catch (IOException e2) {}
+                } catch (IOException e2) {
+                    System.out.println("error");
+                }
             }
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e2) {}
+                } catch (IOException e2) {System.out.println("error");}
             }
         } catch (NullPointerException e3){
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e2) {
+                    System.out.println("error");
+                }
+            }
+            return new Board(8,8);
+        }
+        return null;
+    }
+    public static Board loadFromBoards(String boardname) {
+        if (boardname == null) {
+            boardname = DEFAULTBOARD;
+        }
+
+        ClassLoader classLoader = LoadBoard.class.getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname);
+        if (inputStream == null) {
+            // TODO these constants should be defined somewhere
+            return new Board(8,8);
+        }
+
+        // In simple cases, we can create a Gson object with new Gson():
+        GsonBuilder simpleBuilder = new GsonBuilder();
+        Gson gson = simpleBuilder.create();
+
+        Board result;
+        JsonReader reader = null;
+        try {
+            reader = gson.newJsonReader(new InputStreamReader(inputStream));
+
+            // Creates boardtemplate based on JSON file
+            BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
+
+            //Creates a new board with size from boardtemplate
+            result = new Board(template.width, template.height);
+
+            //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
+            for (SpaceTemplate spaceTemplate: template.spaces) {
+                Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
+                if (space != null) {
+
+                    // Adds walls if available.
+                    for (int i = 0;i<spaceTemplate.walls.size();i++) {
+                        space.getWalls().addAll(spaceTemplate.walls);
+                    }
+
+                    // Adds checkpoint if available.
+                    if(spaceTemplate.checkPoint!=null){
+                        space.getActions().add(new CheckPoint(space,spaceTemplate.checkPoint.number));
+                    }
+
+                    // Adds conveyorbelt if available.
+                    if(spaceTemplate.conveyorBelt!=null){
+                        space.getActions().add(new ConveyorBelt(space,spaceTemplate.conveyorBelt.heading, spaceTemplate.conveyorBelt.isDouble));
+                    }
+                }
+            }
+
+
+            // Adds players to the Board
+            for(int i=0;i<template.players.size();i++){
+
+                // Creates playertemplate object
+                PlayerTemplate playerTemplate = template.players.get(i);
+
+
+
+                //Creates player object from playertemplate info
+                Player player = new Player(result,playerTemplate.color,playerTemplate.name,playerTemplate.checkPoint);
+
+
+                // Informs the player object of the location
+                player.setSpace(result.getSpace(playerTemplate.x,playerTemplate.y));
+
+                //Informs the player object of the heading.
+                player.setHeading(playerTemplate.heading);
+
+                result.getPlayers().add(player);
+
+                // Checks if this player is the current player
+                if(playerTemplate.currentPlayer){
+                    result.setCurrentPlayer(player);
+                }
+            }
+
+
+            reader.close();
+            return result;
+        } catch (IOException e1) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                    reader = null;
+                } catch (IOException e2) {
+                    System.out.println("error");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e2) {System.out.println("error");}
+            }
+        } catch (NullPointerException e3){
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e2) {
+                    System.out.println("error");
                 }
             }
             return new Board(8,8);
