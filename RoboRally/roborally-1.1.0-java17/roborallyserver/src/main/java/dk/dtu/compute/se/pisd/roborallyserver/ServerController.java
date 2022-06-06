@@ -24,6 +24,17 @@ public class ServerController {
         return "added";
     }
 
+
+    /**
+     *
+     * @return names of games on the server.
+     */
+    @GetMapping()
+    public String getGames(){
+        String games = serviceLayer.getGames();
+        return games;
+    }
+
     @GetMapping(value = "/{id}")
     public String getGame(@PathVariable("id") String id){
 

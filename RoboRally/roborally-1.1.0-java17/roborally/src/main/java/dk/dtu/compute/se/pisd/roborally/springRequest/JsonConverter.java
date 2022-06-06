@@ -101,4 +101,9 @@ public class JsonConverter {
 
         return gson.toJson(template,template.getClass());
     }
+
+    public static Board jsonToBoard(String game) {
+
+        return null;
+    }
 }

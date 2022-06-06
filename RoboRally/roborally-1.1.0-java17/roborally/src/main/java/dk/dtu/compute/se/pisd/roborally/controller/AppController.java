@@ -278,12 +278,13 @@ public class AppController extends FieldAction implements Observer {
 
         // Large random number for the serial number. Used to identify games on the server.
         // For the future, there could be a check to see if the number already exists on the server.
-        int serialNumber = (int)Math.random()*1000000;
+        int serialNumber = (int)(Math.random()*1000000);
+
 
 
         // Sends the game information and serial number to the server.
         try {
-            GameClient.putGame(serialNumber,jsonString);
+            GameClient.putGame(String.valueOf(serialNumber),jsonString);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -299,24 +300,34 @@ public class AppController extends FieldAction implements Observer {
 
     public void joinGame() {
         List<Board> boards=null;
+        String games = null;
         // TODO: Loop  every 5 or 10 seconds seconds to get games from server and call createJoinView with that list.
         try {
-            String games = GameClient.getGames();
+            games = GameClient.getGames();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // TODO: Interpret the games from the server and see which ones are available to join.
         // For now hard coded with a default game
-        List<String> games= List.of(new String[]{"Marcus's Game", "Beier's Game"});
 
 
-        roboRally.createJoinView(games);
+        String[] gamesList=games.split("\n");
+
+
+        roboRally.createJoinView(gamesList);
 
 
     }
 
     public void startJoinGame(String gameName){
+        try {
+            String game = GameClient.getGame(gameName);
+            Board board = JsonConverter.jsonToBoard(game);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
