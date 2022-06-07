@@ -24,12 +24,20 @@ public class DataLayer {
         String game=null;
 
         // File path
-        String fileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber;
+        String tempfileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber;
+        String fileName ="";
+        if(tempfileName.charAt(1) == 'C' && tempfileName.charAt(2)==':'){
+            //substring(1) is needed on windows due to path.of setting a /in front.
+            fileName = tempfileName.substring(1);
+        } else{
+            //doesnt remove the first /
+            fileName = tempfileName;
+        }
 
         Path filePath = Path.of(fileName);
 
         try {
-            game = Files.readString(filePath);
+            game = Files.readString(filePath.toAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }

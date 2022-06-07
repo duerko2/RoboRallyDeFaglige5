@@ -123,7 +123,6 @@ public class JsonConverter {
         Gson gson = simpleBuilder.create();
 
             GameTemplate gameTemplate = gson.fromJson(game, GameTemplate.class);
-
             //Creates a new board with size from boardtemplate
             Board board = new Board(gameTemplate.board.width, gameTemplate.board.height);
 
