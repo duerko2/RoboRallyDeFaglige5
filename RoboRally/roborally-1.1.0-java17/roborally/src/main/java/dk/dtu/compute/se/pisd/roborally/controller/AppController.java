@@ -70,7 +70,7 @@ public class AppController extends FieldAction implements Observer {
     private Optional<Integer> numOfPlayers;
     private Game game;
     private boolean isHost=false;
-
+    private Thread lobbyThread;
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
@@ -283,7 +283,6 @@ public class AppController extends FieldAction implements Observer {
         // Converts the game information to json string
         String jsonString = JsonConverter.gameToJson(game);
 
-
         // Sends the game information and serial number to the server.
         try {
             GameClient.putGame(serialNumber,jsonString);
@@ -367,30 +366,56 @@ public class AppController extends FieldAction implements Observer {
     }
 
     private void startLobbyThread(String gameName){
-        Runnable task = new Runnable() {
+        lobbyThread = new Thread( new Runnable() {
+            boolean running;
+            public void stopThread(){
+                running = false;
+                lobbyThread.interrupt();
+            }
             public void run() {
-                while(true) {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException var2) {
-                        var2.printStackTrace();
-                    }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            if(game.getBoard().getPhase()==Phase.PROGRAMMING){
-                                // Start the game
-
-                                Thread.currentThread().interrupt();
-                            } else{
-                                updateLobby(gameName);
-                            }
+                running = true;
+                while(running) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException var2) {
+                            var2.printStackTrace();
                         }
-                    });
+                    System.out.println(game.getBoard().getPhase());
+                        if(running) {
+                            Platform.runLater(new Runnable() {
+                                public void run() {
+                                    try {
+                                        if (!getIsHost()) {
+                                            String temp = GameClient.getGame(gameName);
+                                            game = JsonConverter.jsonToGame(temp);
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (game.getBoard().getPhase().equals(Phase.PROGRAMMING)) {
+                                        //start the game and if host->put the game
+                                        gameController.startProgrammingPhase();
+                                        roboRally.createBoardView(gameController);
+                                        if(getIsHost()){
+                                            try {
+                                                GameClient.putGame(gameName,JsonConverter.gameToJson(game));
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        //stop the thread
+                                        stopThread();
+
+                                    } else {
+                                        updateLobby(gameName);
+                                    }
+                                }
+                            });
+                        }
                 }
             }
-        };
-        Thread updateLobby = new Thread(task);
-        updateLobby.start();
+        });
+        lobbyThread.start();
     }
 
     public void updateLobby(String gameName){
@@ -412,14 +437,10 @@ public class AppController extends FieldAction implements Observer {
                 amountOfCurrentPlayers++;
             }
         }
+        System.out.println(amountOfCurrentPlayers);
         if(amountOfCurrentPlayers==game.getMaxAmountOfPlayers()){
             // For now we just start the game as normal...
             game.getBoard().setPhase(Phase.PROGRAMMING);
-            try {
-                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         else return;
 

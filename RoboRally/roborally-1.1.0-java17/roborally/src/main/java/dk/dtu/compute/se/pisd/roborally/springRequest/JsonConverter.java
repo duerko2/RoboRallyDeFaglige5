@@ -118,11 +118,9 @@ public class JsonConverter {
 
     public static Game jsonToGame(String game) {
 
-
         // In simple cases, we can create a Gson object with new Gson():
         GsonBuilder simpleBuilder = new GsonBuilder();
         Gson gson = simpleBuilder.create();
-
 
             GameTemplate gameTemplate = gson.fromJson(game, GameTemplate.class);
 

@@ -33,7 +33,6 @@ public class DataLayer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return game;
     }
 

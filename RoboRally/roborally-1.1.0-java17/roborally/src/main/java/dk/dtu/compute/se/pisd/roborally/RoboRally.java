@@ -91,6 +91,7 @@ public class RoboRally extends Application {
     }
 
     public void createBoardView(GameController gameController) {
+        //when game is created, stop the previous lobby thread
         // if present, remove old BoardView
         boardRoot.getChildren().clear();
 
