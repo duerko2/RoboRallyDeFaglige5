@@ -60,6 +60,8 @@ public class Board extends Subject {
 
     private boolean stepMode;
 
+    Phase currentPhase;
+
     public Board(int width, int height, @NotNull String boardName) {
         this.boardName = boardName;
         this.width = width;
@@ -223,5 +225,7 @@ public class Board extends Subject {
                 ", Step: " + getStep();
     }
 
-
+    public Phase getCurrentPhase(){
+        return currentPhase;
+    }
 }

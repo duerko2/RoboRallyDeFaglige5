@@ -23,6 +23,7 @@ public class JsonConverter {
 
         //Creates board template based on board size.
         BoardTemplate template = new BoardTemplate();
+        template.currentPhase = board.getPhase();
         template.width = board.width;
         template.height = board.height;
 
@@ -102,7 +103,6 @@ public class JsonConverter {
 
             template.players.add(playerTemplate);
         }
-
         GameTemplate gameTemplate = new GameTemplate();
         gameTemplate.board=template;
         gameTemplate.serialNumber=game.getSerialNumber();
@@ -199,6 +199,7 @@ public class JsonConverter {
 
 
                 board.getPlayers().add(player);
+                board.setPhase(gameTemplate.board.currentPhase);
 
                 // Checks if this player is the current player
                 if (playerTemplate.currentPlayer) {

@@ -71,6 +71,10 @@ public class AppController extends FieldAction implements Observer {
     private Game game;
     private boolean isHost=false;
     private Thread lobbyThread;
+    private Thread ActivationPhaseThread;
+    private String gameNavn;
+    private int ClientPlayerNumber;
+    private AppController appController = this;
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
@@ -118,7 +122,7 @@ public class AppController extends FieldAction implements Observer {
             // Real implementation of loading a board
 
             Board board = LoadBoard.loadBoard(fileNameResult.get());
-            gameController = new GameController(board);
+            gameController = new GameController(board, this);
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
@@ -145,7 +149,7 @@ public class AppController extends FieldAction implements Observer {
         String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
-        gameController = new GameController(board);
+        gameController = new GameController(board, this);
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase(true,currentPlayer);
@@ -341,6 +345,7 @@ public class AppController extends FieldAction implements Observer {
             }
 
             game.getBoard().getPlayers().get(currentIndex).setName(name);
+            ClientPlayerNumber = currentIndex;
 
             // Upload new game to server
 
@@ -360,6 +365,12 @@ public class AppController extends FieldAction implements Observer {
         }
 
 
+    }
+    public int getClientPlayerNumber(){
+        return ClientPlayerNumber;
+    }
+    public void setGame(Game game){
+        this.game = game;
     }
 
     private void startLobbyThread(String gameName){
@@ -398,13 +409,13 @@ public class AppController extends FieldAction implements Observer {
                                             }
                                             game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
                                             game.updated();
-                                            gameController = new GameController(game.getBoard());
+                                            gameController = new GameController(game.getBoard(), appController);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
                                         }catch(Exception e){
                                             e.printStackTrace();
                                         }
-
+                                        gameNavn = gameName;
                                         //stop the thread
                                         stopThread();
 
@@ -418,6 +429,54 @@ public class AppController extends FieldAction implements Observer {
             }
         });
         lobbyThread.start();
+    }
+    public String getGameNavn(){
+        return this.gameNavn;
+    }
+
+    public void startActivationThread(){
+        ActivationPhaseThread = new Thread(new Runnable() {
+            boolean running = true;
+            public void stopThread(){
+                running = false;
+                ActivationPhaseThread.interrupt();
+            }
+            public void run() {
+                while(running)
+                    try{
+                        Thread.sleep(5000);
+                    }catch(Exception e){
+                        System.out.println("rat");
+                    }
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            try {
+                                    //game = JsonConverter.jsonToGame(GameClient.getGame(gameName);
+                                    game = JsonConverter.jsonToGame(GameClient.getGame(gameNavn));
+                                    game.updated();
+                                System.out.println(game);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (game.getBoard().getCurrentPhase()==Phase.ACTIVATION) {
+                                //START ACTIVATION PHASE
+                                gameController.board.setPhase(Phase.ACTIVATION);
+                                stopThread();
+
+                            }
+                    }
+                });
+            }
+        });
+        ActivationPhaseThread.start();
+    }
+    public boolean checkForActivationPhase(){
+        for(int i = 0; i < game.getMaxAmountOfPlayers();i++){
+            if(game.getBoard().getPlayer(i).getProgramField(0).getCard() == null){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void updateLobby(String gameName){

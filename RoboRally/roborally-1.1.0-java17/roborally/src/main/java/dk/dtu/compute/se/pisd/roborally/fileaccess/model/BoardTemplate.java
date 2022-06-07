@@ -42,8 +42,9 @@ public class BoardTemplate {
     public boolean readyToReceivePlayers;
     public int maxAmountOfPlayers;
     public String serialNumber;
+     */
     public Phase currentPhase;
-    */
+
 
     public List<SpaceTemplate> spaces = new ArrayList<>();
     public List<PlayerTemplate> players = new ArrayList<>();

@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
+import dk.dtu.compute.se.pisd.roborally.springRequest.JsonConverter;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,9 +38,11 @@ import java.util.Optional;
 public class GameController {
 
     final public Board board;
+    private AppController appController;
 
-    public GameController(@NotNull Board board) {
+    public GameController(@NotNull Board board, AppController appController) {
         this.board = board;
+        this.appController = appController;
     }
 
     /**
@@ -104,9 +108,31 @@ public class GameController {
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
-        board.setPhase(Phase.ACTIVATION);
-        board.setCurrentPlayer(board.getPlayer(0));
-        board.setStep(0);
+
+        Player tempPlayer = board.getPlayer(appController.getClientPlayerNumber());
+        try {
+            appController.setGame(JsonConverter.jsonToGame(GameClient.getGame(appController.getGameNavn())));
+            appController.getGame().updated();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        appController.getGame().getBoard().getPlayers().set(appController.getClientPlayerNumber(), tempPlayer);
+
+        if(appController.checkForActivationPhase()){
+            appController.getGame().getBoard().setPhase(Phase.ACTIVATION);
+            appController.getGame().getBoard().setCurrentPlayer(appController.getGame().getBoard().getPlayer(0));
+            appController.getGame().getBoard().setStep(0);
+        }
+        try {
+            GameClient.putGame(appController.getGame().getSerialNumber(), JsonConverter.gameToJson(appController.getGame()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(JsonConverter.gameToJson(appController.getGame()));
+        appController.startActivationThread();
+
+
     }
 
     // XXX: V2
