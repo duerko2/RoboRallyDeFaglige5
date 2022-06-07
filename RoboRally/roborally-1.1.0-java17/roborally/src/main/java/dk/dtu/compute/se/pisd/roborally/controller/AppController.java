@@ -69,6 +69,7 @@ public class AppController extends FieldAction implements Observer {
 
     private Optional<Integer> numOfPlayers;
     private Game game;
+    private boolean isHost=false;
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -240,6 +241,7 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void hostGame() {
+        isHost=true;
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
@@ -272,20 +274,11 @@ public class AppController extends FieldAction implements Observer {
         gameController = new GameController(board);
 
 
-
-
-
-
-        roboRally.createHostView(numOfPlayers.get(),fileNameResult.get());
-
-
-
-
         // Large random number for the serial number. Used to identify games on the server.
         // For the future, there could be a check to see if the number already exists on the server.
         String serialNumber = String.valueOf((int)(Math.random()*1000000));
 
-        Game game = new Game(board,serialNumber,numOfPlayers.get(),true);
+        this.game = new Game(board,serialNumber,numOfPlayers.get(),true);
 
         // Converts the game information to json string
         String jsonString = JsonConverter.gameToJson(game);
@@ -298,12 +291,12 @@ public class AppController extends FieldAction implements Observer {
             e.printStackTrace();
         }
 
+        // Creates the view
+        String gameName = String.join("",game.getSerialNumber(),".json");
+        roboRally.createLobbyView(gameName,game);
+
 
         //TODO: Pull the game for the server in a loop until it's in progress.
-
-
-
-
 
     }
 
@@ -381,20 +374,28 @@ public class AppController extends FieldAction implements Observer {
             e.printStackTrace();
             return;
         }
-
-
-
-
     }
 
     public void startHostGame() {
-        // TODO: Include check to see if lobby is full.
+        int amountOfCurrentPlayers=0;
+        for(int i=0;i<game.getBoard().getPlayers().size();i++){
+            if(game.getBoard().getPlayers().get(i).getName()!=null){
+                amountOfCurrentPlayers++;
+            }
+        }
+        if(amountOfCurrentPlayers==game.getMaxAmountOfPlayers()){
+            // For now we just start the game as normal...
+            game.getBoard().setPhase(Phase.PROGRAMMING);
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else return;
 
 
-        // For now we just start the game as normal...
-        gameController.startProgrammingPhase();
 
-        roboRally.createBoardView(gameController);
 
 
 
@@ -409,5 +410,8 @@ public class AppController extends FieldAction implements Observer {
 
     public Game getGame() {
         return game;
+    }
+    public boolean getIsHost(){
+        return isHost;
     }
 }

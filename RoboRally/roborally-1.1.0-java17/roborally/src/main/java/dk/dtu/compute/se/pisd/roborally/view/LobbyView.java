@@ -33,10 +33,26 @@ public class LobbyView extends VBox implements ViewObserver{
         for(int i=0;i<game.getBoard().getPlayers().size();i++){
             this.getChildren().add(new Pane(new Label(game.getBoard().getPlayers().get(i).getName())));
         }
+
+        // Button for refreshing the view
         Button button1 = new Button("Refresh Lobby");
         button1.setOnAction(e->appController.updateLobby(gameName));
         this.getChildren().add(button1);
 
-        // this.getChildren().add(numOfPlayersLabel);
+        // Game information
+        numOfPlayersLabel = new Label("Amount of players needed for this game: "+game.getMaxAmountOfPlayers()+". \nBoard: \n"+gameName);
+        this.getChildren().add(numOfPlayersLabel);
+
+        // Button only visible to host. Starts the game
+        if(appController.getIsHost()){
+            Button startButton = new Button("Start Game");
+            startButton.setOnAction(e->appController.startHostGame());
+            this.getChildren().add(startButton);
+        }
+
+
+
+
+
     }
 }
