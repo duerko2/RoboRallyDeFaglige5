@@ -361,6 +361,8 @@ public class AppController extends FieldAction implements Observer {
             // Should therefore display players currently in game in realtime.
             roboRally.createLobbyView(gameName,game);
 
+            // Loop hvert 10 sekund.
+
 
 
         } catch (Exception e) {
