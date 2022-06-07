@@ -75,6 +75,8 @@ public class AppController extends FieldAction implements Observer {
         this.roboRally = roboRally;
     }
 
+    private int playerNumber;
+
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
@@ -118,7 +120,7 @@ public class AppController extends FieldAction implements Observer {
             // Real implementation of loading a board
 
             Board board = LoadBoard.loadBoard(fileNameResult.get());
-            gameController = new GameController(board);
+            gameController = new GameController(board,0);
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
@@ -145,7 +147,7 @@ public class AppController extends FieldAction implements Observer {
         String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
-        gameController = new GameController(board);
+        gameController = new GameController(board,0);
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase(true,currentPlayer);
@@ -240,12 +242,19 @@ public class AppController extends FieldAction implements Observer {
     }
 
     public void hostGame() {
+        // A couple of to be stored in the client, when the user hosts.
         isHost=true;
+        playerNumber=0; // For now host is always 0.
+
+
+        // Gives host ability to select amount of players for this game.
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
         dialog.setHeaderText("Select number of players");
         numOfPlayers = dialog.showAndWait();
 
+
+        // Gives host ability to choose field.
         BOARDS.clear();
         BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
         ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
@@ -254,6 +263,8 @@ public class AppController extends FieldAction implements Observer {
         Optional<String> fileNameResult = filename.showAndWait();
         BOARDS.clear();
 
+
+        // Defensive checks in case something goes with user selection.
         if (numOfPlayers.isPresent()&&fileNameResult.isPresent()) {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
@@ -263,11 +274,16 @@ public class AppController extends FieldAction implements Observer {
                 }
             }
         }
+
+
+
+        // Loads the board chosen from the client. In the future this could also be stored on the server.
         Board board = LoadBoard.loadFromBoards(fileNameResult.get());
         for(int i = 5; i >= numOfPlayers.get() ;i--){
             board.getPlayers().remove(i);
         }
 
+        // Inserts own name into the first player object.
         board.getPlayers().get(0).setName(name);
 
 
@@ -290,28 +306,27 @@ public class AppController extends FieldAction implements Observer {
         // Creates the view
         String gameName = String.join("",game.getSerialNumber(),".json");
         roboRally.createLobbyView(gameName,game);
+
+        // Stars thread that pulls the game state every 5 seconds and updates the view.
         startLobbyThread(gameName);
-
-
-        //TODO: Pull the game for the server in a loop until it's in progress.
-
     }
 
     public void joinGame() {
         List<Board> boards = null;
         String games = null;
-        // TODO: Loop  every 5 or 10 seconds seconds to get games from server and call createJoinView with that list.
         try {
             games = GameClient.getGames();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // TODO: Interpret the games from the server and see which ones are available to join.
-        // For now hard coded with a default game
+
 
 
         String[] gamesList = games.split("\n");
+
+
+        // TODO: Interpret the games from the server and see which ones are available to join.
 
         // for looop gamesList
         // Game game = GameClient.getGame(gamesList(i))
@@ -339,6 +354,7 @@ public class AppController extends FieldAction implements Observer {
                 System.out.println(e.getMessage());
                 return;
             }
+            playerNumber=currentIndex;
 
             game.getBoard().getPlayers().get(currentIndex).setName(name);
 
@@ -398,7 +414,7 @@ public class AppController extends FieldAction implements Observer {
                                             }
                                             game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
                                             game.updated();
-                                            gameController = new GameController(game.getBoard());
+                                            gameController = new GameController(game.getBoard(),playerNumber);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
                                         }catch(Exception e){
