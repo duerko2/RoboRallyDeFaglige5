@@ -126,6 +126,8 @@ public class JsonConverter {
             //Creates a new board with size from boardtemplate
             Board board = new Board(gameTemplate.board.width, gameTemplate.board.height);
 
+
+
             //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
             for (SpaceTemplate spaceTemplate : gameTemplate.board.spaces) {
                 Space space = board.getSpace(spaceTemplate.x, spaceTemplate.y);
@@ -204,7 +206,6 @@ public class JsonConverter {
                 }
             }
             Game result = new Game(board,gameTemplate.serialNumber,gameTemplate.maxAmountOfPlayers,gameTemplate.readyToReceivePlayers);
-
         return result;
     }
 }

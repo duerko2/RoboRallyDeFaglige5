@@ -35,7 +35,6 @@ public class DataLayer {
         }
 
         Path filePath = Path.of(fileName);
-
         try {
             game = Files.readString(filePath.toAbsolutePath());
         } catch (IOException e) {

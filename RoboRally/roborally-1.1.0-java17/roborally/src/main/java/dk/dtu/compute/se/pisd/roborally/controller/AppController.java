@@ -81,7 +81,6 @@ public class AppController extends FieldAction implements Observer {
         dialog.setHeaderText("Select number of players");
         Optional<Integer> result = dialog.showAndWait();
 
-
         BOARDS.clear();
         BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
         ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
@@ -271,8 +270,6 @@ public class AppController extends FieldAction implements Observer {
 
         board.getPlayers().get(0).setName(name);
 
-        gameController = new GameController(board);
-
 
         // Large random number for the serial number. Used to identify games on the server.
         // For the future, there could be a check to see if the number already exists on the server.
@@ -378,31 +375,36 @@ public class AppController extends FieldAction implements Observer {
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException var2) {
-                            var2.printStackTrace();
+                            running = false;
+                            lobbyThread.interrupt();
                         }
-                    System.out.println(game.getBoard().getPhase());
                         if(running) {
                             Platform.runLater(new Runnable() {
                                 public void run() {
                                     try {
                                         if (!getIsHost()) {
-                                            String temp = GameClient.getGame(gameName);
-                                            game = JsonConverter.jsonToGame(temp);
+                                            //game = JsonConverter.jsonToGame(GameClient.getGame(gameName);
+                                            game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
+                                            game.updated();
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
-                                    if (game.getBoard().getPhase().equals(Phase.PROGRAMMING)) {
+                                    if (!game.getReadyToReceivePlayers()) {
                                         //start the game and if host->put the game
-                                        gameController.startProgrammingPhase();
-                                        roboRally.createBoardView(gameController);
-                                        if(getIsHost()){
-                                            try {
-                                                GameClient.putGame(gameName,JsonConverter.gameToJson(game));
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
+                                        try{
+                                            if(getIsHost()) {
+                                                GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                                             }
+                                            game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
+                                            game.updated();
+                                            gameController = new GameController(game.getBoard());
+                                            gameController.startProgrammingPhase();
+                                            roboRally.createBoardView(gameController);
+                                        }catch(Exception e){
+                                            e.printStackTrace();
                                         }
+
                                         //stop the thread
                                         stopThread();
 
@@ -440,7 +442,7 @@ public class AppController extends FieldAction implements Observer {
         System.out.println(amountOfCurrentPlayers);
         if(amountOfCurrentPlayers==game.getMaxAmountOfPlayers()){
             // For now we just start the game as normal...
-            game.getBoard().setPhase(Phase.PROGRAMMING);
+            game.setReadyToReceivePlayers(false);
         }
         else return;
 
