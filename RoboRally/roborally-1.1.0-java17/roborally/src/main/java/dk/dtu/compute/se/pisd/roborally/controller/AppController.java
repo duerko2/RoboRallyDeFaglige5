@@ -294,6 +294,7 @@ public class AppController extends FieldAction implements Observer {
         // Creates the view
         String gameName = String.join("",game.getSerialNumber(),".json");
         roboRally.createLobbyView(gameName,game);
+        startLobbyThread(gameName);
 
 
         //TODO: Pull the game for the server in a loop until it's in progress.
@@ -353,7 +354,7 @@ public class AppController extends FieldAction implements Observer {
             // Create lobby view. Lobby view will be attached to the Game instance with Observer pattern, which will be updated frequently.
             // Should therefore display players currently in game in realtime.
             roboRally.createLobbyView(gameName,game);
-
+            startLobbyThread(gameName);
             // Loop hvert 10 sekund.
 
 
@@ -364,6 +365,34 @@ public class AppController extends FieldAction implements Observer {
 
 
     }
+
+    private void startLobbyThread(String gameName){
+        Runnable task = new Runnable() {
+            public void run() {
+                while(true) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException var2) {
+                        var2.printStackTrace();
+                    }
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            if(game.getBoard().getPhase()==Phase.PROGRAMMING){
+                                // Start the game
+
+                                Thread.currentThread().interrupt();
+                            } else{
+                                updateLobby(gameName);
+                            }
+                        }
+                    });
+                }
+            }
+        };
+        Thread updateLobby = new Thread(task);
+        updateLobby.start();
+    }
+
     public void updateLobby(String gameName){
         try {
             String gameJson = GameClient.getGame(gameName);
