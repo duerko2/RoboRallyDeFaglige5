@@ -18,12 +18,15 @@ public class Game extends Subject {
     //Setters
     public void setBoard(Board board){
         this.board = board;
+        notifyChange();
     }
     public void setSerialNumber(String serialNumber){
         this.serialNumber = serialNumber;
+        notifyChange();
     }
     public void setReadyToReceivePlayers(boolean bool){
         this.readyToReceivePlayers = bool;
+        notifyChange();
     }
     public void setMaxAmountOfPlayers(int maxAmountOfPlayers){
         this.maxAmountOfPlayers = maxAmountOfPlayers;
@@ -41,9 +44,5 @@ public class Game extends Subject {
     }
     public boolean getReadyToReceivePlayers(){
         return this.readyToReceivePlayers;
-    }
-
-    public void updated(){
-        notifyChange();
     }
 }
