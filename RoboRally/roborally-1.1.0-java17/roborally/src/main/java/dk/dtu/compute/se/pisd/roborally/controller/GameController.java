@@ -126,11 +126,6 @@ public class GameController {
     // XXX: V2
     public void finishProgrammingPhase(){
         Player tempPlayer = game.getBoard().getPlayer(playerNumber);
-        try {
-            System.out.println(GameClient.getGame(game.getSerialNumber()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         try{
             applyGetGame();
         }catch(Exception e){
@@ -142,14 +137,13 @@ public class GameController {
             game.getBoard().setPhase(Phase.ACTIVATION);
             game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
             game.getBoard().setStep(0);
-        }
 
+        }
         try {
             GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("jeg når til metoden");
         startActivationThread();
     }
 
@@ -211,27 +205,28 @@ public class GameController {
                 while (running) {
                     try {
                         Thread.sleep(2000);
-                    } catch (Exception e) {
-                        System.out.println("rat");
-                    }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            try {
-                                Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                                if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
-                                    //START ACTIVATION PHASE
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
                                     makeProgramFieldsInvisible();
                                     makeProgramFieldsVisible(0);
-                                    applyGetGame();
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
                                     game.getBoard().setStep(0);
-                                    ActivationPhase();
-                                    stopThread();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            });
+                            ActivationPhase();
+                            stopThread();
                         }
-                    });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -241,7 +236,7 @@ public class GameController {
     public void ActivationPhase(){
         activationPhaseThread = new Thread(new Runnable() {
             boolean running;
-            public void stopThread(){
+            public void stopThread() {
                 running = false;
                 activationPhaseThread.interrupt();
             }
@@ -250,24 +245,23 @@ public class GameController {
                 while (running) {
                     try {
                         Thread.sleep(2000);
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        if (tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) == playerNumber) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            stopThread();
+                        }
                     } catch (Exception e) {
                         System.out.println("rat");
                     }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            Game tempGame = null;
-                            try {
-                                tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                                if(tempGame.getBoard().getCurrentPlayer() == game.getBoard().getPlayer(playerNumber)){
-                                    applyGetGame();
-                                    stopThread();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
                 }
             }
         });
@@ -318,6 +312,7 @@ public class GameController {
                     game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
                     if(activationPhaseThread.isInterrupted()){
                         activationPhaseThread.start();
+                        //ActivationPhase();
                     }
                 } else {
                     step++;
@@ -327,10 +322,16 @@ public class GameController {
                         game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
                         if(activationPhaseThread.isInterrupted()){
                             activationPhaseThread.start();
+                            //ActivationPhase();
                         }
                     } else {
                         startProgrammingPhase();
                     }
+                }
+                try {
+                    GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
                 // this should not happen
@@ -364,7 +365,7 @@ public class GameController {
      */
     // XXX: V2
     private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == game.getBoard() && command != null) {
+        if (player != null && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
@@ -456,7 +457,6 @@ public class GameController {
      */
     // TODO Assignment V2
     public void move(@NotNull Player player) throws NullPointerException {
-
             Space nextSpace;
             Space currentSpace = player.getSpace();
             switch (player.getHeading()) {
