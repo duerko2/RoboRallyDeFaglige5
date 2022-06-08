@@ -223,14 +223,6 @@
       "y": 1
     },
     {
-      "walls": [],
-      "checkPoint": {
-        "number": 2
-      },
-      "x": 7,
-      "y": 3
-    },
-    {
       "walls": [
         "EAST"
       ],
