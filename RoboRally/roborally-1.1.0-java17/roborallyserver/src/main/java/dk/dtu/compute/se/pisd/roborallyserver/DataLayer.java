@@ -24,7 +24,7 @@ public class DataLayer {
         String game=null;
 
         // File path
-        String tempfileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber;
+        String tempfileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber+"."+JSON_EXT;
         String fileName ="";
         if(tempfileName.charAt(1) == 'C' && tempfileName.charAt(2)==':'){
             //substring(1) is needed on windows due to path.of setting a /in front.
@@ -53,6 +53,9 @@ public class DataLayer {
         String[] names= new String[files.length];
         for(int i=0;i<files.length;i++){
             names[i]=files[i].getName();
+            int index = names[i].indexOf('.');
+            names[i]=names[i].substring(0,index);
+
         }
         String namesOfGames=String.join("\n", names);
 

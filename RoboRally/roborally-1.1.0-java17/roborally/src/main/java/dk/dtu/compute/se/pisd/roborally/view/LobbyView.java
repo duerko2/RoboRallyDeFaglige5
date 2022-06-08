@@ -43,7 +43,7 @@ public class LobbyView extends VBox implements ViewObserver{
         this.getChildren().add(button1);
         */
         // Game information
-        numOfPlayersLabel = new Label("Amount of players needed for this game: "+game.getMaxAmountOfPlayers()+". \nBoard: \n"+gameName);
+        numOfPlayersLabel = new Label("Amount of players needed for this game: "+game.getMaxAmountOfPlayers()+". \nBoard: \n"+"Serial number: "+gameName);
         this.getChildren().add(numOfPlayersLabel);
         // Button only visible to host. Starts the game
         if(appController.getIsHost()){

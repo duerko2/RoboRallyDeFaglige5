@@ -205,6 +205,9 @@ public class JsonConverter {
                     board.setCurrentPlayer(player);
                 }
             }
+
+
+
             Game result = new Game(board,gameTemplate.serialNumber,gameTemplate.maxAmountOfPlayers,gameTemplate.readyToReceivePlayers);
         return result;
     }
