@@ -36,13 +36,10 @@ import java.util.Optional;
  *
  */
 public class GameController {
-
-    final public Board board;
     private Game game;
     private int playerNumber;
 
-    public GameController(@NotNull Board board, int playerNumber, Game game) {
-        this.board = board;
+    public GameController(int playerNumber, @NotNull Game game) {
         this.game = game;
         this.playerNumber=playerNumber;
     }
@@ -63,8 +60,8 @@ public class GameController {
         //     if the player is moved
 
         if (space.getPlayer() == null) {
-            board.getCurrentPlayer().setSpace(space);
-            board.nextPlayer();
+            game.getBoard().getCurrentPlayer().setSpace(space);
+            game.getBoard().nextPlayer();
         }
 
     }
@@ -72,12 +69,12 @@ public class GameController {
 
     // XXX: V2
     public void startProgrammingPhase() {
-        board.setPhase(Phase.PROGRAMMING);
-        board.setCurrentPlayer(board.getPlayer(0));
-        board.setStep(0);
+        game.getBoard().setPhase(Phase.PROGRAMMING);
+        game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+        game.getBoard().setStep(0);
 
-        for (int i = 0; i < board.getPlayersNumber(); i++) {
-            Player player = board.getPlayer(i);
+        for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
+            Player player = game.getBoard().getPlayer(i);
             if (player != null) {
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
@@ -94,9 +91,9 @@ public class GameController {
     }
 
     public void startProgrammingPhase(boolean gameLoaded, Player currentPlayer){
-        board.setPhase(Phase.PROGRAMMING);
-        board.setCurrentPlayer(currentPlayer);
-        board.setStep(0);
+        game.getBoard().setPhase(Phase.PROGRAMMING);
+        game.getBoard().setCurrentPlayer(currentPlayer);
+        game.getBoard().setStep(0);
     }
 
     // XXX: V2
@@ -111,17 +108,17 @@ public class GameController {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
 
-        Player tempPlayer = board.getPlayer(appController.getClientPlayerNumber());
+        Player tempPlayer = game.getBoard().getPlayer(playerNumber);
         try {
             game.updated();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        game.getBoard().getPlayers().set(appController.getClientPlayerNumber(), tempPlayer);
+        game.getBoard().getPlayers().set(playerNumber, tempPlayer);
 
-        if(appController.checkForActivationPhase()){
+        if(0==0){
             game.getBoard().setPhase(Phase.ACTIVATION);
-            game.getBoard().setCurrentPlayer(appController.getGame().getBoard().getPlayer(0));
+            game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
             game.getBoard().setStep(0);
         }
         try {
@@ -134,30 +131,28 @@ public class GameController {
     }
 
     public void finishedProgramming(){
-        Player tempPlayer = board.getPlayer();
+        Player tempPlayer = game.getBoard().getPlayer(playerNumber);
         Game tempGame;
         try{
             tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         }catch(Exception e){
 
         }
-        game.getBoard()
     }
 
     public void applyGetGame() throws Exception {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         game.getBoard().setPhase(serverGame.getBoard().getCurrentPhase());
-        for(int i = 0; i < board.getPlayers().size(); i++){
+        for(int i = 0; i < game.getBoard().getPlayers().size(); i++){
             game.getBoard().getPlayers().set(i, serverGame.getBoard().getPlayer(i));
         }
-
     }
 
     // XXX: V2
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
-            for (int i = 0; i < board.getPlayersNumber(); i++) {
-                Player player = board.getPlayer(i);
+            for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
+                Player player = game.getBoard().getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
                 field.setVisible(true);
             }
@@ -166,8 +161,8 @@ public class GameController {
 
     // XXX: V2
     private void makeProgramFieldsInvisible() {
-        for (int i = 0; i < board.getPlayersNumber(); i++) {
-            Player player = board.getPlayer(i);
+        for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
+            Player player = game.getBoard().getPlayer(i);
             for (int j = 0; j < Player.NO_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
                 field.setVisible(false);
@@ -177,13 +172,13 @@ public class GameController {
 
     // XXX: V2
     public void executePrograms() {
-        board.setStepMode(false);
+        game.getBoard().setStepMode(false);
         continuePrograms();
     }
 
     // XXX: V2
     public void executeStep() {
-        board.setStepMode(true);
+        game.getBoard().setStepMode(true);
         continuePrograms();
     }
 
@@ -191,34 +186,34 @@ public class GameController {
     private void continuePrograms() {
         do {
             executeNextStep();
-        } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
+        } while (game.getBoard().getPhase() == Phase.ACTIVATION && !game.getBoard().isStepMode());
     }
 
     // XXX: V2
     public void executeNextStep() {
-        Player currentPlayer = board.getCurrentPlayer();
-        if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
-            int step = board.getStep();
+        Player currentPlayer = game.getBoard().getCurrentPlayer();
+        if (game.getBoard().getPhase() == Phase.ACTIVATION && currentPlayer != null) {
+            int step = game.getBoard().getStep();
             if (step >= 0 && step < Player.NO_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     if (!card.command.getOptions().isEmpty()) {
-                        board.setPhase(Phase.PLAYER_INTERACTION);
+                        game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
 
                         return;
                     }
                     Command command = card.command;
                     executeCommand(currentPlayer, command);
                 }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+                int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
+                if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
+                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
                 } else {
                     step++;
                     if (step < Player.NO_REGISTERS) {
                         makeProgramFieldsVisible(step);
-                        board.setStep(step);
-                        board.setCurrentPlayer(board.getPlayer(0));
+                        game.getBoard().setStep(step);
+                        game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
                     } else {
                         startProgrammingPhase();
                     }
@@ -242,7 +237,7 @@ public class GameController {
     }
     // XXX: V2
     private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == board && command != null) {
+        if (player != null && player.board == game.getBoard() && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
@@ -282,7 +277,7 @@ public class GameController {
                 default:
                     // DO NOTHING (for now)
             }
-            spaceAction(board);
+            spaceAction(game.getBoard());
         }
     }
 
@@ -292,18 +287,18 @@ public class GameController {
      * @param command This is the command chosen from the command option card.
      */
     public void executeCommandOptionAndContinue(Command command) {
-        board.setPhase(Phase.ACTIVATION);
-        executeCommand(board.getCurrentPlayer(), command);
-        int step = board.getStep();
-        int nextPlayerNumber = board.getPlayerNumber(board.getCurrentPlayer()) + 1;
-        if (nextPlayerNumber < board.getPlayersNumber()) {
-            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        game.getBoard().setPhase(Phase.ACTIVATION);
+        executeCommand(game.getBoard().getCurrentPlayer(), command);
+        int step = game.getBoard().getStep();
+        int nextPlayerNumber = game.getBoard().getPlayerNumber(game.getBoard().getCurrentPlayer()) + 1;
+        if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
+            game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
         } else {
             step++;
             if (step < Player.NO_REGISTERS) {
                 makeProgramFieldsVisible(step);
-                board.setStep(step);
-                board.setCurrentPlayer(board.getPlayer(0));
+                game.getBoard().setStep(step);
+                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
             } else {
                 startProgrammingPhase();
             }
@@ -330,7 +325,7 @@ public class GameController {
             Space currentSpace = player.getSpace();
             switch (player.getHeading()) {
                 case SOUTH:
-                    nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y + 1));
                     //checkForOutOfBounds();
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
@@ -338,21 +333,21 @@ public class GameController {
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case WEST:
-                    nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x - 1, player.getSpace().y));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case NORTH:
-                    nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y - 1));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading());
                     break;
                 case EAST:
-                    nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x + 1, player.getSpace().y));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
@@ -397,28 +392,28 @@ public class GameController {
             Boolean backwards = true;
             switch (player.getHeading()) {
                 case SOUTH:
-                    nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y - 1));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y - 1));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case WEST:
-                    nextSpace = (board.getSpace(player.getSpace().x + 1, player.getSpace().y));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x + 1, player.getSpace().y));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case NORTH:
-                    nextSpace = (board.getSpace(player.getSpace().x, player.getSpace().y + 1));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y + 1));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case EAST:
-                    nextSpace = (board.getSpace(player.getSpace().x - 1, player.getSpace().y));
+                    nextSpace = (game.getBoard().getSpace(player.getSpace().x - 1, player.getSpace().y));
                     if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
                         return;
                     }
@@ -464,7 +459,7 @@ public class GameController {
             Heading orig = heading;
             Player other = nextSpace.getPlayer();
             if (other != null) {
-                Space target = board.getNeighbour(other.getSpace(), orig);
+                Space target = game.getBoard().getNeighbour(other.getSpace(), orig);
                 if (checkForWall(nextSpace, target, orig,other)) {
                     return;
                 }
@@ -481,8 +476,8 @@ public class GameController {
             boolean u = false;
             int j = 1;
             do {
-                if (board.getSpace(2, j).getPlayer() == null) {
-                    player2.setSpace(board.getSpace(2, j));
+                if (game.getBoard().getSpace(2, j).getPlayer() == null) {
+                    player2.setSpace(game.getBoard().getSpace(2, j));
                     u = true;
                 }else {
                     j++;
@@ -531,8 +526,8 @@ public class GameController {
             int j = 1;
             Boolean u = false;
             do {
-                if (board.getSpace(2, j).getPlayer() == null) {
-                    player.setSpace(board.getSpace(2,j));
+                if (game.getBoard().getSpace(2, j).getPlayer() == null) {
+                    player.setSpace(game.getBoard().getSpace(2,j));
                     u = true;
                 }else {
                     j++;
@@ -545,6 +540,10 @@ public class GameController {
 
     public int getPlayerNumber() {
         return playerNumber;
+    }
+
+    public Game getGame() {
+            return game;
     }
 }
 

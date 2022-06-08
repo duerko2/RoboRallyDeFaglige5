@@ -40,7 +40,7 @@ public class PlayersView extends TabPane implements ViewObserver {
     private PlayerView[] playerViews;
 
     public PlayersView(GameController gameController) {
-        board = gameController.board;
+        board = gameController.getGame().getBoard();
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 

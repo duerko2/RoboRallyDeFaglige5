@@ -70,7 +70,6 @@ public class AppController implements Observer {
     private Thread lobbyThread;
     private Thread ActivationPhaseThread;
     private String gameNavn;
-    private int ClientPlayerNumber;
     private AppController appController = this;
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -122,7 +121,7 @@ public class AppController implements Observer {
             // Real implementation of loading a board
 
             Board board = LoadBoard.loadBoard(fileNameResult.get());
-            gameController = new GameController(board,0, this, game);
+            gameController = new GameController(0, game);
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
@@ -144,7 +143,7 @@ public class AppController implements Observer {
     public void saveGame() {
         String fileName=getUserInput("Name of save file:");
 
-        LoadBoard.saveGame(gameController.board,fileName);
+        LoadBoard.saveGame(game.getBoard(),fileName);
     }
 
     // To be deleted
@@ -152,7 +151,7 @@ public class AppController implements Observer {
         String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
-        gameController = new GameController(board,0, this, game);
+        gameController = new GameController(0,  game);
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase(true,currentPlayer);
@@ -377,7 +376,6 @@ public class AppController implements Observer {
             playerNumber=currentIndex;
 
             game.getBoard().getPlayers().get(currentIndex).setName(name);
-            ClientPlayerNumber = currentIndex;
 
             // Upload new game to server
 
@@ -397,9 +395,6 @@ public class AppController implements Observer {
         }
 
 
-    }
-    public int getClientPlayerNumber(){
-        return ClientPlayerNumber;
     }
     public void setGame(Game game){
         this.game = game;
@@ -438,7 +433,7 @@ public class AppController implements Observer {
                                             }
                                             game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
                                             game.updated();
-                                            gameController = new GameController(game.getBoard());
+                                            gameController = new GameController(playerNumber, game);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
                                         }catch(Exception e){
@@ -487,7 +482,7 @@ public class AppController implements Observer {
                             }
                             if (game.getBoard().getCurrentPhase()==Phase.ACTIVATION) {
                                 //START ACTIVATION PHASE
-                                gameController.board.setPhase(Phase.ACTIVATION);
+                                game.getBoard().setPhase(Phase.ACTIVATION);
                                 stopThread();
 
                             }
