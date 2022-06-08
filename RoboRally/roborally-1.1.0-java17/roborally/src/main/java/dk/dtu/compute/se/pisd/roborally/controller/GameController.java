@@ -125,10 +125,15 @@ public class GameController {
     // XXX: V2
     public void finishProgrammingPhase(){
         Player tempPlayer = game.getBoard().getPlayer(playerNumber);
+        try {
+            System.out.println(GameClient.getGame(game.getSerialNumber()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try{
             applyGetGame();
         }catch(Exception e){
-
+            e.printStackTrace();
         }
         game.getBoard().getPlayers().set(playerNumber, tempPlayer);
 
@@ -143,13 +148,13 @@ public class GameController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        System.out.println("jeg når til metoden");
         startActivationThread();
     }
 
     public void applyGetGame() throws Exception {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-        game.getBoard().setPhase(serverGame.getBoard().getCurrentPhase());
+        game.getBoard().setPhase(serverGame.getBoard().getPhase());
         game.getBoard().setPlayers(serverGame);
         game.getBoard().setCurrentPlayer(serverGame.getBoard().getCurrentPlayer());
     }
@@ -195,32 +200,35 @@ public class GameController {
 
     public void startActivationThread(){
         ActivationPhaseThread = new Thread(new Runnable() {
-            boolean running = true;
+            boolean running;
             public void stopThread(){
                 running = false;
                 ActivationPhaseThread.interrupt();
             }
             public void run() {
-                while(running)
-                    try{
+                running = true;
+                while (running) {
+                    try {
                         Thread.sleep(2000);
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         System.out.println("rat");
                     }
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        try {
-                            Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                            if (tempGame.getBoard().getCurrentPhase()==Phase.ACTIVATION) {
-                                //START ACTIVATION PHASE
-                                applyGetGame();
-                                stopThread();
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            System.out.println("thread kører");
+                            try {
+                                Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                                if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
+                                    //START ACTIVATION PHASE
+                                    applyGetGame();
+                                    stopThread();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         ActivationPhaseThread.start();

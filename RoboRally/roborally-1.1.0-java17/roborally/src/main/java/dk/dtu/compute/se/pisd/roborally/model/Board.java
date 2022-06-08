@@ -211,7 +211,7 @@ public class Board extends Subject {
 
     public void setPlayers(Game game){
         for(int i = 0; i < game.getBoard().getPlayers().size();i++) {
-            players.set(i, game.getBoard().getPlayer(i));
+            players.set(i, game.getBoard().getPlayers().get(i));
         }
         notifyChange();
     }
@@ -227,7 +227,7 @@ public class Board extends Subject {
         // status of the game
 
         // XXX: V2 changed the status so that it shows the phase, the player and the step
-        return "Phase: " + getPhase().name() +
+        return "Phase: " + getPhase() +
                 ", Player = " + getCurrentPlayer().getName() +
                 ", Step: " + getStep();
     }
