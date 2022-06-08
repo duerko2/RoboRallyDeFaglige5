@@ -15,6 +15,11 @@ public class CheckPoint extends FieldAction {
         amountOfCheckpoints++;
     }
 
+    /**
+     * Checks how many checkpoints a player has reached, if the player has reached all the player wins.
+     * If the player has not reached all checkpoints, it decrements the counter.
+     */
+
     @Override
     public boolean doAction(GameController gameController, Space space) {
         if(space.getPlayer().getCurrentCheckPoint() == amountOfCheckpoints-1){

@@ -19,6 +19,11 @@ public class GameClient {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
+    /**
+     * Method to get a saved game from the server, uses the saved game's serialnumber and creates a http GET request.
+     * The game is returned to the client as a string.
+     */
+
     public static String getGame(String serialNumber) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -32,6 +37,10 @@ public class GameClient {
         return result;
     }
 
+    /**
+     * Method to return all names of games on the server using a http GET request.
+     */
+
     public static String getGames() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -44,6 +53,11 @@ public class GameClient {
         String result = response.thenApply((r)->r.body()).get(5, TimeUnit.SECONDS);
         return result;
     }
+
+    /**
+     * Method to save game to the server, uses the saved game's serialnumber, and the json file as a string and creates a http PUT request.
+     * The game is returned to the server as a string.
+     */
 
     public static String putGame(String serialNumber, String jsonString) throws Exception{
         HttpRequest request = HttpRequest.newBuilder()
