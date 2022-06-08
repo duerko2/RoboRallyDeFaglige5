@@ -209,6 +209,13 @@ public class Board extends Subject {
         return players;
     }
 
+    public void setPlayers(Game game){
+        for(int i = 0; i < game.getBoard().getPlayers().size();i++) {
+            players.set(i, game.getBoard().getPlayer(i));
+        }
+        notifyChange();
+    }
+
     public void nextPlayer(){
         int playersTurn = (getPlayerNumber(getCurrentPlayer())+1)%getPlayers().size();
         setCurrentPlayer(getPlayer(playersTurn));

@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
 import dk.dtu.compute.se.pisd.roborally.springRequest.JsonConverter;
+import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,7 @@ import java.util.Optional;
 public class GameController {
     private Game game;
     private int playerNumber;
+    private Thread ActivationPhaseThread;
 
     public GameController(int playerNumber, @NotNull Game game) {
         this.game = game;
@@ -121,48 +123,44 @@ public class GameController {
      * Ending the programming phase, and starts activation phase for player 1.
      */
     // XXX: V2
-    public void finishProgrammingPhase() {
-        makeProgramFieldsInvisible();
-        makeProgramFieldsVisible(0);
-
+    public void finishProgrammingPhase(){
         Player tempPlayer = game.getBoard().getPlayer(playerNumber);
-        try {
-            game.updated();
-        } catch (Exception e) {
-            e.printStackTrace();
+        try{
+            applyGetGame();
+        }catch(Exception e){
+
         }
         game.getBoard().getPlayers().set(playerNumber, tempPlayer);
 
-        if(0==0){
+        if(checkForActivation()){
             game.getBoard().setPhase(Phase.ACTIVATION);
             game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
             game.getBoard().setStep(0);
         }
+
         try {
             GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(JsonConverter.gameToJson(game));
 
-    }
-
-    public void finishedProgramming(){
-        Player tempPlayer = game.getBoard().getPlayer(playerNumber);
-        Game tempGame;
-        try{
-            tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-        }catch(Exception e){
-
-        }
+        startActivationThread();
     }
 
     public void applyGetGame() throws Exception {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         game.getBoard().setPhase(serverGame.getBoard().getCurrentPhase());
-        for(int i = 0; i < game.getBoard().getPlayers().size(); i++){
-            game.getBoard().getPlayers().set(i, serverGame.getBoard().getPlayer(i));
+        game.getBoard().setPlayers(serverGame);
+        game.getBoard().setCurrentPlayer(serverGame.getBoard().getCurrentPlayer());
+    }
+
+    public boolean checkForActivation(){
+        for(int i = 0; i < game.getBoard().getPlayers().size();i++){
+            if(game.getBoard().getPlayer(i).getProgramField(0).getCard() == null){
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -193,6 +191,39 @@ public class GameController {
                 field.setVisible(false);
             }
         }
+    }
+
+    public void startActivationThread(){
+        ActivationPhaseThread = new Thread(new Runnable() {
+            boolean running = true;
+            public void stopThread(){
+                running = false;
+                ActivationPhaseThread.interrupt();
+            }
+            public void run() {
+                while(running)
+                    try{
+                        Thread.sleep(2000);
+                    }catch(Exception e){
+                        System.out.println("rat");
+                    }
+                Platform.runLater(new Runnable() {
+                    public void run() {
+                        try {
+                            Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                            if (tempGame.getBoard().getCurrentPhase()==Phase.ACTIVATION) {
+                                //START ACTIVATION PHASE
+                                applyGetGame();
+                                stopThread();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+        ActivationPhaseThread.start();
     }
 
     // XXX: V2

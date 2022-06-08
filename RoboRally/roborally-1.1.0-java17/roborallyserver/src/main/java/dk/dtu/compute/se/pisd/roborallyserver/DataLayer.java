@@ -22,7 +22,6 @@ public class DataLayer {
     public String loadGame(String serialNumber){
 
         String game=null;
-
         // File path
         String tempfileName = classLoader.getResource(GAMESFOLDER).getPath() + "/" + serialNumber+"."+JSON_EXT;
         String fileName ="";

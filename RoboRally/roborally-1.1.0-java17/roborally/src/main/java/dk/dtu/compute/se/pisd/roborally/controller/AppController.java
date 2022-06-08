@@ -68,9 +68,6 @@ public class AppController implements Observer {
     private Game game;
     private boolean isHost=false;
     private Thread lobbyThread;
-    private Thread ActivationPhaseThread;
-    private String gameNavn;
-    private AppController appController = this;
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
@@ -439,8 +436,10 @@ public class AppController implements Observer {
                                         }catch(Exception e){
                                             e.printStackTrace();
                                         }
-                                        gameNavn = gameName;
                                         //stop the thread
+
+
+                                        System.out.println("THREAD STOPPERRRR");
                                         stopThread();
 
                                     }
@@ -452,54 +451,7 @@ public class AppController implements Observer {
         });
         lobbyThread.start();
     }
-    public String getGameNavn(){
-        return this.gameNavn;
-    }
 
-    public void startActivationThread(){
-        ActivationPhaseThread = new Thread(new Runnable() {
-            boolean running = true;
-            public void stopThread(){
-                running = false;
-                ActivationPhaseThread.interrupt();
-            }
-            public void run() {
-                while(running)
-                    try{
-                        Thread.sleep(5000);
-                    }catch(Exception e){
-                        System.out.println("rat");
-                    }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            try {
-                                    //game = JsonConverter.jsonToGame(GameClient.getGame(gameName);
-                                    game = JsonConverter.jsonToGame(GameClient.getGame(gameNavn));
-                                    game.updated();
-                                System.out.println(game);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (game.getBoard().getCurrentPhase()==Phase.ACTIVATION) {
-                                //START ACTIVATION PHASE
-                                game.getBoard().setPhase(Phase.ACTIVATION);
-                                stopThread();
-
-                            }
-                    }
-                });
-            }
-        });
-        ActivationPhaseThread.start();
-    }
-    public boolean checkForActivationPhase(){
-        for(int i = 0; i < game.getMaxAmountOfPlayers();i++){
-            if(game.getBoard().getPlayer(i).getProgramField(0).getCard() == null){
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * This method fetches the game from the server and calls the method to update the view.
