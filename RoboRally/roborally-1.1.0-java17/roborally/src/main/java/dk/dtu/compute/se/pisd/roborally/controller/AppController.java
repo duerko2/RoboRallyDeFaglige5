@@ -455,7 +455,6 @@ public class AppController implements Observer {
         try {
             String gameJson = GameClient.getGame(gameName);
             Game newGame = JsonConverter.jsonToGame(gameJson);
-            Board newBoard = newGame.getBoard();
             game.getBoard().getPlayers().clear();
             game.getBoard().getPlayers().addAll(newGame.getBoard().getPlayers());
             game.setReadyToReceivePlayers(newGame.getReadyToReceivePlayers());
@@ -481,6 +480,11 @@ public class AppController implements Observer {
         if(amountOfCurrentPlayers==game.getMaxAmountOfPlayers()){
             // For now we just start the game as normal...
             game.setReadyToReceivePlayers(false);
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         else return;
 
