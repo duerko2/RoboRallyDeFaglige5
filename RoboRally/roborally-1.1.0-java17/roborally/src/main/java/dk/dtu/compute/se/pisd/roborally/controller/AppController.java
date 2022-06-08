@@ -356,23 +356,51 @@ public class AppController implements Observer {
      * @param serialNumber
      */
     public void startJoinGame(String serialNumber){
+
         try {
             String gameJson = GameClient.getGame(serialNumber);
             game = JsonConverter.jsonToGame(gameJson);
 
-            // Add ourselves to the player list.
-            int currentIndex=0;
-            try {
-                while (game.getBoard().getPlayers().get(currentIndex).getName() != null) {
-                    currentIndex++;
-                }
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(e.getMessage());
-                return;
-            }
-            playerNumber=currentIndex;
+            ArrayList<Integer> PLAYER_SELECT_NUMBER = new ArrayList<Integer>();
 
-            game.getBoard().getPlayers().get(currentIndex).setName(name);
+            for (int i = 1 ; i < game.getMaxAmountOfPlayers() ; i++){
+                PLAYER_SELECT_NUMBER.add(i+1);
+            }
+
+            // Add ourselves to the player list.
+
+            for (int i = 1 ; i < game.getMaxAmountOfPlayers() ; i++){
+                try {
+                    if ((game.getBoard().getPlayers().get(i).getName() != null && PLAYER_SELECT_NUMBER.contains(i + 1))) {
+                            PLAYER_SELECT_NUMBER.remove(PLAYER_SELECT_NUMBER.indexOf(i + 1));
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println(e.getMessage());
+                    return;
+                }
+            }
+
+            /*
+
+            Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+            int rat = tempGame.getMaxAmountOfPlayers();
+            for(int i = 0; i < tempGame.getBoard().getPlayers().size(); i++){
+                if(tempGame.getBoard().getPlayers().get(i).get!=null){
+
+                }
+            }
+
+
+             */
+
+            ChoiceDialog<Integer> dialogchoice = new ChoiceDialog<>(PLAYER_SELECT_NUMBER.get(0), PLAYER_SELECT_NUMBER);
+            dialogchoice.setTitle("Player number");
+            dialogchoice.setHeaderText("Select your player number");
+            int result = dialogchoice.showAndWait().get();
+
+            playerNumber=result-1;
+
+            game.getBoard().getPlayers().get(result-1).setName(name);
 
             // Upload new game to server
 
