@@ -39,10 +39,12 @@ public class GameController {
 
     final public Board board;
     private Game game;
+    private int playerNumber;
 
-    public GameController(@NotNull Board board, Game game) {
+    public GameController(@NotNull Board board, int playerNumber, Game game) {
         this.board = board;
         this.game = game;
+        this.playerNumber=playerNumber;
     }
 
     /**
@@ -540,5 +542,9 @@ public class GameController {
                 player.getProgramField(i).setCard(null);
             }
         }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
+}
 
