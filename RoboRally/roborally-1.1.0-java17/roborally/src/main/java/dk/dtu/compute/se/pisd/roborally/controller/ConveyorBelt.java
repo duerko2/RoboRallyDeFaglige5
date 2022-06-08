@@ -19,6 +19,10 @@ public class  ConveyorBelt extends FieldAction{
         this.isDouble = isDouble;
     }
 
+    /**
+     * Conveyor belt functionality, uses heading and position to decide where a player is placed.
+     */
+
     @Override
     public boolean doAction(GameController gameController, Space space) {
         Space nextSpace;

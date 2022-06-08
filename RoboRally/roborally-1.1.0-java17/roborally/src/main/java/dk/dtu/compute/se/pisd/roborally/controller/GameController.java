@@ -66,7 +66,9 @@ public class GameController {
 
     }
 
-
+    /**
+     * This starts the programming phase, and assigns new programming cards for each of the players.
+     */
     // XXX: V2
     public void startProgrammingPhase() {
         game.getBoard().setPhase(Phase.PROGRAMMING);
@@ -90,12 +92,24 @@ public class GameController {
         }
     }
 
+    /**
+     * This starts programming phase when the game is loaded from a previously saved game.
+     * This does not assign new programming cards.
+     *
+     * @param gameLoaded boolean to make sure this method only is used if the game is loaded.
+     * @param currentPlayer selects the current player for the programming phase.
+     */
     public void startProgrammingPhase(boolean gameLoaded, Player currentPlayer){
         game.getBoard().setPhase(Phase.PROGRAMMING);
         game.getBoard().setCurrentPlayer(currentPlayer);
         game.getBoard().setStep(0);
     }
 
+    /**
+     * Generates random programming cards
+     *
+     * @return returns the generated programming cards
+     */
     // XXX: V2
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
@@ -103,6 +117,9 @@ public class GameController {
         return new CommandCard(commands[random]);
     }
 
+    /**
+     * Ending the programming phase, and starts activation phase for player 1.
+     */
     // XXX: V2
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
@@ -148,6 +165,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Makes the used programming cards visible one by one when they are used or about to be.
+     *
+     * @param register a parameter used for knowing what the current register is, and ensures that it does not loop forever
+     */
     // XXX: V2
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
@@ -159,6 +181,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Makes all programming cards invisible for each player
+     */
     // XXX: V2
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
@@ -189,6 +214,10 @@ public class GameController {
         } while (game.getBoard().getPhase() == Phase.ACTIVATION && !game.getBoard().isStepMode());
     }
 
+    /**
+     * This gives the next player the turn after the current player has played their cards during the activation phase.
+     * This also sets the phase to programming phase if all the players has used all their programming cards.
+     */
     // XXX: V2
     public void executeNextStep() {
         Player currentPlayer = game.getBoard().getCurrentPlayer();
@@ -228,6 +257,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Checks if the player is on an action board retrieves all field actions on the current field.
+     *
+     * @param board Parameter used to access the board
+     */
     private void spaceAction(Board board){
         if(board.getCurrentPlayer().getSpace().getActions().size() > 0){
             for(int i = 0; i < board.getCurrentPlayer().getSpace().getActions().size();i++){
@@ -235,6 +269,14 @@ public class GameController {
             }
         }
     }
+
+    /**
+     * This method executes the command from the programming cards chosen,
+     * and makes sure the right thing happens whenever a card has been played.
+     *
+     * @param player used to distinguish the players and execute the command on the current player.
+     * @param command used to see which programming card has been played and which command to use.
+     */
     // XXX: V2
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == game.getBoard() && command != null) {
@@ -304,6 +346,8 @@ public class GameController {
             }
         }
     }
+
+
     public void  moveOne (@NotNull Player player){
         try {
 
@@ -318,6 +362,13 @@ public class GameController {
 
     }
 
+    /**
+     * Checks if there is a player or a wall in the way of the current player's robot.
+     * If so makes sure to either push another player or stop for the wall
+     *
+     * @param player gets the player and executes action on players.
+     * @throws NullPointerException throws exception when a field not on the board is chosen.
+     */
     // TODO Assignment V2
     public void move(@NotNull Player player) throws NullPointerException {
 
@@ -384,7 +435,11 @@ public class GameController {
     }
 
 
-
+    /**
+     * Goes back 1 field, and checks for wall.
+     *
+     * @param player gets the current player
+     */
         public void backUp (@NotNull Player player){
         try {
             Space nextSpace;
@@ -454,6 +509,14 @@ public class GameController {
             }
 
         }
+
+    /**
+     * Checks if another player is in the trajectory of the current player.
+     *
+     * @param player gets the player moving and in the way of the current player.
+     * @param nextSpace is the space after the movement occurs.
+     * @param heading gets the players heading.
+     */
     public void checkForPush(@NotNull Player player, @NotNull Space nextSpace, @NotNull Heading heading) {
         try {
             Heading orig = heading;
@@ -522,7 +585,14 @@ public class GameController {
             // XXX just for now to indicate that the actual method is not yet implemented
             assert false;
         }
-        public void outOfBounds ( Player player) {
+
+    /**
+     * Checks if the player is out of the map (out of bounds), then teleports to specific field on the board.
+     * Also "reboots" the robot, discarding current programming registers.
+     *
+     * @param player
+     */
+    public void outOfBounds ( Player player) {
             int j = 1;
             Boolean u = false;
             do {

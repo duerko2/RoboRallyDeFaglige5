@@ -313,11 +313,11 @@ public class AppController implements Observer {
         }
 
         // Creates the view
-        String gameName = String.join("",game.getSerialNumber(),".json");
-        roboRally.createLobbyView(gameName,game);
+
+        roboRally.createLobbyView(serialNumber,game);
 
         // Stars thread that pulls the game state every 5 seconds and updates the view.
-        startLobbyThread(gameName);
+        startLobbyThread(serialNumber);
     }
 
     /**
@@ -356,11 +356,11 @@ public class AppController implements Observer {
      * This method is called when a user selects a game from the list. It fetches that game from the server and displays the players in that game.
      * Inserts the user into the player list and uploads the game again.
      * It then creates a thread which periodically fetches the game from the server and updates the view
-     * @param gameName
+     * @param serialNumber
      */
-    public void startJoinGame(String gameName){
+    public void startJoinGame(String serialNumber){
         try {
-            String gameJson = GameClient.getGame(gameName);
+            String gameJson = GameClient.getGame(serialNumber);
             game = JsonConverter.jsonToGame(gameJson);
 
             // Add ourselves to the player list.
@@ -384,8 +384,8 @@ public class AppController implements Observer {
 
             // Create lobby view. Lobby view will be attached to the Game instance with Observer pattern, which will be updated frequently.
             // Should therefore display players currently in game in realtime.
-            roboRally.createLobbyView(gameName,game);
-            startLobbyThread(gameName);
+            roboRally.createLobbyView(serialNumber,game);
+            startLobbyThread(serialNumber);
             // Loop hvert 10 sekund.
 
 
@@ -403,9 +403,9 @@ public class AppController implements Observer {
     /**
      * This method starts a thread which every 2 seconds gets the game from the server and updates the view.
      * If the game is started by host, it will create a gameController object and start the game
-     * @param gameName
+     * @param serialNumber
      */
-    private void startLobbyThread(String gameName){
+    private void startLobbyThread(String serialNumber){
         lobbyThread = new Thread( new Runnable() {
             boolean running;
             public void stopThread(){
@@ -424,14 +424,14 @@ public class AppController implements Observer {
                         if(running) {
                             Platform.runLater(new Runnable() {
                                 public void run() {
-                                    updateLobby(gameName);
+                                    updateLobby(serialNumber);
                                     if (!game.getReadyToReceivePlayers()) {
                                         //start the game and if host->put the game
                                         try{
                                             if(getIsHost()) {
                                                 GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                                             }
-                                            game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
+                                            game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
                                             game.updated();
                                             gameController = new GameController(playerNumber, game);
                                             gameController.startProgrammingPhase();
@@ -503,11 +503,11 @@ public class AppController implements Observer {
 
     /**
      * This method fetches the game from the server and calls the method to update the view.
-     * @param gameName
+     * @param serialNumber
      */
-    public void updateLobby(String gameName){
+    public void updateLobby(String serialNumber){
         try {
-            String gameJson = GameClient.getGame(gameName);
+            String gameJson = GameClient.getGame(serialNumber);
             Game newGame = JsonConverter.jsonToGame(gameJson);
             game.getBoard().getPlayers().clear();
             game.getBoard().getPlayers().addAll(newGame.getBoard().getPlayers());
