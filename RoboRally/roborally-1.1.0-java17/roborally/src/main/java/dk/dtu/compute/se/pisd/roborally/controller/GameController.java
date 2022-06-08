@@ -267,7 +267,6 @@ public class GameController {
                 if (card != null) {
                     if (!card.command.getOptions().isEmpty()) {
                         game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
-
                         return;
                     }
                     Command command = card.command;
