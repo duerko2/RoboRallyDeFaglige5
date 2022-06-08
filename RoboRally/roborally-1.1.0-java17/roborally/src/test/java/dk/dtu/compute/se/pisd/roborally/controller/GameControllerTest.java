@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Game;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -15,11 +16,12 @@ class GameControllerTest {
 
     private GameController gameController;
     private AppController appController;
+    private Game game;
 
     @BeforeEach
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
-        gameController = new GameController(board, appController);
+        gameController = new GameController(board, appController, game);
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null,"Player " + i,0);
             board.addPlayer(player);

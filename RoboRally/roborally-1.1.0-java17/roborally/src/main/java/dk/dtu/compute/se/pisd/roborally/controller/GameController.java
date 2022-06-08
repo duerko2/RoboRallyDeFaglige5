@@ -38,11 +38,11 @@ import java.util.Optional;
 public class GameController {
 
     final public Board board;
-    private AppController appController;
+    private Game game;
 
-    public GameController(@NotNull Board board, AppController appController) {
+    public GameController(@NotNull Board board, Game game) {
         this.board = board;
-        this.appController = appController;
+        this.game = game;
     }
 
     /**
@@ -111,27 +111,43 @@ public class GameController {
 
         Player tempPlayer = board.getPlayer(appController.getClientPlayerNumber());
         try {
-            appController.setGame(JsonConverter.jsonToGame(GameClient.getGame(appController.getGameNavn())));
-            appController.getGame().updated();
+            game.updated();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        appController.getGame().getBoard().getPlayers().set(appController.getClientPlayerNumber(), tempPlayer);
+        game.getBoard().getPlayers().set(appController.getClientPlayerNumber(), tempPlayer);
 
         if(appController.checkForActivationPhase()){
-            appController.getGame().getBoard().setPhase(Phase.ACTIVATION);
-            appController.getGame().getBoard().setCurrentPlayer(appController.getGame().getBoard().getPlayer(0));
-            appController.getGame().getBoard().setStep(0);
+            game.getBoard().setPhase(Phase.ACTIVATION);
+            game.getBoard().setCurrentPlayer(appController.getGame().getBoard().getPlayer(0));
+            game.getBoard().setStep(0);
         }
         try {
-            GameClient.putGame(appController.getGame().getSerialNumber(), JsonConverter.gameToJson(appController.getGame()));
+            GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(JsonConverter.gameToJson(game));
 
-        System.out.println(JsonConverter.gameToJson(appController.getGame()));
-        appController.startActivationThread();
+    }
 
+    public void finishedProgramming(){
+        Player tempPlayer = board.getPlayer();
+        Game tempGame;
+        try{
+            tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+        }catch(Exception e){
+
+        }
+        game.getBoard()
+    }
+
+    public void applyGetGame() throws Exception {
+        Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+        game.getBoard().setPhase(serverGame.getBoard().getCurrentPhase());
+        for(int i = 0; i < board.getPlayers().size(); i++){
+            game.getBoard().getPlayers().set(i, serverGame.getBoard().getPlayer(i));
+        }
 
     }
 

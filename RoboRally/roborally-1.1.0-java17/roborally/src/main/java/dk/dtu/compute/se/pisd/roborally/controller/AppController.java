@@ -122,7 +122,7 @@ public class AppController extends FieldAction implements Observer {
             // Real implementation of loading a board
 
             Board board = LoadBoard.loadBoard(fileNameResult.get());
-            gameController = new GameController(board, this);
+            gameController = new GameController(board, this, game);
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
@@ -149,7 +149,7 @@ public class AppController extends FieldAction implements Observer {
         String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
         Player currentPlayer = board.getCurrentPlayer();
-        gameController = new GameController(board, this);
+        gameController = new GameController(board, this, game);
         // XXX: V2
         // board.setCurrentPlayer(board.getPlayer(0));
         gameController.startProgrammingPhase(true,currentPlayer);
@@ -409,7 +409,7 @@ public class AppController extends FieldAction implements Observer {
                                             }
                                             game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
                                             game.updated();
-                                            gameController = new GameController(game.getBoard(), appController);
+                                            gameController = new GameController(game.getBoard(), appController, game);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
                                         }catch(Exception e){
