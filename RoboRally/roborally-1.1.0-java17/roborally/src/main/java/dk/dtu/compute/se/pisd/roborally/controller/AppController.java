@@ -55,18 +55,15 @@ import java.util.*;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
-public class AppController extends FieldAction implements Observer {
+public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
-
     final private RoboRally roboRally;
     private static final String BOARDSFOLDER = "boards";
     final private List<String> BOARDS = new ArrayList<>();
     private String name;
-
     private GameController gameController;
-
     private Optional<Integer> numOfPlayers;
     private Game game;
     private boolean isHost=false;
@@ -74,9 +71,10 @@ public class AppController extends FieldAction implements Observer {
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
     }
-
     private int playerNumber;
 
+
+    // To be deleted
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
@@ -137,12 +135,15 @@ public class AppController extends FieldAction implements Observer {
         }
     }
 
+    // TOOD: Needs to be changed to support the multiplayer . Should upload the current game to the server.
+    // Needs to be changed to
     public void saveGame() {
         String fileName=getUserInput("Name of save file:");
 
         LoadBoard.saveGame(gameController.board,fileName);
     }
 
+    // To be deleted
     public void loadGame() {
         String filename=getUserInput("Name of save file:");
         Board board = LoadBoard.loadGame(filename);
@@ -178,6 +179,7 @@ public class AppController extends FieldAction implements Observer {
         return false;
     }
 
+
     public void exit() {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -207,11 +209,9 @@ public class AppController extends FieldAction implements Observer {
         // XXX do nothing for now
     }
 
-    @Override
-    public boolean doAction(GameController gameController, Space space) {
-        return false;
-    }
 
+    // Gets input from user
+    // TODO: Should somehow be more of a view thing...
     public String getUserInput(String ask){
         Stage dialogue = new Stage();
         dialogue.setTitle(ask);
@@ -241,6 +241,12 @@ public class AppController extends FieldAction implements Observer {
         return textField.getText();
     }
 
+    /**
+     * This method is called when the user selects host game from the menu. It asks the user to choose amount of players for the game and the board to be played
+     * The it loads a board and uploads the game to the server with the correct information.
+     * Aftewards it starts a thread which listens to the server to see if other players have joined and updates the view.
+     * TODO: The player should also be able to load a previously played game from the server.
+     */
     public void hostGame() {
         // A couple of to be stored in the client, when the user hosts.
         isHost=true;
@@ -311,6 +317,10 @@ public class AppController extends FieldAction implements Observer {
         startLobbyThread(gameName);
     }
 
+    /**
+     * This method is called when the user chooses to join a game in the menu bar. It fetches all the games on the server and displays them.
+     *
+     */
     public void joinGame() {
         List<Board> boards = null;
         String games = null;
@@ -339,6 +349,12 @@ public class AppController extends FieldAction implements Observer {
 
     }
 
+    /**
+     * This method is called when a user selects a game from the list. It fetches that game from the server and displays the players in that game.
+     * Inserts the user into the player list and uploads the game again.
+     * It then creates a thread which periodically fetches the game from the server and updates the view
+     * @param gameName
+     */
     public void startJoinGame(String gameName){
         try {
             String gameJson = GameClient.getGame(gameName);
@@ -378,6 +394,11 @@ public class AppController extends FieldAction implements Observer {
 
     }
 
+    /**
+     * This method starts a thread which every 2 seconds gets the game from the server and updates the view.
+     * If the game is started by host, it will create a gameController object and start the game
+     * @param gameName
+     */
     private void startLobbyThread(String gameName){
         lobbyThread = new Thread( new Runnable() {
             boolean running;
@@ -397,15 +418,7 @@ public class AppController extends FieldAction implements Observer {
                         if(running) {
                             Platform.runLater(new Runnable() {
                                 public void run() {
-                                    try {
-                                        if (!getIsHost()) {
-                                            //game = JsonConverter.jsonToGame(GameClient.getGame(gameName);
-                                            game = JsonConverter.jsonToGame(GameClient.getGame(gameName));
-                                            game.updated();
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                                    updateLobby(gameName);
                                     if (!game.getReadyToReceivePlayers()) {
                                         //start the game and if host->put the game
                                         try{
@@ -424,8 +437,6 @@ public class AppController extends FieldAction implements Observer {
                                         //stop the thread
                                         stopThread();
 
-                                    } else {
-                                        updateLobby(gameName);
                                     }
                                 }
                             });
@@ -436,11 +447,18 @@ public class AppController extends FieldAction implements Observer {
         lobbyThread.start();
     }
 
+    /**
+     * This method fetches the game from the server and calls the method to update the view.
+     * @param gameName
+     */
     public void updateLobby(String gameName){
         try {
             String gameJson = GameClient.getGame(gameName);
+            Game newGame = JsonConverter.jsonToGame(gameJson);
+            Board newBoard = newGame.getBoard();
             game.getBoard().getPlayers().clear();
-            game.getBoard().getPlayers().addAll(JsonConverter.jsonToGame(gameJson).getBoard().getPlayers());
+            game.getBoard().getPlayers().addAll(newGame.getBoard().getPlayers());
+            game.setReadyToReceivePlayers(newGame.getReadyToReceivePlayers());
             game.updated();
         } catch (Exception e) {
             e.printStackTrace();
@@ -448,6 +466,10 @@ public class AppController extends FieldAction implements Observer {
         }
     }
 
+    /**
+     * When the host presses play this method is called. It checks if the game is full (player count matches allowed player count)
+     * If this check is passed it will change status of the game to not ready to receive players
+     */
     public void startHostGame() {
         int amountOfCurrentPlayers=0;
         for(int i=0;i<game.getBoard().getPlayers().size();i++){
