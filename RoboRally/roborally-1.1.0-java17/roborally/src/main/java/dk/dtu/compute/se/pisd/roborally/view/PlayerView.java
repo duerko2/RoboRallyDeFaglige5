@@ -92,7 +92,6 @@ public class PlayerView extends Tab implements ViewObserver {
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction(values->{
             gameController.finishProgrammingPhase();
-            finishButton.setOnAction(null);
         });
 
 
