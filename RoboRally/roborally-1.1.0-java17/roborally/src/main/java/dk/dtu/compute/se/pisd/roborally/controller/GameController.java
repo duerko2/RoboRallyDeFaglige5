@@ -36,9 +36,11 @@ import java.util.Optional;
 public class GameController {
 
     final public Board board;
+    private int playerNumber;
 
-    public GameController(@NotNull Board board) {
+    public GameController(@NotNull Board board, int playerNumber) {
         this.board = board;
+        this.playerNumber=playerNumber;
     }
 
     /**
@@ -498,5 +500,9 @@ public class GameController {
                 player.getProgramField(i).setCard(null);
             }
         }
+
+    public int getPlayerNumber() {
+        return playerNumber;
     }
+}
 
