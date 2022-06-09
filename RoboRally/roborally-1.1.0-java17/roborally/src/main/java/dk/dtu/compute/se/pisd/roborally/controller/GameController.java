@@ -262,7 +262,7 @@ public class GameController {
                     try {
                         Thread.sleep(2000);
                         Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                        if (tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) == playerNumber) {
+                        if(tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) != playerNumber) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -273,6 +273,8 @@ public class GameController {
                                     }
                                 }
                             });
+                        } else {
+                            applyGetGame();
                             stopThread();
                         }
                     } catch (Exception e) {
@@ -325,8 +327,13 @@ public class GameController {
                 int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
                     game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
+                    try {
+                        GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     if(activationPhaseThread.isInterrupted()){
-                        activationPhaseThread.start();
+                        ActivationPhase();
                         //ActivationPhase();
                     }
                 } else {
@@ -335,18 +342,18 @@ public class GameController {
                         makeProgramFieldsVisible(step);
                         game.getBoard().setStep(step);
                         game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                        try {
+                            GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         if(activationPhaseThread.isInterrupted()){
-                            activationPhaseThread.start();
+                            ActivationPhase();
                             //ActivationPhase();
                         }
                     } else {
                         startProgrammingPhase();
                     }
-                }
-                try {
-                    GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             } else {
                 // this should not happen
