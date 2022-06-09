@@ -184,6 +184,7 @@ public class GameController {
         game.getBoard().setPlayers(serverGame);
         game.getBoard().setCurrentPlayerIndex(serverGame.getBoard().getPlayerNumber(serverGame.getBoard().getCurrentPlayer()));
         game.getBoard().setStep(serverGame.getBoard().getStep());
+        game.setWinner(serverGame.getWinner());
 
         if(game.getWinner()>=0){
             WinnerView winnerView = new WinnerView(game.getBoard().getPlayer(game.getWinner()));
