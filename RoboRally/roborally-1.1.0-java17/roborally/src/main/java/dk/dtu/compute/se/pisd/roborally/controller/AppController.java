@@ -508,9 +508,9 @@ public class AppController implements Observer {
 
             Board board = loadgame.getBoard();
             for (int i =0; i<numOfPlayers.get();i++){
-                for (int j=0; j<5;j++){
-                    board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
-                }
+                //for (int j=0; j<5;j++){
+                  //  board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
+                //}
                 //for(int u = 0;u<9;u++){
                //     board.getPlayer(i).getCardField(u).setCard(loadgame);
                 //}
