@@ -271,39 +271,50 @@ public class GameController {
      */
     // XXX: V2
     public void executeNextStep() {
+        // 1. execute my step
+        // 2. Sets next player's turn and increases step if needed
+        // 3. Upload my changes
+        // 4. Start the thread that checks if it's my turn.
+
+        // 1.
         Player currentPlayer = game.getBoard().getCurrentPlayer();
-        if (game.getBoard().getPhase() == Phase.ACTIVATION && currentPlayer != null) {
-            int step = game.getBoard().getStep();
-            if (step >= 0 && step < Player.NO_REGISTERS) {
-                CommandCard card = currentPlayer.getProgramField(step).getCard();
-                if (card != null) {
-                    if (!card.command.getOptions().isEmpty()) {
-                        game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
-                        return;
-                    }
-                    Command command = card.command;
-                    executeCommand(currentPlayer, command);
+        int step = game.getBoard().getStep();
+
+        if (step >= 0 && step < Player.NO_REGISTERS) {
+            CommandCard card = currentPlayer.getProgramField(step).getCard();
+            if (card != null) {
+                if (!card.command.getOptions().isEmpty()) {
+                    game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
+                    return;
                 }
-                int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
-                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
-                } else {
-                    step++;
-                    if (step < Player.NO_REGISTERS) {
-                        makeProgramFieldsVisible(step);
-                        game.getBoard().setStep(step);
-                        game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
-                    } else {
-                        startProgrammingPhase();
-                    }
-                }
-            } else {
-                // this should not happen
-                assert false;
+
+                // Executes my step
+                Command command = card.command;
+                executeCommand(currentPlayer, command);
             }
-        } else {
-            // this should not happen
-            assert false;
+
+            // 2.
+            int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
+            if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
+                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
+            } else {
+                step++;
+                if (step < Player.NO_REGISTERS) {
+                    makeProgramFieldsVisible(step);
+                    game.getBoard().setStep(step);
+                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                }
+            }
+
+            // 3.
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //4.
+            ActivationPhase();
         }
     }
 
