@@ -416,41 +416,34 @@ public class AppController implements Observer {
             public void run() {
                 running = true;
                 while(running) {
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException var2) {
-                            running = false;
-                            lobbyThread.interrupt();
-                        }
-                        if(running) {
-                            Platform.runLater(new Runnable() {
-                                public void run() {
-                                    updateLobby(serialNumber);
-                                    if (!game.getReadyToReceivePlayers()) {
-                                        //start the game and if host->put the game
-                                        try{
-                                            if(getIsHost()) {
-                                                GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
-                                            }
-
-                                            // Game is replaced here instead of inserting the values, since we don't need to update the lobby view anymore.
-                                            game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
-                                            gameController = new GameController(playerNumber, game);
-                                            gameController.startProgrammingPhase();
-                                            roboRally.createBoardView(gameController);
-                                        }catch(Exception e){
-                                            e.printStackTrace();
+                    try {
+                        Thread.sleep(2000);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateLobby(serialNumber);
+                                if (!game.getReadyToReceivePlayers()) {
+                                    try{
+                                        if (getIsHost()) {
+                                            GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                                         }
-                                        //stop the thread
-
-
-                                        System.out.println("THREAD STOPPERRRR");
-                                        stopThread();
-
+                                        game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
+                                        gameController = new GameController(playerNumber, game);
+                                        gameController.startProgrammingPhase();
+                                        roboRally.createBoardView(gameController);
+                                    }catch(Exception e){
+                                        e.printStackTrace();
                                     }
                                 }
-                            });
+                            }
+                        });
+                        if(!game.getReadyToReceivePlayers()){
+                            stopThread();
                         }
+                    } catch (InterruptedException var2) {
+                        running = false;
+                        lobbyThread.interrupt();
+                    }
                 }
             }
         });

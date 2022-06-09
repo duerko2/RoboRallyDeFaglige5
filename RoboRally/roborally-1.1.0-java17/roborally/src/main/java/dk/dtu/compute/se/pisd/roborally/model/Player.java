@@ -145,6 +145,7 @@ public class Player extends Subject {
 
     public void setCards(CommandCardField[] cards) {
         this.cards = cards;
+        notifyChange();
     }
 
     public CommandCardField getCardField(int i) {
@@ -153,6 +154,7 @@ public class Player extends Subject {
 
     public void setProgram(CommandCardField[] program) {
         this.program = program;
+        notifyChange();
     }
 
     public CommandCardField[] getProgram() {

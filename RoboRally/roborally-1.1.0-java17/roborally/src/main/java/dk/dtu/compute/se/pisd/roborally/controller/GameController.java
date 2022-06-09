@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.font.TextMeasurer;
 import java.util.Optional;
 
 /**
@@ -39,7 +40,8 @@ import java.util.Optional;
 public class GameController {
     private Game game;
     private int playerNumber;
-    private Thread ActivationPhaseThread;
+    private Thread startActivationPhaseThread;
+    private Thread activationPhaseThread;
 
     public GameController(int playerNumber, @NotNull Game game) {
         this.game = game;
@@ -130,45 +132,57 @@ public class GameController {
      */
     // XXX: V2
     public void finishProgrammingPhase(){
-        // Creates a new temporary player object.
-        Player tempPlayer = new Player(game.getBoard(),game.getBoard().getPlayer(playerNumber).getColor(),
-                game.getBoard().getPlayer(playerNumber).getName(),
-                game.getBoard().getPlayer(playerNumber).getCurrentCheckPoint());
-        tempPlayer.setProgram(game.getBoard().getPlayer(playerNumber).getProgram());
-        tempPlayer.setCards(game.getBoard().getPlayer(playerNumber).getCards());
-        tempPlayer.setSpace(game.getBoard().getPlayer(playerNumber).getSpace());
-        try {
-            System.out.println(GameClient.getGame(game.getSerialNumber()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try{
-            applyGetGame();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        game.getBoard().getPlayers().set(playerNumber, tempPlayer);
+            // Creates a new temporary player object.
+            CommandCard[] tempCards = new CommandCard[Player.NO_CARDS];
+            CommandCard[] tempProgram = new CommandCard[Player.NO_REGISTERS];
+            for(int j = 0; j < Player.NO_REGISTERS; j++){
+                tempProgram[j] = game.getBoard().getPlayer(playerNumber).getProgramField(j).getCard();
+            }
+            for(int j = 0; j < Player.NO_CARDS; j++){
+                tempCards[j] = game.getBoard().getPlayer(playerNumber).getCardField(j).getCard();
+            }
 
-        if(checkForActivation()){
-            game.getBoard().setPhase(Phase.ACTIVATION);
-            game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
-            game.getBoard().setStep(0);
-        }
+            try {
+                applyGetGame();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        try {
-            GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
-        } catch (Exception e) {
-            e.printStackTrace();
+            Player player = game.getBoard().getPlayer(playerNumber);
+            if (player != null) {
+                for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                    CommandCardField field = player.getProgramField(j);
+                    field.setCard(tempProgram[j]);
+                    field.setVisible(true);
+                }
+                for (int j = 0; j < Player.NO_CARDS; j++) {
+                    CommandCardField field = player.getCardField(j);
+                    field.setCard(tempCards[j]);
+                    field.setVisible(true);
+                }
+            }
+
+            System.out.println(checkForActivation());
+            if (checkForActivation()) {
+                game.getBoard().setPhase(Phase.ACTIVATION);
+                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                game.getBoard().setStep(0);
+            }
+
+            try {
+                GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            startActivationThread();
         }
-        System.out.println("jeg når til metoden");
-        startActivationThread();
-    }
 
     public void applyGetGame() throws Exception {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         game.getBoard().setPhase(serverGame.getBoard().getPhase());
         game.getBoard().setPlayers(serverGame);
-        game.getBoard().setCurrentPlayer(serverGame.getBoard().getCurrentPlayer());
+        game.getBoard().setCurrentPlayerIndex(serverGame.getBoard().getPlayerNumber(serverGame.getBoard().getCurrentPlayer()));
+        game.getBoard().setStep(serverGame.getBoard().getStep());
     }
 
     public boolean checkForActivation(){
@@ -211,39 +225,86 @@ public class GameController {
     }
 
     public void startActivationThread(){
-        ActivationPhaseThread = new Thread(new Runnable() {
+        startActivationPhaseThread = new Thread(new Runnable() {
             boolean running;
             public void stopThread(){
                 running = false;
-                ActivationPhaseThread.interrupt();
+                startActivationPhaseThread.interrupt();
             }
             public void run() {
                 running = true;
                 while (running) {
                     try {
                         Thread.sleep(2000);
-                    } catch (Exception e) {
-                        System.out.println("rat");
-                    }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            System.out.println("thread kører");
-                            try {
-                                Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                                if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
-                                    //START ACTIVATION PHASE
-                                    applyGetGame();
-                                    stopThread();
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    makeProgramFieldsVisible(0);
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                                    game.getBoard().setStep(0);
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            });
+                            ActivationPhase();
+                            stopThread();
                         }
-                    });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
-        ActivationPhaseThread.start();
+        startActivationPhaseThread.start();
+    }
+
+    public void ActivationPhase(){
+        activationPhaseThread = new Thread(new Runnable() {
+            boolean running;
+            public void stopThread() {
+                running = false;
+                activationPhaseThread.interrupt();
+            }
+            public void run() {
+                running = true;
+                while (running) {
+                    try {
+                        Thread.sleep(2000);
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+
+                        //StartProgrammingPhase
+                        if(tempGame.getBoard().getStep() == Player.NO_REGISTERS){
+                            applyGetGame();
+                            startProgrammingPhase();
+                            stopThread();
+                        } else if(tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) == playerNumber) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            stopThread();
+                        } else {
+                            applyGetGame();
+                        }
+                    } catch (Exception e) {
+                        this.stopThread();
+                        ActivationPhase();
+                    }
+                }
+            }
+        });
+        activationPhaseThread.start();
     }
 
     // XXX: V2
@@ -271,39 +332,51 @@ public class GameController {
      */
     // XXX: V2
     public void executeNextStep() {
+        // 1. execute my step
+        // 2. Sets next player's turn and increases step if needed
+        // 3. Upload my changes
+        // 4. Start the thread that checks if it's my turn.
+
+        // 1.
         Player currentPlayer = game.getBoard().getCurrentPlayer();
-        if (game.getBoard().getPhase() == Phase.ACTIVATION && currentPlayer != null) {
-            int step = game.getBoard().getStep();
-            if (step >= 0 && step < Player.NO_REGISTERS) {
-                CommandCard card = currentPlayer.getProgramField(step).getCard();
-                if (card != null) {
-                    if (!card.command.getOptions().isEmpty()) {
-                        game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
-                        return;
-                    }
-                    Command command = card.command;
-                    executeCommand(currentPlayer, command);
+        int step = game.getBoard().getStep();
+        if(step == 4){
+            System.out.println("rat");
+        }
+        if (step >= 0 && step < Player.NO_REGISTERS) {
+            CommandCard card = currentPlayer.getProgramField(step).getCard();
+            if (card != null) {
+                if (!card.command.getOptions().isEmpty()) {
+                    game.getBoard().setPhase(Phase.PLAYER_INTERACTION);
+                    return;
                 }
-                int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
-                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
-                } else {
-                    step++;
-                    if (step < Player.NO_REGISTERS) {
-                        makeProgramFieldsVisible(step);
-                        game.getBoard().setStep(step);
-                        game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
-                    } else {
-                        startProgrammingPhase();
-                    }
-                }
-            } else {
-                // this should not happen
-                assert false;
+                // Executes my step
+                Command command = card.command;
+                executeCommand(currentPlayer, command);
             }
-        } else {
-            // this should not happen
-            assert false;
+
+            // 2.
+            int nextPlayerNumber = game.getBoard().getPlayerNumber(currentPlayer) + 1;
+            if (nextPlayerNumber < game.getBoard().getPlayersNumber()) {
+                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(nextPlayerNumber));
+            } else {
+                step++;
+                if (step < Player.NO_REGISTERS) {
+                    makeProgramFieldsVisible(step);
+                }
+                game.getBoard().setStep(step);
+                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+            }
+
+            // 3.
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //4.
+            ActivationPhase();
         }
     }
 
