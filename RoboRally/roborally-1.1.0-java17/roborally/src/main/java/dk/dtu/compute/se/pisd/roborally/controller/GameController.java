@@ -39,7 +39,8 @@ import java.util.Optional;
 public class GameController {
     private Game game;
     private int playerNumber;
-    private Thread ActivationPhaseThread;
+    private Thread startActivationPhaseThread;
+    private Thread activationPhaseThread;
 
     public GameController(int playerNumber, @NotNull Game game) {
         this.game = game;
@@ -76,7 +77,6 @@ public class GameController {
         game.getBoard().setPhase(Phase.PROGRAMMING);
         game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
         game.getBoard().setStep(0);
-
 
         for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
             Player player = game.getBoard().getPlayer(i);
@@ -160,7 +160,6 @@ public class GameController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("jeg når til metoden");
         startActivationThread();
     }
 
@@ -211,39 +210,80 @@ public class GameController {
     }
 
     public void startActivationThread(){
-        ActivationPhaseThread = new Thread(new Runnable() {
+        startActivationPhaseThread = new Thread(new Runnable() {
             boolean running;
             public void stopThread(){
                 running = false;
-                ActivationPhaseThread.interrupt();
+                startActivationPhaseThread.interrupt();
             }
             public void run() {
                 running = true;
                 while (running) {
                     try {
                         Thread.sleep(2000);
-                    } catch (Exception e) {
-                        System.out.println("rat");
-                    }
-                    Platform.runLater(new Runnable() {
-                        public void run() {
-                            System.out.println("thread kører");
-                            try {
-                                Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-                                if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
-                                    //START ACTIVATION PHASE
-                                    applyGetGame();
-                                    stopThread();
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        if (tempGame.getBoard().getPhase() == Phase.ACTIVATION) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    makeProgramFieldsInvisible();
+                                    makeProgramFieldsVisible(0);
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                                    game.getBoard().setStep(0);
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            });
+                            ActivationPhase();
+                            stopThread();
                         }
-                    });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
-        ActivationPhaseThread.start();
+        startActivationPhaseThread.start();
+    }
+
+    public void ActivationPhase(){
+        activationPhaseThread = new Thread(new Runnable() {
+            boolean running;
+            public void stopThread() {
+                running = false;
+                activationPhaseThread.interrupt();
+            }
+            public void run() {
+                running = true;
+                while (running) {
+                    try {
+                        Thread.sleep(2000);
+                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        if(tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) != playerNumber) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        applyGetGame();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } else {
+                            applyGetGame();
+                            stopThread();
+                        }
+                    } catch (Exception e) {
+                        System.out.println("rat");
+                    }
+                }
+            }
+        });
+        activationPhaseThread.start();
     }
 
     // XXX: V2
