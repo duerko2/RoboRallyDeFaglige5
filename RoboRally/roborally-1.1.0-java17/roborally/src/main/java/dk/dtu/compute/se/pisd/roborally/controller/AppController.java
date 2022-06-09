@@ -456,8 +456,9 @@ public class AppController implements Observer {
                                             if(getIsHost()) {
                                                 GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                                             }
+
+                                            // Game is replaced here instead of inserting the values, since we don't need to update the lobby view anymore.
                                             game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
-                                            game.updated();
                                             gameController = new GameController(playerNumber, game);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
@@ -489,10 +490,8 @@ public class AppController implements Observer {
         try {
             String gameJson = GameClient.getGame(serialNumber);
             Game newGame = JsonConverter.jsonToGame(gameJson);
-            game.getBoard().getPlayers().clear();
-            game.getBoard().getPlayers().addAll(newGame.getBoard().getPlayers());
+            game.setBoard(newGame.getBoard());
             game.setReadyToReceivePlayers(newGame.getReadyToReceivePlayers());
-            game.updated();
         } catch (Exception e) {
             e.printStackTrace();
             return;
