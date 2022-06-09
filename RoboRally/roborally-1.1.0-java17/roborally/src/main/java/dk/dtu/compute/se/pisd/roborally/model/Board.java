@@ -128,10 +128,12 @@ public class Board extends Subject {
     }
 
     public void setCurrentPlayer(Player player) {
-        if (player != this.current && players.contains(player)) {
-            this.current = player;
-            notifyChange();
-        }
+        this.current = player;
+        notifyChange();
+    }
+    public void setCurrentPlayerIndex(int index){
+        this.current=players.get(index);
+        notifyChange();
     }
 
     public Phase getPhase() {
@@ -211,7 +213,17 @@ public class Board extends Subject {
 
     public void setPlayers(Game game){
         for(int i = 0; i < game.getBoard().getPlayers().size();i++) {
-            players.get(i).setSpace(game.getBoard().getPlayers().get(i).getSpace());
+
+            // Remove player from current space.
+            players.get(i).getSpace().setPlayer(null);
+
+            // Add player to new space
+            int newX=game.getBoard().getPlayers().get(i).getSpace().x;
+            int newY=game.getBoard().getPlayers().get(i).getSpace().y;
+            getSpace(newX,newY).setPlayer(players.get(i));
+
+
+
             players.get(i).setHeading(game.getBoard().getPlayers().get(i).getHeading());
             players.get(i).setCurrentCheckPoint(game.getBoard().getPlayers().get(i).getCurrentCheckPoint());
             players.get(i).setCards(game.getBoard().getPlayers().get(i).getCards());

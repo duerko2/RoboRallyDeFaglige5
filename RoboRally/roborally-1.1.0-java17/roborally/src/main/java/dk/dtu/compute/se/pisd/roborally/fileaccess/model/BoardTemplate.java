@@ -38,6 +38,7 @@ public class BoardTemplate {
 
     public int width;
     public int height;
+    public int step;
     /*
     public boolean readyToReceivePlayers;
     public int maxAmountOfPlayers;

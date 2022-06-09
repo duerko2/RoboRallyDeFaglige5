@@ -167,7 +167,8 @@ public class GameController {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         game.getBoard().setPhase(serverGame.getBoard().getPhase());
         game.getBoard().setPlayers(serverGame);
-        game.getBoard().setCurrentPlayer(serverGame.getBoard().getCurrentPlayer());
+        game.getBoard().setCurrentPlayerIndex(serverGame.getBoard().getPlayerNumber(serverGame.getBoard().getCurrentPlayer()));
+        game.getBoard().setStep(serverGame.getBoard().getStep());
     }
 
     public boolean checkForActivation(){
@@ -267,6 +268,7 @@ public class GameController {
                                 @Override
                                 public void run() {
                                     try {
+                                        System.out.println("Er det min tur?");
                                         applyGetGame();
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -274,6 +276,7 @@ public class GameController {
                                 }
                             });
                         } else {
+                            System.out.println("Nu er det min tur");
                             applyGetGame();
                             stopThread();
                         }

@@ -26,6 +26,7 @@ public class JsonConverter {
         template.currentPhase = board.getPhase();
         template.width = board.width;
         template.height = board.height;
+        template.step=board.getStep();
 
 
         // Iterates through the boards spaces
@@ -164,6 +165,7 @@ public class JsonConverter {
 
                 // Informs the player object of the location
                 player.setSpace(board.getSpace(playerTemplate.x, playerTemplate.y));
+                board.getSpace(player.getSpace().x,player.getSpace().y).setPlayer(player);
 
                 //Informs the player object of the heading.
                 player.setHeading(playerTemplate.heading);
@@ -200,6 +202,7 @@ public class JsonConverter {
 
                 board.getPlayers().add(player);
                 board.setPhase(gameTemplate.board.currentPhase);
+                board.setStep(gameTemplate.board.step);
 
                 // Checks if this player is the current player
                 if (playerTemplate.currentPlayer) {
