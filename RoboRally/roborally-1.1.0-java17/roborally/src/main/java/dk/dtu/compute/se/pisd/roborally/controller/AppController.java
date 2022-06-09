@@ -177,11 +177,14 @@ public class AppController implements Observer {
      * TODO: The player should also be able to load a previously played game from the server.
      */
     public void hostGame() {
+        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Load game", "New game");
+        choiceDialog.setHeaderText("Load Game or New Game");
+        choiceDialog.setTitle("");
+        String loadOrNew = choiceDialog.showAndWait().get();
         // A couple of to be stored in the client, when the user hosts.
-        boolean f = true;
         isHost = true;
         playerNumber = 0; // For now host is always 0.
-        if (f == true) {
+        if (loadOrNew == "Load game") {
             String games = null;
             try {
                 games = GameClient.getGames();
@@ -515,6 +518,9 @@ public class AppController implements Observer {
                 for (int j=0; j<5;j++){
                     board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
                 }
+                //for(int u = 0;u<9;u++){
+               //     board.getPlayer(i).getCardField(u).setCard(loadgame);
+                //}
             }
             for (int i = 0; i<numOfPlayers.get();i++){
                 board.getPlayer(i).setName(null);
