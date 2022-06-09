@@ -73,89 +73,12 @@ public class AppController implements Observer {
     }
     private int playerNumber;
 
-
-    // To be deleted
-    public void newGame() {
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
-        dialog.setTitle("Player number");
-        dialog.setHeaderText("Select number of players");
-        Optional<Integer> result = dialog.showAndWait();
-
-        BOARDS.clear();
-        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
-        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
-        filename.setTitle("Boards");
-        filename.setHeaderText("Select board to play");
-        Optional<String> fileNameResult = filename.showAndWait();
-        BOARDS.clear();
-
-        if (result.isPresent()&&fileNameResult.isPresent()) {
-            if (gameController != null) {
-                // The UI should not allow this, but in case this happens anyway.
-                // give the user the option to save the game or abort this operation!
-                if (!stopGame()) {
-                    return;
-                }
-            }
-
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
-            /*
-            Board board = new Board(8,8);
-            gameController = new GameController(board);
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
-            }
-
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
-
-             */
-            // Real implementation of loading a board
-
-            Board board = LoadBoard.loadBoard(fileNameResult.get());
-            gameController = new GameController(0, game);
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1),0);
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
-            }
-
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
-
-            roboRally.createBoardView(gameController);
-
-        }
-    }
-
     // TOOD: Needs to be changed to support the multiplayer . Should upload the current game to the server.
     // Needs to be changed to
     public void saveGame() {
-        String fileName=getUserInput("Name of save file:");
 
-        LoadBoard.saveGame(game.getBoard(),fileName);
     }
 
-    // To be deleted
-    public void loadGame() {
-        String filename=getUserInput("Name of save file:");
-        Board board = LoadBoard.loadGame(filename);
-        Player currentPlayer = board.getCurrentPlayer();
-        gameController = new GameController(0,  game);
-        // XXX: V2
-        // board.setCurrentPlayer(board.getPlayer(0));
-        gameController.startProgrammingPhase(true,currentPlayer);
-
-
-        roboRally.createBoardView(gameController);
-    }
 
     /**
      * Stop playing the current game, giving the user the option to save
@@ -168,10 +91,6 @@ public class AppController implements Observer {
      */
     public boolean stopGame() {
         if (gameController != null) {
-
-            // here we save the game (without asking the user).
-            saveGame();
-
             gameController = null;
             roboRally.createBoardView(null);
             return true;
@@ -181,6 +100,15 @@ public class AppController implements Observer {
 
 
     public void exit() {
+        if(getIsHost()){
+            // If you are the host and you leave, the game should not allow players to join anymore.
+            game.setReadyToReceivePlayers(false);
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
@@ -195,6 +123,7 @@ public class AppController implements Observer {
         // If the user did not cancel, the RoboRally application will exit
         // after the option to save the game
         if (gameController == null || stopGame()) {
+            System.exit(0);
             Platform.exit();
         }
     }
@@ -334,9 +263,22 @@ public class AppController implements Observer {
 
 
         String[] gamesList = games.split("\n");
-
+        List<String>joinableGamesList= new ArrayList<>();
 
         // TODO: Interpret the games from the server and see which ones are available to join.
+        for(int i=0; i<gamesList.length;i++){
+            Game tempGame=null;
+            try {
+                tempGame = JsonConverter.jsonToGame(GameClient.getGame(gamesList[i]));
+            } catch (Exception e) {
+            }
+            try {
+                if (tempGame.getReadyToReceivePlayers()){
+                    joinableGamesList.add(gamesList[i]);
+                }
+            } catch(NullPointerException e){
+            }
+        }
 
         // for looop gamesList
         // Game game = GameClient.getGame(gamesList(i))
@@ -344,7 +286,9 @@ public class AppController implements Observer {
         //  display...
         // }
 
-        roboRally.createJoinView(gamesList);
+
+
+        roboRally.createJoinView(joinableGamesList);
 
 
     }
@@ -356,23 +300,56 @@ public class AppController implements Observer {
      * @param serialNumber
      */
     public void startJoinGame(String serialNumber){
+
         try {
             String gameJson = GameClient.getGame(serialNumber);
             game = JsonConverter.jsonToGame(gameJson);
 
+            ArrayList<Integer> PLAYER_SELECT_NUMBER = new ArrayList<Integer>();
+
+            for (int i = 1 ; i < game.getMaxAmountOfPlayers() ; i++){
+                PLAYER_SELECT_NUMBER.add(i+1);
+            }
+
             // Add ourselves to the player list.
-            int currentIndex=0;
-            try {
-                while (game.getBoard().getPlayers().get(currentIndex).getName() != null) {
-                    currentIndex++;
+
+            for (int i = 1 ; i < game.getMaxAmountOfPlayers() ; i++){
+                try {
+                    if ((game.getBoard().getPlayers().get(i).getName() != null && PLAYER_SELECT_NUMBER.contains(i + 1))) {
+                            PLAYER_SELECT_NUMBER.remove(PLAYER_SELECT_NUMBER.indexOf(i + 1));
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println(e.getMessage());
+                    return;
                 }
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(e.getMessage());
+            }
+
+            /*
+
+            Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+            int rat = tempGame.getMaxAmountOfPlayers();
+            for(int i = 0; i < tempGame.getBoard().getPlayers().size(); i++){
+                if(tempGame.getBoard().getPlayers().get(i).get!=null){
+
+                }
+            }
+
+
+             */
+            int result=0;
+            try {
+                ChoiceDialog<Integer> dialogchoice = new ChoiceDialog<>(PLAYER_SELECT_NUMBER.get(0), PLAYER_SELECT_NUMBER);
+                dialogchoice.setTitle("Player number");
+                dialogchoice.setHeaderText("Select your player number");
+                 result= dialogchoice.showAndWait().get();
+            } catch (IndexOutOfBoundsException e){
+                // What happens when the user can't join the game because it's full should go here. Right now nothing happens.
                 return;
             }
-            playerNumber=currentIndex;
 
-            game.getBoard().getPlayers().get(currentIndex).setName(name);
+            playerNumber=result-1;
+
+            game.getBoard().getPlayers().get(result-1).setName(name);
 
             // Upload new game to server
 
@@ -428,8 +405,9 @@ public class AppController implements Observer {
                                             if(getIsHost()) {
                                                 GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                                             }
+
+                                            // Game is replaced here instead of inserting the values, since we don't need to update the lobby view anymore.
                                             game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
-                                            game.updated();
                                             gameController = new GameController(playerNumber, game);
                                             gameController.startProgrammingPhase();
                                             roboRally.createBoardView(gameController);
@@ -461,10 +439,8 @@ public class AppController implements Observer {
         try {
             String gameJson = GameClient.getGame(serialNumber);
             Game newGame = JsonConverter.jsonToGame(gameJson);
-            game.getBoard().getPlayers().clear();
-            game.getBoard().getPlayers().addAll(newGame.getBoard().getPlayers());
+            game.setBoard(newGame.getBoard());
             game.setReadyToReceivePlayers(newGame.getReadyToReceivePlayers());
-            game.updated();
         } catch (Exception e) {
             e.printStackTrace();
             return;
