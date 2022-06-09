@@ -7,6 +7,7 @@ public class Game extends Subject {
     int maxAmountOfPlayers;
     boolean readyToReceivePlayers;
     Board board;
+    int winner=-1;
 
     public Game(Board board, String serialNumber, int maxAmountOfPlayers, boolean readyToReceivePlayers){
         this.board = board;
@@ -44,5 +45,13 @@ public class Game extends Subject {
     }
     public boolean getReadyToReceivePlayers(){
         return this.readyToReceivePlayers;
+    }
+
+    public void setWinner(int winner) {
+        this.winner = winner;
+    }
+
+    public int getWinner() {
+        return winner;
     }
 }

@@ -2,19 +2,14 @@ package dk.dtu.compute.se.pisd.roborally.springRequest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
-import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
+import dk.dtu.compute.se.pisd.roborally.model.CheckPoint;
+import dk.dtu.compute.se.pisd.roborally.model.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.model.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Game;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.*;
 
 public class JsonConverter {
 
@@ -109,6 +104,7 @@ public class JsonConverter {
         gameTemplate.serialNumber=game.getSerialNumber();
         gameTemplate.maxAmountOfPlayers=game.getMaxAmountOfPlayers();
         gameTemplate.readyToReceivePlayers=game.getReadyToReceivePlayers();
+        gameTemplate.gameWinner=game.getWinner();
 
         GsonBuilder simpleBuilder = new GsonBuilder().
                 setPrettyPrinting();
@@ -213,6 +209,7 @@ public class JsonConverter {
 
 
             Game result = new Game(board,gameTemplate.serialNumber,gameTemplate.maxAmountOfPlayers,gameTemplate.readyToReceivePlayers);
+            result.setWinner(gameTemplate.gameWinner);
         return result;
     }
 }
