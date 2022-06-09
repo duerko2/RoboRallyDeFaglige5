@@ -75,31 +75,37 @@ public class GameController {
      */
     // XXX: V2
     public void startProgrammingPhase() {
+        System.out.println("Active threads" + Thread.activeCount());
         game.getBoard().setPhase(Phase.PROGRAMMING);
         game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
-        game.getBoard().setStep(0);
 
-
-        for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
-            Player player = game.getBoard().getPlayer(i);
-            if (player != null) {
-                for (int j = 0; j < Player.NO_REGISTERS; j++) {
-                    CommandCardField field = player.getProgramField(j);
-                    field.setCard(null);
-                    field.setVisible(true);
-                }
-                for (int j = 0; j < Player.NO_CARDS; j++) {
-                    CommandCardField field = player.getCardField(j);
-                    field.setCard(generateRandomCommandCard());
-                    field.setVisible(true);
-                }
-            }
-        }
         try {
-            GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+            if(tempGame.getBoard().getPlayer(playerNumber).getCardField(0).getCard() != null){
+                applyGetGame();
+            } else{
+                for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
+                    Player player = game.getBoard().getPlayer(i);
+                    if (player != null) {
+                        for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                            CommandCardField field = player.getProgramField(j);
+                            field.setCard(null);
+                            field.setVisible(true);
+                        }
+                        for (int j = 0; j < Player.NO_CARDS; j++) {
+                            CommandCardField field = player.getCardField(j);
+                            field.setCard(generateRandomCommandCard());
+                            field.setVisible(true);
+                        }
+                    }
+                }
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 
     /**
@@ -149,11 +155,15 @@ public class GameController {
             }
 
             Player player = game.getBoard().getPlayer(playerNumber);
+            boolean full = true;
             if (player != null) {
                 for (int j = 0; j < Player.NO_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(tempProgram[j]);
                     field.setVisible(true);
+                    if(field.getCard() == null){
+                        full=false;
+                    }
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
                     CommandCardField field = player.getCardField(j);
@@ -162,19 +172,22 @@ public class GameController {
                 }
             }
 
-            System.out.println(checkForActivation());
-            if (checkForActivation()) {
-                game.getBoard().setPhase(Phase.ACTIVATION);
-                game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
-                game.getBoard().setStep(0);
-            }
+            if(full) {
+                if (checkForActivation()) {
+                    game.getBoard().setPhase(Phase.ACTIVATION);
+                    game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
+                    game.getBoard().setStep(0);
+                }
 
-            try {
-                GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                startActivationThread();
+            } else{
+                //find på noget med message
             }
-            startActivationThread();
         }
 
     public void applyGetGame() throws Exception {
@@ -232,6 +245,9 @@ public class GameController {
                 startActivationPhaseThread.interrupt();
             }
             public void run() {
+                if(activationPhaseThread != null && !activationPhaseThread.isInterrupted()){
+                    activationPhaseThread.interrupt();
+                }
                 running = true;
                 while (running) {
                     try {
@@ -255,7 +271,7 @@ public class GameController {
                             stopThread();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        this.stopThread();
                     }
                 }
             }
@@ -271,6 +287,9 @@ public class GameController {
                 activationPhaseThread.interrupt();
             }
             public void run() {
+                if(startActivationPhaseThread != null && !startActivationPhaseThread.isInterrupted()){
+                    startActivationPhaseThread.interrupt();
+                }
                 running = true;
                 while (running) {
                     try {
