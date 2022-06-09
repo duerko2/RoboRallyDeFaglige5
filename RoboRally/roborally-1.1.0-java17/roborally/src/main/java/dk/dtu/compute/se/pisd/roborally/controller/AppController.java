@@ -100,6 +100,15 @@ public class AppController implements Observer {
 
 
     public void exit() {
+        if(getIsHost()){
+            // If you are the host and you leave, the game should not allow players to join anymore.
+            game.setReadyToReceivePlayers(false);
+            try {
+                GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
