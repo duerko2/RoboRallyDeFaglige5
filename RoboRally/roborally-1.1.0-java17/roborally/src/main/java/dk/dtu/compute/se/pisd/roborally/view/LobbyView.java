@@ -37,7 +37,7 @@ public class LobbyView extends VBox implements ViewObserver{
         label = new Label(game.getBoard().getPlayers().get(0).getName()+"'s game\nLIST OF PLAYERS....\n");
         this.getChildren().add(new Pane(label));
         for(int i=0;i<game.getBoard().getPlayers().size();i++){
-            this.getChildren().add(new Pane(new Label(game.getBoard().getPlayers().get(i).getName())));
+            this.getChildren().add(new Pane(new Label("Player "+(i+1)+": "+game.getBoard().getPlayers().get(i).getName())));
         }
         /*
         // Button for refreshing the view
