@@ -254,9 +254,22 @@ public class AppController implements Observer {
 
 
         String[] gamesList = games.split("\n");
-
+        List<String>joinableGamesList= new ArrayList<>();
 
         // TODO: Interpret the games from the server and see which ones are available to join.
+        for(int i=0; i<gamesList.length;i++){
+            Game tempGame=null;
+            try {
+                tempGame = JsonConverter.jsonToGame(GameClient.getGame(gamesList[i]));
+            } catch (Exception e) {
+            }
+            try {
+                if (tempGame.getReadyToReceivePlayers()){
+                    joinableGamesList.add(gamesList[i]);
+                }
+            } catch(NullPointerException e){
+            }
+        }
 
         // for looop gamesList
         // Game game = GameClient.getGame(gamesList(i))
@@ -264,7 +277,9 @@ public class AppController implements Observer {
         //  display...
         // }
 
-        roboRally.createJoinView(gamesList);
+
+
+        roboRally.createJoinView(joinableGamesList);
 
 
     }
@@ -312,11 +327,16 @@ public class AppController implements Observer {
 
 
              */
-
-            ChoiceDialog<Integer> dialogchoice = new ChoiceDialog<>(PLAYER_SELECT_NUMBER.get(0), PLAYER_SELECT_NUMBER);
-            dialogchoice.setTitle("Player number");
-            dialogchoice.setHeaderText("Select your player number");
-            int result = dialogchoice.showAndWait().get();
+            int result=0;
+            try {
+                ChoiceDialog<Integer> dialogchoice = new ChoiceDialog<>(PLAYER_SELECT_NUMBER.get(0), PLAYER_SELECT_NUMBER);
+                dialogchoice.setTitle("Player number");
+                dialogchoice.setHeaderText("Select your player number");
+                 result= dialogchoice.showAndWait().get();
+            } catch (IndexOutOfBoundsException e){
+                // What happens when the user can't join the game because it's full should go here. Right now nothing happens.
+                return;
+            }
 
             playerNumber=result-1;
 
