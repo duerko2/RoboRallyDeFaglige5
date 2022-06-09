@@ -182,7 +182,6 @@ public class AppController implements Observer {
         isHost = true;
         playerNumber = 0; // For now host is always 0.
         if (f == true) {
-            List<Board> boards = null;
             String games = null;
             try {
                 games = GameClient.getGames();
@@ -199,7 +198,10 @@ public class AppController implements Observer {
             //  display...
             // }
 
-            roboRally.createJoinView(gamesList);
+            roboRally.createLoadServerView(gamesList);
+
+            // indsæt martins fx hvor man kun kan se spil der kører
+            //loadSaveGame();
         } else {
 
 
@@ -272,6 +274,7 @@ public class AppController implements Observer {
      *
      */
     public void joinGame() {
+
         List<Board> boards = null;
         String games = null;
         try {
@@ -497,6 +500,45 @@ public class AppController implements Observer {
 
 
 
+    }
+    public void LoadHostGame (String serialNumber){
+        try {
+
+
+            String gameJson = GameClient.getGame(serialNumber);
+            Game loadgame = JsonConverter.jsonToGame(gameJson);
+            numOfPlayers = Optional.of(loadgame.getMaxAmountOfPlayers());
+            Optional<String> fileNameResult = Optional.ofNullable(loadgame.getBoard().boardName);
+
+            Board board = loadgame.getBoard();
+            for (int i =0; i<numOfPlayers.get();i++){
+                for (int j=0; j<5;j++){
+                    board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
+                }
+            }
+            for (int i = 0; i<numOfPlayers.get();i++){
+                board.getPlayer(i).setName(null);
+            }
+            board.getPlayers().get(0).setName(name);
+
+            loadgame = new Game(board,serialNumber,numOfPlayers.get(),true);
+
+            String JsonString = JsonConverter.gameToJson(loadgame);
+            try {
+
+
+                GameClient.putGame(serialNumber, JsonString);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            game = loadgame;
+            roboRally.createLobbyView(serialNumber,loadgame);
+
+            startLobbyThread(serialNumber);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public String getName(){
         return name;

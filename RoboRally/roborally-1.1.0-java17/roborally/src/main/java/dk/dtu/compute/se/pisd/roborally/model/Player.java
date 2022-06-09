@@ -78,6 +78,9 @@ public class Player extends Subject {
             if (space != null) {
                 space.playerChanged();
             }
+        }else{
+            this.name =name;
+            notifyChange();
         }
     }
 
