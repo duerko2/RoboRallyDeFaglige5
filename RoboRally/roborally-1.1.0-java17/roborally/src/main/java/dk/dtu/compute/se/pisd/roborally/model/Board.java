@@ -211,7 +211,11 @@ public class Board extends Subject {
 
     public void setPlayers(Game game){
         for(int i = 0; i < game.getBoard().getPlayers().size();i++) {
-            players.set(i, game.getBoard().getPlayers().get(i));
+            players.get(i).setSpace(game.getBoard().getPlayers().get(i).getSpace());
+            players.get(i).setHeading(game.getBoard().getPlayers().get(i).getHeading());
+            players.get(i).setCurrentCheckPoint(game.getBoard().getPlayers().get(i).getCurrentCheckPoint());
+            players.get(i).setCards(game.getBoard().getPlayers().get(i).getCards());
+            players.get(i).setProgram(game.getBoard().getPlayers().get(i).getProgram());
         }
         notifyChange();
     }

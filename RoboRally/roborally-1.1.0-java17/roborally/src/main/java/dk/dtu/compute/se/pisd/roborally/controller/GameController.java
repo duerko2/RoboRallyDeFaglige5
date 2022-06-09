@@ -77,6 +77,7 @@ public class GameController {
         game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
         game.getBoard().setStep(0);
 
+
         for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
             Player player = game.getBoard().getPlayer(i);
             if (player != null) {
@@ -91,6 +92,11 @@ public class GameController {
                     field.setVisible(true);
                 }
             }
+        }
+        try {
+            GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -124,7 +130,13 @@ public class GameController {
      */
     // XXX: V2
     public void finishProgrammingPhase(){
-        Player tempPlayer = game.getBoard().getPlayer(playerNumber);
+        // Creates a new temporary player object.
+        Player tempPlayer = new Player(game.getBoard(),game.getBoard().getPlayer(playerNumber).getColor(),
+                game.getBoard().getPlayer(playerNumber).getName(),
+                game.getBoard().getPlayer(playerNumber).getCurrentCheckPoint());
+        tempPlayer.setProgram(game.getBoard().getPlayer(playerNumber).getProgram());
+        tempPlayer.setCards(game.getBoard().getPlayer(playerNumber).getCards());
+        tempPlayer.setSpace(game.getBoard().getPlayer(playerNumber).getSpace());
         try {
             System.out.println(GameClient.getGame(game.getSerialNumber()));
         } catch (Exception e) {
@@ -243,7 +255,7 @@ public class GameController {
     // XXX: V2
     public void executeStep() {
         game.getBoard().setStepMode(true);
-        continuePrograms();
+        executeNextStep();
     }
 
     // XXX: V2
@@ -317,7 +329,7 @@ public class GameController {
      */
     // XXX: V2
     private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == game.getBoard() && command != null) {
+        if (player != null && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
             //     their execution. This should eventually be done in a more elegant way
             //     (this concerns the way cards are modelled as well as the way they are executed).
