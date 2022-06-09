@@ -497,6 +497,8 @@ public class AppController implements Observer {
 
 
     }
+
+    // TODO: 09-06-2022 get the cards and checkpoint from Json 
     public void LoadHostGame (String serialNumber){
         try {
 
