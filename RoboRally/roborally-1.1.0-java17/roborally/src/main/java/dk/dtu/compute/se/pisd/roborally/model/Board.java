@@ -221,13 +221,18 @@ public class Board extends Subject {
             int newX=game.getBoard().getPlayers().get(i).getSpace().x;
             int newY=game.getBoard().getPlayers().get(i).getSpace().y;
             getSpace(newX,newY).setPlayer(players.get(i));
+            players.get(i).setSpace(getSpace(newX,newY));
 
 
 
             players.get(i).setHeading(game.getBoard().getPlayers().get(i).getHeading());
             players.get(i).setCurrentCheckPoint(game.getBoard().getPlayers().get(i).getCurrentCheckPoint());
-            players.get(i).setCards(game.getBoard().getPlayers().get(i).getCards());
-            players.get(i).setProgram(game.getBoard().getPlayers().get(i).getProgram());
+            for(int j = 0; j < Player.NO_REGISTERS; j++){
+                players.get(i).getProgramField(j).setCard(game.getBoard().getPlayers().get(i).getProgramField(j).getCard());
+            }for(int j = 0; j < Player.NO_CARDS; j++){
+                players.get(i).getCardField(j).setCard(game.getBoard().getPlayers().get(i).getCardField(j).getCard());
+            }
+
         }
         notifyChange();
     }

@@ -180,9 +180,10 @@ public class PlayerView extends Tab implements ViewObserver {
 
                     case ACTIVATION:
                         finishButton.setDisable(true);
-                        if(gameController.getGame().getBoard().getCurrentPlayer().getColor().equals(player.getColor())){
+                        if(gameController.getGame().getBoard().getPlayerNumber(gameController.getGame().getBoard().getCurrentPlayer()) == gameController.getPlayerNumber()){
                             stepButton.setDisable(false);
                         }
+                        System.out.println(gameController.getGame().getBoard().getPlayerNumber(gameController.getGame().getBoard().getCurrentPlayer()) + " and " + gameController.getPlayerNumber());
                         break;
 
                     default:
