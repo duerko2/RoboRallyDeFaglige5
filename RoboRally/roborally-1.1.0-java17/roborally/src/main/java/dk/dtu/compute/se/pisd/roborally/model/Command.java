@@ -23,12 +23,12 @@ public enum Command {
     BACK_UP("Move 1 Back"),
 
     // XXX Assignment P3
-    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
+    OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT),
 
-    /* 2 Special programming cards
+    //2 Special programming cards
     WEASEL_ROUTINE("Weasel", LEFT,RIGHT,U_TURN),
     SANDBOX("Sandbox",LEFT,RIGHT,FORWARD,FAST_FORWARD,U_TURN,MOVE_THREE,BACK_UP);
-    */
+
     final public String displayName;
 
     // XXX Assignment P3

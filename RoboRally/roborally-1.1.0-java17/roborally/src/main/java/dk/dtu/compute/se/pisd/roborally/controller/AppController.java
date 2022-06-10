@@ -234,16 +234,27 @@ public class AppController implements Observer {
         // Sends the game information and serial number to the server.
         try {
             GameClient.putGame(serialNumber,jsonString);
+
+            // Creates the view
+            roboRally.createLobbyView(serialNumber,game);
+
+            // Stars thread that pulls the game state every 5 seconds and updates the view.
+            startLobbyThread(serialNumber);
         } catch (Exception e) {
-            e.printStackTrace();
+            game = null;
+            isHost = false;
+            Alert a = new Alert(AlertType.ERROR);
+            a.setContentText("Server is unavailable");
+            a.show();
+            return;
         }
 
-        // Creates the view
 
-        roboRally.createLobbyView(serialNumber,game);
 
-        // Stars thread that pulls the game state every 5 seconds and updates the view.
-        startLobbyThread(serialNumber);
+
+
+
+
     }
 
     /**
@@ -256,7 +267,10 @@ public class AppController implements Observer {
         try {
             games = GameClient.getGames();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert a = new Alert(AlertType.ERROR);
+            a.setContentText("Server is unavailable");
+            a.show();
+            return;
         }
 
 
