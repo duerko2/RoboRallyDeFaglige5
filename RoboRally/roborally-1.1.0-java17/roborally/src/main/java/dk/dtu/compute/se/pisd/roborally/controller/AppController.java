@@ -98,6 +98,9 @@ public class AppController implements Observer {
         return false;
     }
 
+    /**
+     * Method to exit the program. with conditions to save the game.
+     */
 
     public void exit() {
         if(getIsHost()){
@@ -177,59 +180,84 @@ public class AppController implements Observer {
      * TODO: The player should also be able to load a previously played game from the server.
      */
     public void hostGame() {
+        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Load game", "New game");
+        choiceDialog.setHeaderText("Load Game or New Game");
+        choiceDialog.setTitle("");
+        String loadOrNew = choiceDialog.showAndWait().get();
         // A couple of to be stored in the client, when the user hosts.
-        isHost=true;
-        playerNumber=0; // For now host is always 0.
+        isHost = true;
+        playerNumber = 0; // For now host is always 0.
+        if (loadOrNew == "Load game") {
+            String games = null;
+            try {
+                games = GameClient.getGames();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            String[] gamesList = games.split("\n");
+
+            // TODO: Interpret the games from the server and see which ones are available to join.
+
+            // for looop gamesList
+            // Game game = GameClient.getGame(gamesList(i))
+            // if(game.getReadyToReceivePlayers()){
+            //  display...
+            // }
+
+            roboRally.createLoadServerView(gamesList);
+
+            // indsæt martins fx hvor man kun kan se spil der kører
+            //loadSaveGame();
+        } else {
 
 
-        // Gives host ability to select amount of players for this game.
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
-        dialog.setTitle("Player number");
-        dialog.setHeaderText("Select number of players");
-        numOfPlayers = dialog.showAndWait();
+            // Gives host ability to select amount of players for this game.
+            ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
+            dialog.setTitle("Player number");
+            dialog.setHeaderText("Select number of players");
+            numOfPlayers = dialog.showAndWait();
 
 
-        // Gives host ability to choose field.
-        BOARDS.clear();
-        BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
-        ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
-        filename.setTitle("Boards");
-        filename.setHeaderText("Select board to play");
-        Optional<String> fileNameResult = filename.showAndWait();
-        BOARDS.clear();
+            // Gives host ability to choose field.
+            BOARDS.clear();
+            BOARDS.addAll(List.of(new File("RoboRally/roborally-1.1.0-java17/roborally/src/main/resources/boards").list()));
+            ChoiceDialog<String> filename = new ChoiceDialog<>(BOARDS.get(0), BOARDS);
+            filename.setTitle("Boards");
+            filename.setHeaderText("Select board to play");
+            Optional<String> fileNameResult = filename.showAndWait();
+            BOARDS.clear();
 
 
-        // Defensive checks in case something goes with user selection.
-        if (numOfPlayers.isPresent()&&fileNameResult.isPresent()) {
-            if (gameController != null) {
-                // The UI should not allow this, but in case this happens anyway.
-                // give the user the option to save the game or abort this operation!
-                if (!stopGame()) {
-                    return;
+            // Defensive checks in case something goes with user selection.
+            if (numOfPlayers.isPresent() && fileNameResult.isPresent()) {
+                if (gameController != null) {
+                    // The UI should not allow this, but in case this happens anyway.
+                    // give the user the option to save the game or abort this operation!
+                    if (!stopGame()) {
+                        return;
+                    }
                 }
             }
-        }
 
 
+            // Loads the board chosen from the client. In the future this could also be stored on the server.
+            Board board = LoadBoard.loadFromBoards(fileNameResult.get());
+            for (int i = 5; i >= numOfPlayers.get(); i--) {
+                board.getPlayers().remove(i);
+            }
 
-        // Loads the board chosen from the client. In the future this could also be stored on the server.
-        Board board = LoadBoard.loadFromBoards(fileNameResult.get());
-        for(int i = 5; i >= numOfPlayers.get() ;i--){
-            board.getPlayers().remove(i);
-        }
-
-        // Inserts own name into the first player object.
-        board.getPlayers().get(0).setName(name);
+            // Inserts own name into the first player object.
+            board.getPlayers().get(0).setName(name);
 
 
-        // Large random number for the serial number. Used to identify games on the server.
-        // For the future, there could be a check to see if the number already exists on the server.
-        String serialNumber = String.valueOf((int)(Math.random()*1000000));
+            // Large random number for the serial number. Used to identify games on the server.
+            // For the future, there could be a check to see if the number already exists on the server.
+            String serialNumber = String.valueOf((int) (Math.random() * 1000000));
 
-        this.game = new Game(board,serialNumber,numOfPlayers.get(),true);
+            this.game = new Game(board, serialNumber, numOfPlayers.get(), true);
 
-        // Converts the game information to json string
-        String jsonString = JsonConverter.gameToJson(game);
+            // Converts the game information to json string
+            String jsonString = JsonConverter.gameToJson(game);
 
         // Sends the game information and serial number to the server.
         try {
@@ -262,6 +290,7 @@ public class AppController implements Observer {
      *
      */
     public void joinGame() {
+
         List<Board> boards = null;
         String games = null;
         try {
@@ -483,6 +512,54 @@ public class AppController implements Observer {
 
 
 
+    }
+
+    /**
+     * Method for host to load a saved game from the server
+     */
+
+    // TODO: 09-06-2022 get the cards and checkpoint from Json
+    public void LoadHostGame (String serialNumber){
+        try {
+
+
+            String gameJson = GameClient.getGame(serialNumber);
+            Game loadgame = JsonConverter.jsonToGame(gameJson);
+            numOfPlayers = Optional.of(loadgame.getMaxAmountOfPlayers());
+            Optional<String> fileNameResult = Optional.ofNullable(loadgame.getBoard().boardName);
+
+            Board board = loadgame.getBoard();
+            for (int i =0; i<numOfPlayers.get();i++){
+                //for (int j=0; j<5;j++){
+                  //  board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
+                //}
+                //for(int u = 0;u<9;u++){
+               //     board.getPlayer(i).getCardField(u).setCard(loadgame);
+                //}
+            }
+            for (int i = 0; i<numOfPlayers.get();i++){
+                board.getPlayer(i).setName(null);
+            }
+            board.getPlayers().get(0).setName(name);
+
+            loadgame = new Game(board,serialNumber,numOfPlayers.get(),true);
+
+            String JsonString = JsonConverter.gameToJson(loadgame);
+            try {
+
+
+                GameClient.putGame(serialNumber, JsonString);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            game = loadgame;
+            roboRally.createLobbyView(serialNumber,loadgame);
+
+            startLobbyThread(serialNumber);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public String getName(){
         return name;

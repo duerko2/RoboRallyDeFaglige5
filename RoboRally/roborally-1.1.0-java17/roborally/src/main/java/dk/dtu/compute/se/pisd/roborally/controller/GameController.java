@@ -189,6 +189,10 @@ public class GameController {
             }
         }
 
+    /**
+     * Updates client with the game from the server.
+     */
+
     public void applyGetGame() throws Exception {
         Game serverGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
         game.getBoard().setPhase(serverGame.getBoard().getPhase());
@@ -196,6 +200,10 @@ public class GameController {
         game.getBoard().setCurrentPlayerIndex(serverGame.getBoard().getPlayerNumber(serverGame.getBoard().getCurrentPlayer()));
         game.getBoard().setStep(serverGame.getBoard().getStep());
     }
+
+    /**
+     * Checks if every player has programmed their robot.
+     */
 
     public boolean checkForActivation(){
         for(int i = 0; i < game.getBoard().getPlayers().size();i++){
@@ -238,6 +246,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Starts a thread that waits for activation phase to be current phase.
+     */
+
     public void startActivationThread(){
         startActivationPhaseThread = new Thread(new Runnable() {
             boolean running;
@@ -279,6 +291,10 @@ public class GameController {
         });
         startActivationPhaseThread.start();
     }
+
+    /**
+     * Starts the activation phase, also checks if it's programming phase and starts that.
+     */
 
     public void ActivationPhase(){
         activationPhaseThread = new Thread(new Runnable() {
@@ -626,28 +642,28 @@ public class GameController {
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y - 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case WEST:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x + 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case NORTH:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y + 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case EAST:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x - 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
