@@ -113,6 +113,19 @@ public class AppController implements Observer {
             }
         }
         if (gameController != null) {
+            Alert save = new Alert(AlertType.CONFIRMATION);
+            save.setTitle("Save game?");
+            save.setContentText("Do you want so save the current game?");
+            Optional<ButtonType> saveResult = save.showAndWait();
+            if(saveResult.get() == ButtonType.OK){
+                game.setSerialNumber("save_"+game.getSerialNumber());
+                try {
+                    GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
             alert.setContentText("Are you sure you want to exit RoboRally?");

@@ -24,9 +24,11 @@ public SavedGameView(AppController appController, String[] games ){
     this.getChildren().add(mainPane);
 
     for (int i=0; i<games.length;i++){
-        Button button = new Button(games[i]);
-        button.setOnAction(e->appController.LoadHostGame(button.getText()));
-        this.getChildren().add(button);
+        if(games[i].contains("save_")) {
+            Button button = new Button(games[i]);
+            button.setOnAction(e -> appController.LoadHostGame(button.getText()));
+            this.getChildren().add(button);
+        }
     }
 }
     @Override
