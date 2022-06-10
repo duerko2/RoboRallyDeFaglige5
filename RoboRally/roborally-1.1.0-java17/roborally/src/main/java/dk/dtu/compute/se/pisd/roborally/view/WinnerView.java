@@ -11,7 +11,7 @@ public class WinnerView {
     public WinnerView(Player player){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Game is over!");
-        alert.setContentText("Player "+player.getName()+" has won the game. Press ok to return to menu");
+        alert.setContentText("Player "+player.getName()+" has won the game. Press ok to close the game");
         Optional<ButtonType> result = alert.showAndWait();
     }
 }

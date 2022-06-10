@@ -151,6 +151,8 @@ public class Board extends Subject {
     public void setStep(int step) {
         if (step != this.step) {
             this.step = step;
+        }
+        if(this.step<Player.NO_REGISTERS){
             notifyChange();
         }
     }

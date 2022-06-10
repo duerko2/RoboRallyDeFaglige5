@@ -206,6 +206,8 @@ public class GameController {
             WinnerView winnerView = new WinnerView(game.getBoard().getPlayer(game.getWinner()));
 
             // Should cancel the view
+            System.exit(0);
+
 
         }
     }
@@ -319,37 +321,17 @@ public class GameController {
                 running = true;
                 while (running) {
                     try {
-                        Thread.sleep(2000);
-                        if(game.getBoard().getStep() == 4){
-                            System.out.println("rat");
-                        }
-                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
+                        Thread.sleep(100);
+                        applyGetGame();
+                        System.out.println("Thread Kører");
                         //StartProgrammingPhase
-                        if(tempGame.getBoard().getStep() >= Player.NO_REGISTERS){
-                            applyGetGame();
+                        if(game.getBoard().getStep() >= Player.NO_REGISTERS){
                             startProgrammingPhase();
                             stopThread();
-                        } else if(tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) == playerNumber) {
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        applyGetGame();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            if(tempGame.getBoard().getStep() != Player.NO_REGISTERS) {
-                                stopThread();
-                            }
-                        } else {
-                            applyGetGame();
+                        } else if (game.getBoard().getPlayerNumber(game.getBoard().getCurrentPlayer())==playerNumber){
+                            stopThread();
                         }
-                    } catch (Exception e) {
-                        this.stopThread();
-                        ActivationPhase();
-                    }
+                    } catch (Exception e) {}
                 }
             }
         });
