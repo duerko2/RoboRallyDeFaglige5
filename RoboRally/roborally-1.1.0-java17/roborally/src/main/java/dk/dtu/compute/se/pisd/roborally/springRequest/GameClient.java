@@ -27,7 +27,7 @@ public class GameClient {
     public static String getGame(String serialNumber) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://130.226.23.127:8080/games/"+serialNumber))
+                .uri(URI.create("http://localhost:8080/games/"+serialNumber))
                 .setHeader("User-Agent", "Game Client")
                 .header("Content-Type", "application/json")
                 .build();
@@ -44,7 +44,7 @@ public class GameClient {
     public static String getGames() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://130.226.23.127:8080/games"))
+                .uri(URI.create("http://localhost:8080/games"))
                 .setHeader("User-Agent", "Game Client")
                 .header("Content-Type", "application/json")
                 .build();
@@ -62,7 +62,7 @@ public class GameClient {
     public static String putGame(String serialNumber, String jsonString) throws Exception{
         HttpRequest request = HttpRequest.newBuilder()
                 .PUT(HttpRequest.BodyPublishers.ofString(jsonString))
-                .uri(URI.create("http://130.226.23.127:8080/games/"+serialNumber))
+                .uri(URI.create("http://localhost:8080/games/"+serialNumber))
                 .setHeader("User-Agent", "Game Client")
                 .header("Content-Type", "application/json")
                 .build();
@@ -77,7 +77,7 @@ public class GameClient {
     public static String getBoards() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://130.226.23.127:8080/boards/"))
+                .uri(URI.create(" http://localhost:8080/boards/"))
                 .setHeader("User-Agent", "Game Client")
                 .header("Content-Type", "application/json")
                 .build();
