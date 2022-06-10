@@ -26,7 +26,6 @@ public class CheckPoint extends FieldAction {
             space.getPlayer().setCurrentCheckPoint(space.getPlayer().getCurrentCheckPoint() + 1);
         }
         if(space.getPlayer().getCurrentCheckPoint() == 1){
-            System.out.println("Spiller " + space.getPlayer().getName() + " has won!");
             gameController.playerHasWon(space.getPlayer());
         }
         return false;

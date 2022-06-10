@@ -576,7 +576,6 @@ public class GameClientTest {
     try {
         result = GameClient.putGame(serialNumber, jsonfile);
     } catch (Exception e) {
-        e.printStackTrace();
     }
 
     Assertions.assertEquals(result, expected, "Result: " + result + ". " + "Expected: " + expected + ". ");

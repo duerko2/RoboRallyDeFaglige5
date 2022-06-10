@@ -71,7 +71,7 @@ public class GameController {
         try {
             GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
     }
@@ -104,7 +104,7 @@ public class GameController {
                 }
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
         } catch (Exception e) {
-            e.printStackTrace();
+            
         }
 
 
@@ -153,7 +153,7 @@ public class GameController {
             try {
                 applyGetGame();
             } catch (Exception e) {
-                e.printStackTrace();
+                
             }
 
             Player player = game.getBoard().getPlayer(playerNumber);
@@ -184,7 +184,7 @@ public class GameController {
                 try {
                     GameClient.putGame(game.getSerialNumber(), JsonConverter.gameToJson(game));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    
                 }
                 startActivationThread();
             } else{
@@ -279,7 +279,7 @@ public class GameController {
                                     try {
                                         applyGetGame();
                                     } catch (Exception e) {
-                                        e.printStackTrace();
+                                        
                                     }
                                     game.getBoard().setCurrentPlayer(game.getBoard().getPlayer(0));
                                     game.getBoard().setStep(0);
@@ -324,11 +324,6 @@ public class GameController {
                             stopThread();
                         }
 
-                        System.out.println("Thread Kører");
-
-                        if(game.getBoard().getStep()==5){
-                            System.out.println(game.getBoard().getStep());
-                        }
                         //StartProgrammingPhase
                         if(game.getBoard().getStep() >= Player.NO_REGISTERS){
                             startProgrammingPhase();
@@ -337,7 +332,7 @@ public class GameController {
                             stopThread();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        
                     }
                 }
             }
@@ -407,7 +402,7 @@ public class GameController {
             try {
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
             } catch (Exception e) {
-                e.printStackTrace();
+                
             }
         }
         //4.
@@ -512,7 +507,7 @@ public class GameController {
         try {
             GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
         } catch (Exception e) {
-            e.printStackTrace();
+            
         }
 
         //4.

@@ -68,7 +68,6 @@ public class Adapter<E> implements JsonSerializer<E>, JsonDeserializer<E>{
         try {
             klass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             throw new JsonParseException(e.getMessage());
         }
         return context.deserialize(jsonObject.get(INSTANCE), klass);

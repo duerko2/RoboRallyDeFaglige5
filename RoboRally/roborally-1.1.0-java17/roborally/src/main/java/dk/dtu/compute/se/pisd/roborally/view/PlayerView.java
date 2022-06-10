@@ -183,7 +183,6 @@ public class PlayerView extends Tab implements ViewObserver {
                         if(gameController.getGame().getBoard().getPlayerNumber(gameController.getGame().getBoard().getCurrentPlayer()) == gameController.getPlayerNumber()){
                             stepButton.setDisable(false);
                         }
-                        System.out.println(gameController.getGame().getBoard().getPlayerNumber(gameController.getGame().getBoard().getCurrentPlayer()) + " and " + gameController.getPlayerNumber());
                         break;
 
                     default:

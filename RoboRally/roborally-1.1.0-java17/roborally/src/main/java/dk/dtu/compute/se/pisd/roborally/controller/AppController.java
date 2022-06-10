@@ -110,7 +110,7 @@ public class AppController implements Observer {
             try {
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
         }
         if (gameController != null) {
@@ -123,7 +123,7 @@ public class AppController implements Observer {
                 try {
                     GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
                 } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
             }
 
@@ -207,7 +207,7 @@ public class AppController implements Observer {
             try {
                 games = GameClient.getGames();
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
             String[] gamesList = games.split("\n");
 
@@ -372,7 +372,6 @@ public class AppController implements Observer {
                             PLAYER_SELECT_NUMBER.remove(PLAYER_SELECT_NUMBER.indexOf(i + 1));
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    System.out.println(e.getMessage());
                     return;
                 }
             }
@@ -418,7 +417,7 @@ public class AppController implements Observer {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
 
@@ -480,7 +479,7 @@ public class AppController implements Observer {
                                         }
                                         roboRally.createBoardView(gameController);
                                     }catch(Exception e){
-                                        e.printStackTrace();
+
                                     }
                                 }
                             }
@@ -510,7 +509,7 @@ public class AppController implements Observer {
             game.setBoard(newGame.getBoard());
             game.setReadyToReceivePlayers(newGame.getReadyToReceivePlayers());
         } catch (Exception e) {
-            e.printStackTrace();
+
             return;
         }
     }
@@ -526,14 +525,14 @@ public class AppController implements Observer {
                 amountOfCurrentPlayers++;
             }
         }
-        System.out.println(amountOfCurrentPlayers);
+       // System.out.println(amountOfCurrentPlayers);
         if(amountOfCurrentPlayers==game.getMaxAmountOfPlayers()){
             // For now we just start the game as normal...
             game.setReadyToReceivePlayers(false);
             try {
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
         }
         else return;
@@ -572,7 +571,7 @@ public class AppController implements Observer {
             try {
                 GameClient.putGame(serialNumber, JsonString);
             }catch (Exception e){
-                e.printStackTrace();
+
             }
 
             roboRally.createLobbyView(serialNumber,game);
@@ -580,7 +579,7 @@ public class AppController implements Observer {
             startLobbyThread(serialNumber);
 
         }catch (Exception e){
-            e.printStackTrace();
+
         }
     }
     public String getName(){

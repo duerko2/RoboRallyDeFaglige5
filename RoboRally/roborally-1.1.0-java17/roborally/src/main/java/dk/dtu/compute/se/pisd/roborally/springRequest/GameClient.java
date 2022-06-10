@@ -69,7 +69,6 @@ public class GameClient {
         CompletableFuture<HttpResponse<String>> response =
                 httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
         String result = response.thenApply((r)->r.body()).get(5, TimeUnit.SECONDS);
-        System.out.println(result);
 
         return result;
     }
