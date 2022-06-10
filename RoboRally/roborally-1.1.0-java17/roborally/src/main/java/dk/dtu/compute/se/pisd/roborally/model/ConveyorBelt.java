@@ -20,59 +20,66 @@ public class  ConveyorBelt extends FieldAction{
 
     @Override
     public boolean doAction(GameController gameController, Space space) {
-        Space nextSpace;
-        switch (heading) {
-            case EAST:
-                if(isDouble) {
-                    for(int i = 0; i < 2; i++) {
-                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1,space.getPlayer().getSpace().y);
+        try {
+
+
+            Space nextSpace;
+            switch (heading) {
+                case EAST:
+                    if (isDouble) {
+                        for (int i = 0; i < 2; i++) {
+                            nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1, space.getPlayer().getSpace().y);
+                            gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                            space = nextSpace;
+                        }
+                    } else {
+                        nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1, space.getPlayer().getSpace().y);
                         gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                        space = nextSpace;
                     }
-                } else{
-                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x + 1, space.getPlayer().getSpace().y);
-                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                }
-                break;
-            case WEST:
-                if(isDouble) {
-                    for (int i = 0; i < 2; i++){
+                    break;
+                case WEST:
+                    if (isDouble) {
+                        for (int i = 0; i < 2; i++) {
+                            nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
+                            gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                            space = nextSpace;
+                        }
+                    } else {
                         nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
                         gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                        space = nextSpace;
                     }
-                } else{
-                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x - 1, space.getPlayer().getSpace().y);
-                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                }
-                break;
-            case NORTH:
-                if(isDouble) {
-                    for(int i = 0; i < 2; i++) {
+                    break;
+                case NORTH:
+                    if (isDouble) {
+                        for (int i = 0; i < 2; i++) {
+                            nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
+                            gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                            space = nextSpace;
+                        }
+                    } else {
                         nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
                         gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                        space = nextSpace;
                     }
-                }else{
-                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y - 1);
-                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                }
-                break;
-            case SOUTH:
-                if(isDouble) {
-                    for(int i = 0; i < 2; i++) {
+                    break;
+                case SOUTH:
+                    if (isDouble) {
+                        for (int i = 0; i < 2; i++) {
+                            nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
+                            gameController.checkForPush(space.getPlayer(), nextSpace, heading);
+                            space = nextSpace;
+                        }
+                    } else {
                         nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
                         gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                        space = nextSpace;
                     }
-                }else{
-                    nextSpace = space.board.getSpace(space.getPlayer().getSpace().x, space.getPlayer().getSpace().y + 1);
-                    gameController.checkForPush(space.getPlayer(), nextSpace, heading);
-                }
-                break;
+                    break;
+            }
+        } catch (IllegalArgumentException e) {
+            gameController.outOfBounds(space.getPlayer());
         }
 
         return false;
+
     }
     public Heading getHeading(){
         return this.heading;
