@@ -204,7 +204,8 @@ public class PlayerView extends Tab implements ViewObserver {
                 //      the player's choices of the interactive command card. The
                 //      following is just a mockup showing two options
                 if (player.board.getCurrentPlayer() == player) {
-                    Command command = gameController.getGame().getBoard().getCurrentPlayer().getProgramField(gameController.getGame().getBoard().getStep()).getCard().command;
+                    Command command = gameController.getGame().getBoard().getCurrentPlayer()
+                            .getProgramField(gameController.getGame().getBoard().getStep()).getCard().command;
                     for (int j=0; j< command.getOptions().size();j++){
                         Button optionButton = new Button(command.getOptions().get(j).displayName);
                         Command c = command.getOptions().get(j);
