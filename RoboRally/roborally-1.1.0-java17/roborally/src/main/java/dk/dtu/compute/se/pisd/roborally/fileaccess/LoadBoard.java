@@ -85,7 +85,7 @@ public class LoadBoard {
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
             //Creates a new board with size from boardtemplate
-			result = new Board(template.width, template.height);
+			result = new Board(template.width, template.height,1);
 
             //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
 			for (SpaceTemplate spaceTemplate: template.spaces) {
@@ -129,7 +129,7 @@ public class LoadBoard {
                 } catch (IOException e2) {
                 }
             }
-            return new Board(8,8);
+            return new Board(8,8,1);
         }
 		return null;
     }
@@ -276,7 +276,7 @@ public class LoadBoard {
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname);
         if (inputStream == null) {
             // TODO these constants should be defined somewhere
-            return new Board(8,8);
+            return new Board(8,8,1);
         }
 
         // In simple cases, we can create a Gson object with new Gson():
@@ -292,7 +292,7 @@ public class LoadBoard {
             BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
             //Creates a new board with size from boardtemplate
-            result = new Board(template.width, template.height);
+            result = new Board(template.width, template.height,template.amountOfCheckPoints);
 
             //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
             for (SpaceTemplate spaceTemplate: template.spaces) {
@@ -398,7 +398,7 @@ public class LoadBoard {
                     System.out.println("error");
                 }
             }
-            return new Board(8,8);
+            return new Board(8,8,1);
         }
         return null;
     }
@@ -411,7 +411,7 @@ public class LoadBoard {
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname);
         if (inputStream == null) {
             // TODO these constants should be defined somewhere
-            return new Board(8,8);
+            return new Board(8,8, 1);
         }
 
         // In simple cases, we can create a Gson object with new Gson():
@@ -427,7 +427,7 @@ public class LoadBoard {
             BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
 
             //Creates a new board with size from boardtemplate
-            result = new Board(template.width, template.height);
+            result = new Board(template.width, template.height, template.amountOfCheckPoints);
 
             //Iterates through boardtemplate's spaces and adds information to the board's spaces if available.
             for (SpaceTemplate spaceTemplate: template.spaces) {
@@ -503,7 +503,7 @@ public class LoadBoard {
                     System.out.println("error");
                 }
             }
-            return new Board(8,8);
+            return new Board(8,8, 1);
         }
         return null;
     }
