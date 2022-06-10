@@ -99,6 +99,9 @@ public class AppController implements Observer {
         return false;
     }
 
+    /**
+     * Method to exit the program. with conditions to save the game.
+     */
 
     public void exit() {
         if(getIsHost()){
@@ -111,6 +114,19 @@ public class AppController implements Observer {
             }
         }
         if (gameController != null) {
+            Alert save = new Alert(AlertType.CONFIRMATION);
+            save.setTitle("Save game?");
+            save.setContentText("Do you want so save the current game?");
+            Optional<ButtonType> saveResult = save.showAndWait();
+            if(saveResult.get() == ButtonType.OK){
+                game.setSerialNumber("save_"+game.getSerialNumber());
+                try {
+                    GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Exit RoboRally?");
             alert.setContentText("Are you sure you want to exit RoboRally?");
@@ -261,16 +277,20 @@ public class AppController implements Observer {
             // Sends the game information and serial number to the server.
             try {
                 GameClient.putGame(serialNumber, jsonString);
+
+                // Creates the view
+                roboRally.createLobbyView(serialNumber, game);
+
+                // Stars thread that pulls the game state every 5 seconds and updates the view.
+                startLobbyThread(serialNumber);
             } catch (Exception e) {
-                e.printStackTrace();
+                game = null;
+                isHost = false;
+                Alert a = new Alert(AlertType.ERROR);
+                a.setContentText("Server is unavailable");
+                a.show();
+                return;
             }
-
-            // Creates the view
-
-            roboRally.createLobbyView(serialNumber, game);
-
-            // Stars thread that pulls the game state every 5 seconds and updates the view.
-            startLobbyThread(serialNumber);
         }
     }
 
@@ -285,7 +305,10 @@ public class AppController implements Observer {
         try {
             games = GameClient.getGames();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert a = new Alert(AlertType.ERROR);
+            a.setContentText("Server is unavailable");
+            a.show();
+            return;
         }
 
 
@@ -523,7 +546,11 @@ public class AppController implements Observer {
 
     }
 
-    // TODO: 09-06-2022 get the cards and checkpoint from Json 
+    /**
+     * Method for host to load a saved game from the server
+     */
+
+    // TODO: 09-06-2022 get the cards and checkpoint from Json
     public void LoadHostGame (String serialNumber){
         try {
 
@@ -531,6 +558,7 @@ public class AppController implements Observer {
             String gameJson = GameClient.getGame(serialNumber);
             game = JsonConverter.jsonToGame(gameJson);
             numOfPlayers = Optional.of(game.getMaxAmountOfPlayers());
+            serialNumber = game.getSerialNumber().substring(5);
 
             for (int i = 0; i<numOfPlayers.get();i++){
                 game.getBoard().getPlayer(i).setName(null);
