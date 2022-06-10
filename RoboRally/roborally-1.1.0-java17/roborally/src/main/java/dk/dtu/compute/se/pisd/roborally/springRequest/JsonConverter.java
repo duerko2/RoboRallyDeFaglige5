@@ -26,6 +26,7 @@ public class JsonConverter {
         template.width = board.width;
         template.height = board.height;
         template.step=board.getStep();
+        template.amountOfCheckPoints=board.getAmountOfCheckPoints();
 
 
         // Iterates through the boards spaces
