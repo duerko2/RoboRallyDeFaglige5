@@ -559,8 +559,9 @@ public class AppController implements Observer {
             game = JsonConverter.jsonToGame(gameJson);
             numOfPlayers = Optional.of(game.getMaxAmountOfPlayers());
             serialNumber = game.getSerialNumber().substring(5);
+            game.setSerialNumber(serialNumber);
 
-            for (int i = 0; i<numOfPlayers.get();i++){
+            for (int i = 0; i<game.getBoard().getPlayers().size();i++){
                 game.getBoard().getPlayer(i).setName(null);
             }
             game.setReadyToReceivePlayers(true);
@@ -569,8 +570,6 @@ public class AppController implements Observer {
 
             String JsonString = JsonConverter.gameToJson(game);
             try {
-
-
                 GameClient.putGame(serialNumber, JsonString);
             }catch (Exception e){
                 e.printStackTrace();
