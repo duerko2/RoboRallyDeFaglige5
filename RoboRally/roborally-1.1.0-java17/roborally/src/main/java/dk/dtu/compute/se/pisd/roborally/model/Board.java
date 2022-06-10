@@ -210,14 +210,9 @@ public class Board extends Subject {
 
     public void setPlayers(Game game){
         for(int i = 0; i < game.getBoard().getPlayers().size();i++) {
-
-            // Remove player from current space.
-            players.get(i).getSpace().setPlayer(null);
-
             // Add player to new space
             int newX=game.getBoard().getPlayers().get(i).getSpace().x;
             int newY=game.getBoard().getPlayers().get(i).getSpace().y;
-            getSpace(newX,newY).setPlayer(players.get(i));
             players.get(i).setSpace(getSpace(newX,newY));
 
 
