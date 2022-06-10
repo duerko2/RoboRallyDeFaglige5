@@ -21,7 +21,7 @@ public class GameClient {
 
     /**
      * Method to get a saved game from the server, uses the saved game's serialnumber and creates a http GET request.
-     * The game is returned to the client as a string.
+     * The game is returned to the client as a string..
      */
 
     public static String getGame(String serialNumber) throws Exception {
