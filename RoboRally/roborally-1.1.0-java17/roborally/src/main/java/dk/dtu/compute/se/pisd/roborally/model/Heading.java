@@ -27,6 +27,11 @@ package dk.dtu.compute.se.pisd.roborally.model;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+
+/**
+ * A class that defines the directions / heading of a player
+ */
+
 public enum Heading {
 
     SOUTH, WEST, NORTH, EAST;

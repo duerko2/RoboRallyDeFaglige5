@@ -125,6 +125,15 @@ public class RoboRally extends Application {
         boardRoot.setCenter(lobbyView);
         stage.sizeToScene();
     }
+    public void createLoadServerView (String[] games){
+        boardRoot.getChildren().clear();
+        SavedGameView savedGameView = new SavedGameView(appController,games);
+        //SavedGameView savedGameView = new SavedGameView(appController,games);
+        boardRoot.setCenter((savedGameView));
+        stage.sizeToScene();
+
+
+    }
 
     @Override
     public void stop() throws Exception {
