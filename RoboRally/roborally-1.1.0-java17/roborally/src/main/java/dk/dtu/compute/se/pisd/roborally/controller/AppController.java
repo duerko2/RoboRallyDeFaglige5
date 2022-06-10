@@ -98,6 +98,9 @@ public class AppController implements Observer {
         return false;
     }
 
+    /**
+     * Method to exit the program. with conditions to save the game.
+     */
 
     public void exit() {
         if(getIsHost()){
@@ -497,6 +500,10 @@ public class AppController implements Observer {
 
 
     }
+
+    /**
+     * Method for host to load a saved game from the server
+     */
 
     // TODO: 09-06-2022 get the cards and checkpoint from Json 
     public void LoadHostGame (String serialNumber){

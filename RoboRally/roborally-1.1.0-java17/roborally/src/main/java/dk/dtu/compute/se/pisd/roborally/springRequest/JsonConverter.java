@@ -18,6 +18,10 @@ import java.io.*;
 
 public class JsonConverter {
 
+    /**
+     * Converts a game to a JSON file string
+     */
+
     public static String gameToJson(Game game) {
         Board board = game.getBoard();
 
@@ -116,6 +120,10 @@ public class JsonConverter {
 
         return gson.toJson(gameTemplate,gameTemplate.getClass());
     }
+
+    /**
+     * Converts a json file in string format to a game
+     */
 
     public static Game jsonToGame(String game) {
 
