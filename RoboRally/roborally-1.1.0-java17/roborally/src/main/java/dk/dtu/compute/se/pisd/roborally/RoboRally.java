@@ -145,6 +145,12 @@ public class RoboRally extends Application {
         //     so that the AppController can take care of that.
     }
 
+    // When the game ends..
+
+    public void restart(){
+        start(this.stage);
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
