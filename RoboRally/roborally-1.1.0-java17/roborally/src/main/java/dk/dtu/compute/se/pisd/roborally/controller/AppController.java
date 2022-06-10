@@ -532,6 +532,7 @@ public class AppController implements Observer {
 
             String gameJson = GameClient.getGame(serialNumber);
             Game loadgame = JsonConverter.jsonToGame(gameJson);
+            serialNumber = loadgame.getSerialNumber().substring(5);
             numOfPlayers = Optional.of(loadgame.getMaxAmountOfPlayers());
             Optional<String> fileNameResult = Optional.ofNullable(loadgame.getBoard().boardName);
 
