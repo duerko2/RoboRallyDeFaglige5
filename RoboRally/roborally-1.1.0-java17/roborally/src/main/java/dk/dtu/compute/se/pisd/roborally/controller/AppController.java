@@ -72,6 +72,7 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
     private int playerNumber;
+    public boolean loadGame;
 
     // TOOD: Needs to be changed to support the multiplayer . Should upload the current game to the server.
     // Needs to be changed to
@@ -177,7 +178,7 @@ public class AppController implements Observer {
      * TODO: The player should also be able to load a previously played game from the server.
      */
     public void hostGame() {
-        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Load game", "New game");
+        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("New game", "Load game");
         choiceDialog.setHeaderText("Load Game or New Game");
         choiceDialog.setTitle("");
         String loadOrNew = choiceDialog.showAndWait().get();
@@ -185,6 +186,7 @@ public class AppController implements Observer {
         isHost = true;
         playerNumber = 0; // For now host is always 0.
         if (loadOrNew == "Load game") {
+            loadGame = true;
             String games = null;
             try {
                 games = GameClient.getGames();
@@ -331,6 +333,7 @@ public class AppController implements Observer {
         try {
             String gameJson = GameClient.getGame(serialNumber);
             game = JsonConverter.jsonToGame(gameJson);
+            loadGame = checkForLoadGame(game);
 
             ArrayList<Integer> PLAYER_SELECT_NUMBER = new ArrayList<Integer>();
 
@@ -397,6 +400,24 @@ public class AppController implements Observer {
 
 
     }
+
+    private boolean checkForLoadGame(Game game) {
+        for (int i = 0;i<game.getBoard().getPlayers().size();i++){
+            for (int j = 0; j<Player.NO_REGISTERS;j++){
+                if (game.getBoard().getPlayer(i).getProgramField(j)!=null){
+                    return true;
+                }
+            }
+            for (int j =0;j<Player.NO_CARDS;j++){
+                if (game.getBoard().getPlayer(i).getProgramField(j)!=null){
+                    return true;
+                }
+
+            }
+        }
+        return false;
+    }
+
     public void setGame(Game game){
         this.game = game;
     }
@@ -429,7 +450,11 @@ public class AppController implements Observer {
                                         }
                                         game = JsonConverter.jsonToGame(GameClient.getGame(serialNumber));
                                         gameController = new GameController(playerNumber, game);
-                                        gameController.startProgrammingPhase();
+                                        if (loadGame && game.getBoard().getPhase()==Phase.PROGRAMMING){
+                                           gameController.startProgrammingPhase(true,game.getBoard().getCurrentPlayer());
+                                        }else if(!loadGame){
+                                            gameController.startProgrammingPhase();
+                                        }
                                         roboRally.createBoardView(gameController);
                                     }catch(Exception e){
                                         e.printStackTrace();
@@ -504,27 +529,17 @@ public class AppController implements Observer {
 
 
             String gameJson = GameClient.getGame(serialNumber);
-            Game loadgame = JsonConverter.jsonToGame(gameJson);
-            numOfPlayers = Optional.of(loadgame.getMaxAmountOfPlayers());
-            Optional<String> fileNameResult = Optional.ofNullable(loadgame.getBoard().boardName);
+            game = JsonConverter.jsonToGame(gameJson);
+            numOfPlayers = Optional.of(game.getMaxAmountOfPlayers());
 
-            Board board = loadgame.getBoard();
-            for (int i =0; i<numOfPlayers.get();i++){
-                //for (int j=0; j<5;j++){
-                  //  board.getPlayer(i).getProgramField(j).setCard(loadgame.getBoard().getPlayer(i).getProgramField(j).getCard());
-                //}
-                //for(int u = 0;u<9;u++){
-               //     board.getPlayer(i).getCardField(u).setCard(loadgame);
-                //}
-            }
             for (int i = 0; i<numOfPlayers.get();i++){
-                board.getPlayer(i).setName(null);
+                game.getBoard().getPlayer(i).setName(null);
             }
-            board.getPlayers().get(0).setName(name);
+            game.setReadyToReceivePlayers(true);
+            game.getBoard().getPlayers().get(0).setName(name);
 
-            loadgame = new Game(board,serialNumber,numOfPlayers.get(),true);
 
-            String JsonString = JsonConverter.gameToJson(loadgame);
+            String JsonString = JsonConverter.gameToJson(game);
             try {
 
 
@@ -532,8 +547,8 @@ public class AppController implements Observer {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            game = loadgame;
-            roboRally.createLobbyView(serialNumber,loadgame);
+
+            roboRally.createLobbyView(serialNumber,game);
 
             startLobbyThread(serialNumber);
 
