@@ -571,28 +571,28 @@ public class GameController {
             switch (player.getHeading()) {
                 case SOUTH:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y - 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case WEST:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x + 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case NORTH:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x, player.getSpace().y + 1));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
                     break;
                 case EAST:
                     nextSpace = (game.getBoard().getSpace(player.getSpace().x - 1, player.getSpace().y));
-                    if (checkForWall(currentSpace, nextSpace, player.getHeading(),player)) {
+                    if (checkForWall(currentSpace, nextSpace, player.getHeading().next().next(),player)) {
                         return;
                     }
                     checkForPush(player, nextSpace, player.getHeading().next().next());
