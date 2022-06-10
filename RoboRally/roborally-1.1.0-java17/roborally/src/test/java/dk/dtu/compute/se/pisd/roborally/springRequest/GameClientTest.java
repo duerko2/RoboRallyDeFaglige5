@@ -579,7 +579,7 @@ public class GameClientTest {
         e.printStackTrace();
     }
 
-    Assertions.assertEquals(result, expected);
+    Assertions.assertEquals(result, expected, "Result: " + result + ". " + "Expected: " + expected + ". ");
 
     }
 }
