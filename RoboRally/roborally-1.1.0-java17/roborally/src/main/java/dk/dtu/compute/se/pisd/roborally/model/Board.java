@@ -59,6 +59,8 @@ public class Board extends Subject {
 
     Phase currentPhase;
 
+    private int amountOfCheckPoints;
+
     public Board(int width, int height, @NotNull String boardName) {
         this.boardName = boardName;
         this.width = width;
@@ -74,8 +76,9 @@ public class Board extends Subject {
         this.stepMode = false;
     }
 
-    public Board(int width, int height) {
+    public Board(int width, int height, int amountOfCheckPoints) {
         this(width, height, "defaultboard");
+        this.amountOfCheckPoints=amountOfCheckPoints;
     }
 
     public Integer getGameId() {
@@ -249,5 +252,9 @@ public class Board extends Subject {
 
     public Phase getCurrentPhase(){
         return currentPhase;
+    }
+
+    public int getAmountOfCheckPoints() {
+        return amountOfCheckPoints;
     }
 }

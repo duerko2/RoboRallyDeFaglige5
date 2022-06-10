@@ -39,6 +39,7 @@ public class BoardTemplate {
     public int width;
     public int height;
     public int step;
+    public int amountOfCheckPoints;
     /*
     public boolean readyToReceivePlayers;
     public int maxAmountOfPlayers;
