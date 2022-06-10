@@ -81,9 +81,7 @@ public class GameController {
 
         try {
             Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-            if(tempGame.getBoard().getPlayer(playerNumber).getCardField(0).getCard() != null){
-                applyGetGame();
-            } else{
+
                 for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
                     Player player = game.getBoard().getPlayer(i);
                     if (player != null) {
@@ -100,7 +98,6 @@ public class GameController {
                     }
                 }
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -324,6 +321,10 @@ public class GameController {
                         Thread.sleep(100);
                         applyGetGame();
                         System.out.println("Thread Kører");
+
+                        if(game.getBoard().getStep()==5){
+                            System.out.println(game.getBoard().getStep());
+                        }
                         //StartProgrammingPhase
                         if(game.getBoard().getStep() >= Player.NO_REGISTERS){
                             startProgrammingPhase();
@@ -402,10 +403,9 @@ public class GameController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            //4.
-            ActivationPhase();
         }
+        //4.
+        ActivationPhase();
     }
 
     /**
