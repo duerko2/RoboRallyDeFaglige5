@@ -129,7 +129,7 @@ public class JsonConverter {
 
             GameTemplate gameTemplate = gson.fromJson(game, GameTemplate.class);
             //Creates a new board with size from boardtemplate
-            Board board = new Board(gameTemplate.board.width, gameTemplate.board.height);
+            Board board = new Board(gameTemplate.board.width, gameTemplate.board.height,gameTemplate.board.amountOfCheckPoints);
 
 
 
