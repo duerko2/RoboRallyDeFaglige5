@@ -21,15 +21,9 @@
  */
 package dk.dtu.compute.se.pisd.roborally.model;
 
-import com.google.gson.annotations.JsonAdapter;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.controller.CheckPoint;
-import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
-import javafx.scene.text.Text;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 

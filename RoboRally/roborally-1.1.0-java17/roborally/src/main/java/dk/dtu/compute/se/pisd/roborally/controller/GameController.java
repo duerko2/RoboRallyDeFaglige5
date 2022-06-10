@@ -24,6 +24,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.springRequest.GameClient;
 import dk.dtu.compute.se.pisd.roborally.springRequest.JsonConverter;
+import dk.dtu.compute.se.pisd.roborally.view.WinnerView;
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
@@ -80,9 +81,7 @@ public class GameController {
 
         try {
             Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
-            if(tempGame.getBoard().getPlayer(playerNumber).getCardField(0).getCard() != null){
-                applyGetGame();
-            } else{
+
                 for (int i = 0; i < game.getBoard().getPlayersNumber(); i++) {
                     Player player = game.getBoard().getPlayer(i);
                     if (player != null) {
@@ -99,7 +98,6 @@ public class GameController {
                     }
                 }
                 GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -199,6 +197,16 @@ public class GameController {
         game.getBoard().setPlayers(serverGame);
         game.getBoard().setCurrentPlayerIndex(serverGame.getBoard().getPlayerNumber(serverGame.getBoard().getCurrentPlayer()));
         game.getBoard().setStep(serverGame.getBoard().getStep());
+        game.setWinner(serverGame.getWinner());
+
+        if(game.getWinner()>=0){
+            WinnerView winnerView = new WinnerView(game.getBoard().getPlayer(game.getWinner()));
+
+            // Should cancel the view
+            System.exit(0);
+
+
+        }
     }
 
     /**
@@ -310,37 +318,21 @@ public class GameController {
                 running = true;
                 while (running) {
                     try {
-                        Thread.sleep(2000);
-                        if(game.getBoard().getStep() == 4){
-                            System.out.println("rat");
+                        Thread.sleep(100);
+                        applyGetGame();
+                        System.out.println("Thread Kører");
+
+                        if(game.getBoard().getStep()==5){
+                            System.out.println(game.getBoard().getStep());
                         }
-                        Game tempGame = JsonConverter.jsonToGame(GameClient.getGame(game.getSerialNumber()));
                         //StartProgrammingPhase
-                        if(tempGame.getBoard().getStep() >= Player.NO_REGISTERS){
-                            applyGetGame();
+                        if(game.getBoard().getStep() >= Player.NO_REGISTERS){
                             startProgrammingPhase();
                             stopThread();
-                        } else if(tempGame.getBoard().getPlayerNumber(tempGame.getBoard().getCurrentPlayer()) == playerNumber) {
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        applyGetGame();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            if(tempGame.getBoard().getStep() != Player.NO_REGISTERS) {
-                                stopThread();
-                            }
-                        } else {
-                            applyGetGame();
+                        } else if (game.getBoard().getPlayerNumber(game.getBoard().getCurrentPlayer())==playerNumber){
+                            stopThread();
                         }
-                    } catch (Exception e) {
-                        this.stopThread();
-                        ActivationPhase();
-                    }
+                    } catch (Exception e) {}
                 }
             }
         });
@@ -411,10 +403,9 @@ public class GameController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            //4.
-            ActivationPhase();
         }
+        //4.
+        ActivationPhase();
     }
 
     /**
@@ -800,7 +791,16 @@ public class GameController {
             for (int i = 0; i< 5;i++) {
                 player.getProgramField(i).setCard(null);
             }
+    }
+
+    public void playerHasWon(Player player){
+        game.setWinner(getGame().getBoard().getPlayerNumber(player));
+        try {
+            GameClient.putGame(game.getSerialNumber(),JsonConverter.gameToJson(game));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
     public int getPlayerNumber() {
         return playerNumber;

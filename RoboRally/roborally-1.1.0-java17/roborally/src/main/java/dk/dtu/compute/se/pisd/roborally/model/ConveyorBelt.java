@@ -1,10 +1,5 @@
-package dk.dtu.compute.se.pisd.roborally.controller;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
-import static dk.dtu.compute.se.pisd.roborally.model.Heading.*;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-
+package dk.dtu.compute.se.pisd.roborally.model;
+import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 
 
 public class  ConveyorBelt extends FieldAction{

@@ -7,6 +7,7 @@ public class GameTemplate {
     public String serialNumber;
     public int maxAmountOfPlayers;
     public boolean readyToReceivePlayers;
+    public int gameWinner;
 
     public BoardTemplate board;
 }
