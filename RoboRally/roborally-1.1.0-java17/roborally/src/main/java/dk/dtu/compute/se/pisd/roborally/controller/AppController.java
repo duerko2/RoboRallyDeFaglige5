@@ -180,7 +180,7 @@ public class AppController implements Observer {
      * TODO: The player should also be able to load a previously played game from the server.
      */
     public void hostGame() {
-        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Load game", "New game");
+        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("New game", "Load game");
         choiceDialog.setHeaderText("Load Game or New Game");
         choiceDialog.setTitle("");
         String loadOrNew = choiceDialog.showAndWait().get();
