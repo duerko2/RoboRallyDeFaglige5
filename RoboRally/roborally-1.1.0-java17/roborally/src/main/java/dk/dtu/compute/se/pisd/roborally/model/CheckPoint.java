@@ -22,12 +22,12 @@ public class CheckPoint extends FieldAction {
 
     @Override
     public boolean doAction(GameController gameController, Space space) {
+        if (space.getPlayer().getCurrentCheckPoint() == number-1){
+            space.getPlayer().setCurrentCheckPoint(space.getPlayer().getCurrentCheckPoint() + 1);
+        }
         if(space.getPlayer().getCurrentCheckPoint() == amountOfCheckpoints-1){
             System.out.println("Spiller " + space.getPlayer().getName() + " has won!");
             gameController.playerHasWon(space.getPlayer());
-        }
-        else if(space.getPlayer().getCurrentCheckPoint() == number-1){
-            space.getPlayer().setCurrentCheckPoint(space.getPlayer().getCurrentCheckPoint() + 1);
         }
         return false;
     }
