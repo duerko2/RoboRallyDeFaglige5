@@ -45,7 +45,16 @@ public class DataLayer {
     public String loadGames(){
         // Gets the names of all the current game files.
         URL url = classLoader.getResource(GAMESFOLDER);
-        String path = url.getPath();
+        String tempPath = url.getPath();
+        System.out.println(tempPath);
+        String path ="";
+        if(tempPath.charAt(1) == 'C' && tempPath.charAt(2)==':'){
+            //substring(1) is needed on windows due to path.of setting a /in front.
+            path = tempPath.substring(1);
+        } else{
+            //doesnt remove the first /
+            path = tempPath;
+        }
         File[] files = new File(path).listFiles();
 
 
