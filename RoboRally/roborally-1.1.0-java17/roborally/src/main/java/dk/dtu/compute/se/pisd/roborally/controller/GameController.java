@@ -159,7 +159,7 @@ public class GameController {
                     field.setCard(tempProgram[j]);
                     field.setVisible(true);
                     if(field.getCard() == null){
-                        full=false;
+                        field.setCard(generateRandomCommandCard());
                     }
                 }
                 for (int j = 0; j < Player.NO_CARDS; j++) {
